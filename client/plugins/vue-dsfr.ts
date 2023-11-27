@@ -5,7 +5,7 @@ import {
   RiFlagLine,
   RiHome2Line,
   RiRefreshLine,
-} from 'oh-vue-icons/icons/ri/index'
+} from 'oh-vue-icons/icons'
 
 const icons = [
   RiCloseLine,
