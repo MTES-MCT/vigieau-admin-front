@@ -2,16 +2,14 @@
 definePageMeta({
   layout: 'basic',
 })
+
+useHead({
+  title: `Accueil - ${useRuntimeConfig().public.appName}`,
+})
 </script>
 
 <template>
   <div>
-    <Html lang="fr">
-      <Head>
-        <Title>Accueil - Gabarit de démarrage VueDsfr</Title>
-      </Head>
-    </Html>
-
     <h1 class="fr-mt-4w">
       Accueil
     </h1>

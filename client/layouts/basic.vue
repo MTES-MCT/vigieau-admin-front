@@ -1,32 +1,53 @@
 <script setup lang="ts">
-const serviceTitle = 'Service'
-const serviceDescription = 'Description du service'
-const logoText = ['Ministère', 'de l’intérieur']
+import { useScheme } from "@gouvminint/vue-dsfr";
+
+const runTimeConfig = useRuntimeConfig().public;
+const serviceTitle = <string>runTimeConfig.appName;
+const logoText = ["Ministère", "de la transition", "écologique", "et de la cohésion", "des territoires"];
 
 const quickLinks = [
   {
-    label: 'Home',
-    to: '/',
-    icon: 'ri-home-2-line',
+    label: "Home",
+    to: "/",
+    icon: "ri-home-2-line"
   },
   {
-    label: 'À propos',
-    to: '/apropos',
-    icon: 'ri-flag-line',
-  },
-]
+    label: "Connexion",
+    to: "/connexion",
+    icon: "ri-flag-line"
+  }
+];
+
+const preferences = reactive({
+  theme: undefined,
+  scheme: undefined
+});
+
+onMounted(() => {
+  const { theme, scheme, setScheme } = <any>useScheme();
+  preferences.theme = theme.value;
+  preferences.scheme = scheme.value;
+  // preferences.scheme = 'light';
+
+  watchEffect(() => {
+    preferences.theme = theme.value;
+  });
+
+  watchEffect(() => setScheme(preferences.scheme));
+});
 
 </script>
 
 <template>
   <DsfrHeader
-    v-model="query"
     :service-title="serviceTitle"
-    :service-description="serviceDescription"
     :logo-text="logoText"
     :quick-links="quickLinks"
+    :show-beta="runTimeConfig.domainName !== 'vigieau.gouv.fr'"
   />
-  <div class="fr-container">
-    <slot />
-  </div>
+  <main>
+    <div class="fr-container">
+      <slot />      
+    </div>
+  </main>
 </template>

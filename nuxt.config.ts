@@ -1,6 +1,6 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
-const appName = 'VigiEauDdt'
+const appName = 'Règl\'Eau'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -9,37 +9,43 @@ export default defineNuxtConfig({
     head: {
       title: appName,
       meta: [
-        {charset: 'utf-8'},
-        {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
-          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`
+          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`,
         },
-        {name: 'format-detection', content: 'telephone=no'},
-        {property: 'og:title', content: appName},
+        { name: 'format-detection', content: 'telephone=no' },
+        { property: 'og:title', content: appName },
         {
           property: 'og:description',
-          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`
+          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`,
         },
-        {property: 'og:type', content: 'website'},
-        {property: 'og:url', content: `https://${process.env.DOMAIN_NAME}`},
-        {property: 'og:locale', content: 'fr_FR'},
-        {property: 'og:image', content: `https://${process.env.DOMAIN_NAME}/favicon.svg`},
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: `https://${process.env.DOMAIN_NAME}` },
+        { property: 'og:locale', content: 'fr_FR' },
+        { property: 'og:image', content: `https://${process.env.DOMAIN_NAME}/favicon.svg` },
       ],
       link: [
-        {rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg'},
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       ],
       htmlAttrs: {
         lang: 'fr',
       },
     },
   },
-  buildModules: ['@nuxt/typescript-build'],
+  buildModules: [
+    '@nuxt/typescript-build',
+  ],
   css: [
     '@gouvfr/dsfr/dist/core/core.main.min.css',
     '@gouvfr/dsfr/dist/component/component.main.min.css',
     '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css',
+    '@gouvfr/dsfr/dist/scheme/scheme.min.css',
+    '@gouvfr/dsfr/dist/utility/utility.main.min.css',
     '@gouvminint/vue-dsfr/styles',
+
+    'assets/main.scss',
   ],
   ignore: [
     '**/*.test.*',
@@ -49,6 +55,20 @@ export default defineNuxtConfig({
   srcDir: 'client/',
   imports: {
     autoImport: true,
+  },
+  modules: [
+  ],
+  runtimeConfig: {
+    public: {
+      appName,
+      email: 'contact.vigieau@beta.gouv.fr',
+    },
+    private: {
+      authorityUrl: process.env.AUTHORITY_URL,
+      clientId: process.env.OPENID_CLIENT_URL,
+      clientSecret: process.env.OPENID_CLIENT_SECRET,
+      clientScope: process.env.OPENID_CLIENT_SCOPE,
+    },
   },
   vite: {
     build: {
