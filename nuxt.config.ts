@@ -57,17 +57,14 @@ export default defineNuxtConfig({
     autoImport: true,
   },
   modules: [
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
   ],
   runtimeConfig: {
     public: {
       appName,
+      apiUrl: process.env.API_URL,
       email: 'contact.vigieau@beta.gouv.fr',
-    },
-    private: {
-      authorityUrl: process.env.AUTHORITY_URL,
-      clientId: process.env.OPENID_CLIENT_URL,
-      clientSecret: process.env.OPENID_CLIENT_SECRET,
-      clientScope: process.env.OPENID_CLIENT_SCOPE,
     },
   },
   vite: {
@@ -82,6 +79,29 @@ export default defineNuxtConfig({
     //     requireEnv: false,
     //   }),
     // ],
+  },
+  nitro: {
+    devProxy: {
+      '/connexion/proxy/': {
+        target: process.env.API_URL,
+        autoRewrite: true,
+        changeOrigin: true,
+        xfwd: true,
+      },
+      '/api/': {
+        target: process.env.API_URL,
+        autoRewrite: true,
+        changeOrigin: true,
+        xfwd: true,
+      },
+    },
+    // routeRules: {
+    //   '/connexion/proxy/**': { proxy: 'http://localhost:3001/api/**' },
+    //   '/v3/**': { proxy: 'http://localhost:3001/v3/**' },
+    // },
+  },
+  pinia: {
+    storesDirs: ['./stores/**'],
   },
   hooks: {
     'build:manifest': (manifest) => {

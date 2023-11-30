@@ -1,20 +1,25 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: "basic"
+  layout: 'basic',
 })
 
 const runTimeConfig = useRuntimeConfig().public
 
 useHead({
-  title: `Connexion - ${runTimeConfig.appName}`
+  title: `Connexion - ${runTimeConfig.appName}`,
 })
+
+const loginGoogle = () => {
+  navigateTo('/api/auth/login', { external: true })
+}
 </script>
 
 <template>
   <div class="fr-px-md-0 fr-py-10v fr-py-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-9 fr-col-lg-8"><h1>Connexion à {{ runTimeConfig.appName }}</h1>
-        <div class="fr-mb-6v"><h2>Se connecter avec AgentConnect</h2>
+        <div class="fr-mb-6v">
+          <h2>Se connecter avec AgentConnect</h2>
           <div class="fr-connect-group">
             <button class="fr-connect">
               <span class="fr-connect__login">S’identifier avec</span>
@@ -26,6 +31,11 @@ useHead({
                  rel="noopener"
                  title="Qu’est ce qu'AgentConnect ? - nouvelle fenêtre">Qu’est ce qu'AgentConnect ?</a>
             </p>
+          </div>
+          <div class="fr-mb-6v">
+            <h2>Se connecter avec Google (DEV Only)</h2>
+            <DsfrButton label="Se connecter avec Google"
+                        @click="loginGoogle()"/>
           </div>
         </div>
       </div>
