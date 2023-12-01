@@ -15,5 +15,6 @@ useHead({
     <h1 class="fr-mt-4w">
       Utilisateurs
     </h1>
+    <UserList />
   </div>
 </template>

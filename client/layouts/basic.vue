@@ -12,24 +12,52 @@ const logout = function() {
   navigateTo('/api/auth/logout', { external: true })
 }
 
+const a11yCompliance: string = 'Non conforme';
 const quickLinks = await authStore.isAuthenticated ? [
   {
     label: "AC",
     to: "/arrete_cadre",
-    icon: "ri-home-2-line"
+    icon: "ri-article-line"
   },
   {
     label: "Utilisateurs",
     to: "/utilisateurs",
-    icon: "ri-home-2-line"
+    icon: "ri-group-line"
   },
   {
     label: "Déconnexion",
     onclick: logout,
     to: '/',
-    icon: "ri-flag-line"
+    icon: "ri-logout-box-r-line"
   }
 ] : [];
+const mandatoryLinks: any[] = [{
+  label: `Accessibilité : ${a11yCompliance}`,
+  to: '/accessibilite',
+}, {
+  label: 'Mentions légales',
+  to: '/mentions-legales',
+}, {
+  label: 'Données personnelles',
+  to: '/donnees-personnelles',
+}, {
+  label: 'Cookies',
+  to: '/cookies',
+}];
+const ecosystemLinks: any[] = [
+  {
+    "label": "beta.gouv.fr",
+    "href": "https://beta.gouv.fr"
+  },
+  {
+    "label": "gouvernement.fr",
+    "href": "https://gouvernement.fr"
+  },
+  {
+    "label": "data.gouv.fr",
+    "href": "https://data.gouv.fr"
+  }
+];
 
 const preferences = reactive({
   theme: undefined,
@@ -63,4 +91,8 @@ onMounted(() => {
       <slot />      
     </div>
   </main>
+  <DsfrFooter :logo-text="logoText"
+              :mandatoryLinks="mandatoryLinks"
+              :ecosystemLinks="ecosystemLinks">
+  </DsfrFooter>
 </template>

@@ -17,11 +17,18 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   })
 
+  const isMte = computed(() => {
+    if (user.value) {
+      return user.value.role === 'mte'
+    }
+    return false
+  })
+
   const logout = () => {
     user.value = null
   }
 
-  return { user, isAuthenticated, logout }
+  return { user, isAuthenticated, isMte, logout }
 },
 { persist: true },
 )
