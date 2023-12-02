@@ -1,7 +1,7 @@
 import type { User } from '~/dto/user.dto'
 
 const index = {
-  getUser (): Promise<User> {
+  getUser (): Promise<any> {
     return useFetch('/user/me', {
       method: 'GET',
       baseURL: '/api',

@@ -82,23 +82,10 @@ export default defineNuxtConfig({
   },
   nitro: {
     devProxy: {
-      '/connexion/proxy/': {
-        target: process.env.API_URL,
-        autoRewrite: true,
-        changeOrigin: true,
-        xfwd: true,
-      },
       '/api/': {
         target: process.env.API_URL,
-        autoRewrite: true,
-        changeOrigin: true,
-        xfwd: true,
       },
     },
-    // routeRules: {
-    //   '/connexion/proxy/**': { proxy: 'http://localhost:3001/api/**' },
-    //   '/v3/**': { proxy: 'http://localhost:3001/v3/**' },
-    // },
   },
   pinia: {
     storesDirs: ['./stores/**'],

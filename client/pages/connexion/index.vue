@@ -10,7 +10,7 @@ useHead({
 })
 
 const loginGoogle = () => {
-  navigateTo('/api/auth/login', { external: true })
+  navigateTo(`${runTimeConfig.apiUrl}/auth/login`, { external: true })
 }
 </script>
 
