@@ -16,12 +16,12 @@ const a11yCompliance: string = 'Non conforme';
 const quickLinks = await authStore.isAuthenticated ? [
   {
     label: "AC",
-    to: "/arrete_cadre",
+    to: "/arrete-cadre",
     icon: "ri-article-line"
   },
   {
     label: "ZA",
-    to: "/zone_alerte",
+    to: "/zone-alerte",
     icon: "gi-france"
   },
   {

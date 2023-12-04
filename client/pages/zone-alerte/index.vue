@@ -6,12 +6,12 @@ definePageMeta({
 })
 
 useHead({
-  title: `Utilisateurs - ${useRuntimeConfig().public.appName}`,
+  title: `Zones d'alerte - ${useRuntimeConfig().public.appName}`,
 })
-const links: Ref<any[]> = ref([{ text: 'Utilisateurs' }])
+const links: Ref<any[]> = ref([{ text: 'Zones d\'alerte' }])
 </script>
 
 <template>
   <DsfrBreadcrumb :links="links" />
-  <UserList />
+  <ZoneAlerteList />
 </template>

@@ -1,4 +1,4 @@
-import { useAuthStore } from '~/stores/auth';
+import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (!isAuthenticated) {
       return navigateTo({ path: '/connexion' })
     } else if (to.fullPath === '/') {
-      return navigateTo({ path: '/arrete_cadre' })
+      return navigateTo({ path: '/arrete-cadre' })
     }
   } else if (isAuthenticated) {
     return navigateTo({ path: '/' })

@@ -6,12 +6,12 @@ definePageMeta({
 })
 
 useHead({
-  title: `Utilisateurs - ${useRuntimeConfig().public.appName}`,
+  title: `Arrêtés Cadre - ${useRuntimeConfig().public.appName}`,
 })
-const links: Ref<any[]> = ref([{ text: 'Utilisateurs' }])
+const links: Ref<any[]> = ref([{ text: 'Arrêtés Cadre' }])
 </script>
 
 <template>
   <DsfrBreadcrumb :links="links" />
-  <UserList />
+  <ArreteCadreList />
 </template>
