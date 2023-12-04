@@ -40,7 +40,6 @@ export default defineNuxtConfig({
   css: [
     '@gouvfr/dsfr/dist/core/core.main.min.css',
     '@gouvfr/dsfr/dist/component/component.main.min.css',
-    '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css',
     '@gouvfr/dsfr/dist/scheme/scheme.min.css',
     '@gouvfr/dsfr/dist/utility/utility.main.min.css',
     '@gouvminint/vue-dsfr/styles',

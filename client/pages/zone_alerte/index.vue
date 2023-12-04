@@ -6,15 +6,15 @@ definePageMeta({
 const runTimeConfig = useRuntimeConfig().public
 
 useHead({
-  title: `Arrêtés Cadre - ${runTimeConfig.appName}`,
+  title: `Zones d'alerte - ${runTimeConfig.appName}`,
 })
 </script>
 
 <template>
   <div>
     <h1 class="fr-mt-4w">
-      Arrêtés Cadre
+      Zones d'alerte
     </h1>
-    <ArreteCadreList />
+    <ZoneAlerteList />
   </div>
 </template>

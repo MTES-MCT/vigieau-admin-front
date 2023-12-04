@@ -37,6 +37,20 @@ const index = {
       baseURL: '/api',
     })
   },
+
+  getZonesAlerte (): Promise<any> {
+    return useFetch('/zone-alerte', {
+      method: 'GET',
+      baseURL: '/api',
+    })
+  },
+
+  getArretesCadre (): Promise<any> {
+    return useFetch('/arrete-cadre', {
+      method: 'GET',
+      baseURL: '/api',
+    })
+  },
 }
 
 export default index

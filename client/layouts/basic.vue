@@ -20,6 +20,11 @@ const quickLinks = await authStore.isAuthenticated ? [
     icon: "ri-article-line"
   },
   {
+    label: "ZA",
+    to: "/zone_alerte",
+    icon: "gi-france"
+  },
+  {
     label: "Utilisateurs",
     to: "/utilisateurs",
     icon: "ri-group-line"
