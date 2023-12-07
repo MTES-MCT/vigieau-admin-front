@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
-import api from '../api'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
+  const api = useApi()
 
   const isAuthenticated = computed(async () => {
     if (user.value) {
       return true
     }
     // GET USER
-    const { data, error } = await api.getUser()
+    const { data, error } = await api.user.me()
     if (data.value) {
       user.value = data.value
       return true

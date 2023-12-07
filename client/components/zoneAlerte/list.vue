@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
-import api from '../../api'
-import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
+import type { ZoneAlerte } from '~/dto/zone_alerte.dto'
 
 const title = 'Zones d\'alertes'
 const headers = ['Code', 'Type', 'Nom', 'Surface']
@@ -18,7 +17,8 @@ const generateRows = () => {
   componentKey.value += 1
 }
 
-const { data, error } = await api.getZonesAlerte()
+const api = useApi()
+const { data, error } = await api.zoneAlerte.list()
 if (data.value) {
   zonesAlerte.value = data.value
   generateRows()

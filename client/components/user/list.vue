@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
-import api from '../../api'
 import type { User } from '~/dto/user.dto'
 import { UserRole } from '~/dto/user.dto'
 import { useAuthStore } from '~/stores/auth'
@@ -47,7 +46,8 @@ const generateRows = () => {
   componentKey.value += 1
 }
 
-const { data, error } = await api.getUsers()
+const api = useApi()
+const { data, error } = await api.user.list()
 if (data.value) {
   users.value = data.value
   generateRows()

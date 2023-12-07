@@ -1,37 +1,46 @@
 <script setup lang="ts">
 import type { Ref } from 'vue'
-import api from '../../api'
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto'
+import type { PaginatedResult } from '~/dto/paginated_result.dto'
 
-const title = 'Arrêtés cadre'
-const headers = ['Numéro', 'Statut']
-const noCaption = false
-const pagination = true
-const arretesCadre: Ref<ArreteCadre[]> = ref([])
-const rows: Ref<any[]> = ref([])
-const componentKey = ref(0)
+const arretesCadrePaginated: Ref<PaginatedResult<ArreteCadre> | null> = ref(null)
+const currentPage = ref(0)
 
-const generateRows = () => {
-  rows.value = [...arretesCadre.value.map((a: ArreteCadre) => {
-    return [a.numero, a.statut]
-  })]
-  componentKey.value += 1
+const api = useApi()
+
+const paginate = async () => {
+  const { data, error } = await api.arreteCadre.paginate(currentPage.value + 1)
+  if (data.value) {
+    data.value.meta.dsfrPages = Array.from(
+      { length: data.value.meta.totalPages },
+      (value, index) => {
+        return {
+          title: `Page ${index + 1}`,
+          label: `${index + 1}`,
+        }
+      },
+    )
+    arretesCadrePaginated.value = data.value
+  }
 }
 
-const { data, error } = await api.getArretesCadre()
-if (data.value) {
-  arretesCadre.value = data.value
-  generateRows()
-}
+paginate()
 </script>
 
 <template>
-  <DsfrTable
-    :key="componentKey"
-    :title="title"
-    :headers="headers"
-    :rows="rows"
-    :no-caption="noCaption"
-    :pagination="pagination"
-  />
+  <template v-if="arretesCadrePaginated">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+      <div
+        v-for="arreteCadre in arretesCadrePaginated.data"
+        class="fr-col-md-4 fr-col-12"
+      >
+        <ArreteCadreCard :arrete-cadre="arreteCadre" />
+      </div>
+    </div>
+    <DsfrPagination
+      v-model:current-page="currentPage"
+      :pages="arretesCadrePaginated.meta.dsfrPages"
+      @update:current-page="paginate()"
+    />
+  </template>
 </template>
