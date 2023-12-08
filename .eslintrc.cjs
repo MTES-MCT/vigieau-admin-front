@@ -6,7 +6,6 @@ module.exports = {
   extends: [
     'standard',
     'plugin:vue/vue3-recommended',
-    '@nuxtjs/eslint-config-typescript',
   ],
   rules: {
     'jsx-quotes': [2, 'prefer-double'],

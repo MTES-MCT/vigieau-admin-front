@@ -90,6 +90,7 @@ onMounted(() => {
     :logo-text="logoText"
     :quick-links="quickLinks"
     :show-beta="runTimeConfig.domainName !== 'vigieau.gouv.fr'"
+    home-to="/arrete-cadre"
   />
   <main>
     <div class="fr-container fr-my-4w">
@@ -98,6 +99,7 @@ onMounted(() => {
   </main>
   <DsfrFooter :logo-text="logoText"
               :mandatoryLinks="mandatoryLinks"
-              :ecosystemLinks="ecosystemLinks">
-  </DsfrFooter>
+              :ecosystemLinks="ecosystemLinks"
+              home-link="/arrete-cadre"
+  />
 </template>

@@ -5,7 +5,7 @@ export class BaseApiPagination extends BaseApi {
     const params = {
       page: `${pageToGet}`,
       limit: '9',
-      query: query || '',
+      search: query || '',
     }
 
     return useFetch(`/${this.resource}/search`, {

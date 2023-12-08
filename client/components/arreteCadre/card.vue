@@ -41,7 +41,9 @@ switch (props.arreteCadre.statut) {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <a href="#" @click="emit('clickArreteCadre')">{{ arreteCadre.numero }}</a>
+          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id">
+            {{ arreteCadre.numero }}
+          </NuxtLink>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:
