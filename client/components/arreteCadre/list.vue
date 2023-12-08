@@ -8,7 +8,6 @@ const currentPage: Ref<number> = ref(0)
 const query: Ref<string> = ref('')
 
 const api = useApi()
-const router = useRouter()
 
 const paginate = async () => {
   const { data, error } = await api.arreteCadre.paginate(currentPage.value + 1)
@@ -25,9 +24,6 @@ const paginate = async () => {
     arretesCadrePaginated.value = data.value
   }
 }
-const goToArreteCadre = (arreteCadreId: number) => {
-  router.push(`/arrete-cadre/${arreteCadreId}`)
-}
 
 paginate()
 </script>
@@ -41,9 +37,11 @@ paginate()
       />
     </div>
     <h1 class="fr-my-0">Les arrêtés cadre</h1>
-    <DsfrButton
-      label="Créer un nouvel arrêté"
-    />
+    <NuxtLink to="/arrete-cadre/nouveau">
+      <DsfrButton
+        label="Créer un nouvel arrêté"
+      />      
+    </NuxtLink>
   </div>
   <template v-if="arretesCadrePaginated">
     <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
@@ -53,7 +51,7 @@ paginate()
       >
         <ArreteCadreCard :arrete-cadre="arreteCadre"
                          :key="arreteCadre.id"
-                         @click-arrete-cadre="goToArreteCadre(arreteCadre.id)"/>
+                         @click-arrete-cadre="navigateTo(`arrete-cadre/${arreteCadre.id}`)"/>
       </div>
     </div>
     <div class="fr-grid-row fr-grid-row--center fr-mt-2w">

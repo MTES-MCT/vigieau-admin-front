@@ -2,8 +2,7 @@
 import type { Ref } from 'vue'
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto'
 
-const title = 'Zones d\'alertes'
-const headers = ['Code', 'Type', 'Nom', 'Surface']
+const headers = ['Code', 'Type', 'Nom', 'Département']
 const noCaption = false
 const pagination = true
 const zonesAlerte: Ref<ZoneAlerte[]> = ref([])
@@ -12,7 +11,7 @@ const componentKey = ref(0)
 
 const generateRows = () => {
   rows.value = [...zonesAlerte.value.map((z: ZoneAlerte) => {
-    return [z.code, z.type, z.nom, z.surface]
+    return [z.code, z.type, z.nom, z.departement?.nom || '']
   })]
   componentKey.value += 1
 }
@@ -26,8 +25,8 @@ if (data.value) {
 </script>
 
 <template>
+  <h1>Les zones d'alertes</h1>
   <DsfrTable
-    :title="title"
     :headers="headers"
     :rows="rows"
     :no-caption="noCaption"

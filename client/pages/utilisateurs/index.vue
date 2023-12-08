@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
 
 definePageMeta({
   layout: 'basic',
@@ -8,10 +7,8 @@ definePageMeta({
 useHead({
   title: `Utilisateurs - ${useRuntimeConfig().public.appName}`,
 })
-const links: Ref<any[]> = ref([{ text: 'Utilisateurs' }])
 </script>
 
 <template>
-  <DsfrBreadcrumb :links="links" />
   <UserList />
 </template>

@@ -144,10 +144,13 @@ const validateEditUserForm = () => {
 </script>
 
 <template>
-  <DsfrButton
-    label="Ajouter un utilisateur"
-    @click="askAddUser()"
-  />
+  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w">
+    <h1 class="fr-my-0">Les utilisateurs</h1>
+    <DsfrButton
+      label="Ajouter un utilisateur"
+      @click="askAddUser()"
+    />
+  </div>
   <DsfrTable
     :title="title"
     :headers="headers"
