@@ -92,7 +92,7 @@ onMounted(() => {
     :show-beta="runTimeConfig.domainName !== 'vigieau.gouv.fr'"
   />
   <main>
-    <div class="fr-container">
+    <div class="fr-container fr-my-4w">
       <slot />      
     </div>
   </main>

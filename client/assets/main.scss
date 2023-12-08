@@ -6,3 +6,12 @@ body {
 .full-width {
   width: 100%;
 }
+
+// PAGINATION
+a:not([href]) {
+  cursor: pointer;
+}
+
+a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
+  color: inherit;
+}

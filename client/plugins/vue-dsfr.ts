@@ -11,6 +11,8 @@ import {
   RiGroupLine,
   RiLogoutBoxRLine,
   GiFrance,
+  RiArrowRightLine,
+  RiMore2Fill,
 } from 'oh-vue-icons/icons'
 
 const icons = [
@@ -24,6 +26,8 @@ const icons = [
   RiGroupLine,
   RiLogoutBoxRLine,
   GiFrance,
+  RiArrowRightLine,
+  RiMore2Fill,
 ]
 
 export default defineNuxtPlugin((nuxtApp) => {

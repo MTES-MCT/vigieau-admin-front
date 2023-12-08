@@ -1,9 +1,39 @@
 <script setup lang="ts">
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto'
+import { ArreteCadreStatutFr } from "~/dto/arrete_cadre.dto";
+import type { Ref } from "vue";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
 }>()
+
+const emit = defineEmits<{
+  clickArreteCadre: any;
+}>()
+
+const arreteCadreStatutFr = ArreteCadreStatutFr
+const frBadgeClass: Ref<string> = ref('')
+const arreteCadreActions: Ref<any> = ref({
+  title: 'plep',
+  links: [
+    {
+      text : "Lien 1",
+      to : "#"
+    }
+  ]
+})
+
+switch (props.arreteCadre.statut) {
+  case 'a_valider':
+    frBadgeClass.value = 'fr-badge--info'
+    break;
+  case 'publie':
+    frBadgeClass.value = 'fr-badge--success'
+    break;
+  case 'abroge':
+    frBadgeClass.value = ''
+    break;
+}
 </script>
 
 <template>
@@ -11,34 +41,45 @@ const props = defineProps<{
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <a href="#">{{ arreteCadre.numero }}</a>
+          <a href="#" @click="emit('clickArreteCadre')">{{ arreteCadre.numero }}</a>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:
           <template v-for="dep in arreteCadre.departements">
-            {{ dep.nom }}&nbsp;
+            {{ dep.nom }}&nbsp;;
           </template>
         </p>
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
               <DsfrBadge
-                :label="arreteCadre.statut"
-                type="success"
+                :label="arreteCadreStatutFr[arreteCadre.statut]"
+                :class="frBadgeClass"
+                :type="null"
                 :no-icon="true"
               />
             </li>
             <li>
               <DsfrBadge
                 label="Restrictions associés"
-                type="new"
+                class="fr-badge--restrictions"
                 :no-icon="true"
               />
             </li>
           </ul>
-          <p class="fr-card__detail fr-icon-warning-fill">
+          <p class="fr-card__detail">
+            <VIcon name="ri-arrow-right-line"/>
             {{ arreteCadre.dateDebut }}
+            <span v-if="arreteCadre.dateFin">
+              &nbsp;au {{ arreteCadre.dateFin}}
+            </span>
           </p>
+          <div class="fr-card__actions">
+<!--            <DsfrNavigation :nav-items="[arreteCadreActions]"/>-->
+<!--            <DsfrButton :icon-only="true"-->
+<!--                        :secondary="true"-->
+<!--                        icon="ri-more-2-fill"/>-->
+          </div>
         </div>
       </div>
       <div class="fr-card__footer">
@@ -64,3 +105,10 @@ const props = defineProps<{
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.fr-badge--restrictions {
+  background-color: var(--purple-glycine-950-100);
+  color: var(--purple-glycine-sun-319-moon-630);
+}
+</style>

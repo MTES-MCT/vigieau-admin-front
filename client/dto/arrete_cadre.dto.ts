@@ -4,5 +4,11 @@ export interface ArreteCadre {
   dateDebut: string;
   dateFin: string;
   departements: any[];
-  statut: string;
+  statut: 'a_valider' | 'publie' | 'abroge';
+}
+
+export enum ArreteCadreStatutFr {
+  a_valider = 'Brouillon',
+  publie = 'Publié',
+  abroge = 'Abrogé',
 }
