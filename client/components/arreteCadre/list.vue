@@ -68,7 +68,7 @@ watch(query, useUtils().debounce(async () => {
   </template>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .arrete-cadre-header {
   justify-content: space-between;
 }

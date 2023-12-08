@@ -13,6 +13,7 @@ import {
   GiFrance,
   RiArrowRightLine,
   RiMore2Fill,
+  RiSunFill,
 } from 'oh-vue-icons/icons'
 
 const icons = [
@@ -28,6 +29,7 @@ const icons = [
   GiFrance,
   RiArrowRightLine,
   RiMore2Fill,
+  RiSunFill,
 ]
 
 export default defineNuxtPlugin((nuxtApp) => {

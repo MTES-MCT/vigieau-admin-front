@@ -144,7 +144,7 @@ const validateEditUserForm = () => {
 </script>
 
 <template>
-  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w">
+  <div class="user-header fr-grid-row fr-grid-row--middle fr-mb-2w">
     <h1 class="fr-my-0">Les utilisateurs</h1>
     <DsfrButton
       label="Ajouter un utilisateur"
@@ -183,3 +183,9 @@ const validateEditUserForm = () => {
     <div v-html="modalText" />
   </DsfrModal>
 </template>
+
+<style lang="scss" scoped>
+.user-header {
+  justify-content: space-between;
+}
+</style>
