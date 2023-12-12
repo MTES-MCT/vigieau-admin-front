@@ -9,5 +9,5 @@ useHead({
 </script>
 
 <template>
-  <ZoneAlerteDepartementList />
+  <ZoneAlerteList />
 </template>

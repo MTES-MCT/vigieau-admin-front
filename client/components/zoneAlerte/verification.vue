@@ -157,7 +157,7 @@ const populateLayers = () => {
         </ul>
       </template>
       <template v-if="comparaisonZones">
-        <h1>Comparaison avec les zones actives</h1>
+        <h1>Comparaison avec les zones {{ route.params.type_zone }} actives</h1>
         <DsfrTable
           :headers="headers"
           :rows="rows"

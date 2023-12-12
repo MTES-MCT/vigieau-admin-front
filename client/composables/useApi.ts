@@ -7,5 +7,6 @@ export const useApi = () => {
     arreteCadre: new BaseApiPagination('arrete-cadre'),
     zoneAlerte: new ZoneAlerteApi('zone-alerte'),
     user: new UserApi('user'),
+    departement: new UserApi('departement'),
   }
 }
