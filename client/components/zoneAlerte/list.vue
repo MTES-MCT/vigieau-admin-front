@@ -17,15 +17,15 @@ const generateRows = () => {
 }
 
 const api = useApi()
-const { data, error } = await api.zoneAlerte.list()
+const { data, error } = await api.zoneAlerte.get('34')
 if (data.value) {
-  zonesAlerte.value = data.value
+  zonesAlerte.value = <ZoneAlerte[]> data.value
   generateRows()
 }
 </script>
 
 <template>
-  <h1>Les zones d'alertes</h1>
+  <h1>Les zones d'alertes (34)</h1>
   <DsfrTable
     :headers="headers"
     :rows="rows"
@@ -33,4 +33,5 @@ if (data.value) {
     :pagination="pagination"
     :key="componentKey"
   />
+  <zoneAlerteImport />
 </template>
