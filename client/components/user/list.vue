@@ -124,7 +124,7 @@ const deleteUser = async () => {
 }
 
 const createEditUser = async (user: any) => {
-  const { data, error } = user.isNewUser ? await api.createUser(user) : await api.editUser(user)
+  const { data, error } = user.isNewUser ? await api.user.create(user) : await api.user.update(user)
   closeModal()
   if (!error.value) {
     if (user.isNewUser) {
