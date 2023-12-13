@@ -1,34 +1,52 @@
-# Gabarit de démarrage de VueDsfr pour Nuxt 3
+# Règl'eau - Frontend
 
-Nous vous recommandons de regarder la [documentation de Nuxt 3](https://nuxt.com/docs/getting-started/introduction)
+## Description
+
+## Installation
+
+### Pré-requis
+
+Vous aurez besoin de [NodeJS](https://nodejs.org/) v18+ et [Yarn](https://yarnpkg.com/) pour lancer ce projet.
+
+Nous vous recommandons de regarder la [documentation de Nuxt 3](https://v3.nuxtjs.org)
 et la [documentation de VueDsfr](https://vue-dsfr.netlify.app).
 
-## Installation des dépendances
+### Variables d'environnement
 
 ```bash
-npm install
+cp env.example .env
 ```
 
-## Lancer nuxt en mode développement
-
-Démarre le serveur sur `http://localhost:3000`·:
+### Installation des dépendances
 
 ```bash
-npm run dev
+yarn install
 ```
 
-## Générer le code de production
+### Lancer nuxt en mode développement
 
-Génère le code de production de l’application :
+Démarre le serveur sur http://localhost:3000
 
 ```bash
-npm run build
+yarn dev
 ```
 
-Prévisualisation du code de prod (nécessite un build préalable) :
+### Générer le code de production
+
+Génère le code de production de l’application:
 
 ```bash
-npm run preview
+yarn build
 ```
 
-Regarder ensuite la [documentation de Nuxt concernant le déploiement](https://nuxt.com/docs/getting-started/deployment).
+Regarder ensuite la [documentation de Nuxt concernant le déploiement](https://v3.nuxtjs.org/docs/deployment).
+
+## Contribution
+
+Les Pull Requests sont les bienvenues. Pour des changements majeurs merci d'ouvrir auparavant une issue pour en discuter.
+
+Assurez-vous de mettre à jour les tests en conséquence.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)

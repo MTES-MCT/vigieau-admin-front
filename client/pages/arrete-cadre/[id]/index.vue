@@ -7,9 +7,6 @@ definePageMeta({
 useHead({
   title: `Consultation arrêté cadre - ${useRuntimeConfig().public.appName}`,
 })
-
-const route = useRoute()
-console.log(route.params)
 </script>
 
 <template>

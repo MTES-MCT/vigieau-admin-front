@@ -7,10 +7,6 @@ const props = defineProps<{
   arreteCadre: ArreteCadre,
 }>()
 
-const emit = defineEmits<{
-  clickArreteCadre: any;
-}>()
-
 const arreteCadreStatutFr = ArreteCadreStatutFr
 const frBadgeClass: Ref<string> = ref('')
 const arreteCadreActions: Ref<any> = ref({
@@ -61,16 +57,10 @@ switch (props.arreteCadre.statut) {
                 :no-icon="true"
               />
             </li>
-            <li>
-              <DsfrBadge
-                label="Restrictions associés"
-                class="fr-badge--restrictions"
-                :no-icon="true"
-              />
-            </li>
           </ul>
           <p class="fr-card__detail">
-            <VIcon name="ri-arrow-right-line"/>
+            <VIcon name="ri-calendar-fill"/>
+            &nbsp;
             {{ arreteCadre.dateDebut }}
             <span v-if="arreteCadre.dateFin">
               &nbsp;au {{ arreteCadre.dateFin}}
