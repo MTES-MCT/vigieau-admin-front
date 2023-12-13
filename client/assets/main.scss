@@ -22,6 +22,7 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
     margin: 0;
     padding: 0;
     box-shadow: none;
+    overflow: visible;
 
     &:before {
       box-shadow: none;
@@ -33,6 +34,29 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
 
     .fr-tabs__panel {
       padding: 0;
+    }
+  }
+}
+
+// SEARCH BAR
+.fr-search-bar {
+  &.show-label {
+    flex-wrap: wrap;
+    
+    .fr-label {
+      position: relative;
+      width: 100%;
+      height: initial;
+    }
+    
+    .fr-input {
+      margin-top: 0.5rem;
+      flex: 1;
+    }
+    
+    .fr-btn {
+      margin-top: 0.5rem;
+      flex: none;
     }
   }
 }

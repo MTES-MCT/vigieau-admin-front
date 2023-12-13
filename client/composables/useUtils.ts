@@ -34,6 +34,13 @@ export const useUtils = () => {
       }
       // WebGL not supported
       return false;
+    },
+    
+    showInputError(v$: any, inputName: string): string {
+      if(v$[inputName]?.$errors.length > 0) {
+        return v$[inputName]?.$errors.map((e: any) => e.$message).join('.&nbsp;')
+      }
+      return ''
     }
   }
 }

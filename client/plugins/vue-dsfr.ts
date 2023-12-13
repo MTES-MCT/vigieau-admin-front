@@ -15,7 +15,9 @@ import {
   RiMore2Fill,
   RiSunFill,
   RiLoader4Line,
-  RiCalendarFill
+  RiCalendarFill,
+  RiArrowLeftLine,
+  RiSettings3Line
 } from "oh-vue-icons/icons";
 
 const icons = [
@@ -30,6 +32,8 @@ const icons = [
   RiLogoutBoxRLine,
   GiFrance,
   RiArrowRightLine,
+  RiArrowLeftLine,
+  RiSettings3Line,
   RiMore2Fill,
   RiSunFill,
   RiLoader4Line,
