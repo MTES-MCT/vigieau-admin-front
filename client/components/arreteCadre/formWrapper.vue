@@ -2,15 +2,25 @@
 import { ArreteCadre } from "~/dto/arrete_cadre.dto";
 import type { Ref } from "vue";
 import useVuelidate from "@vuelidate/core/dist/index";
+import { useRefDataStore } from "~/stores/refData";
+import type { Departement } from "~/dto/departement.dto";
 
 const arreteCadre: Ref<ArreteCadre | null> = ref(null);
 
 const route = useRoute();
 const api = useApi();
 const isNewArreteCadre = route.params.id === "nouveau";
+const loadRefData = ref(false);
 
 const currentStep: Ref<number> = ref(1);
 const steps = ["Informations générales", "Règles de gestion des niveaux d'alerte", "Liste des zones d'alertes", "Les usages", "Récapitulatif"];
+
+// Départements
+const { data, error } = await api.departement.list();
+if (data.value) {
+  useRefDataStore().setDepartements(<Departement[]> data.value)
+  loadRefData.value = true;
+}
 
 const v$ = useVuelidate()
 
@@ -82,7 +92,7 @@ showButtons()
 <template>
   <h1>{{ isNewArreteCadre ? "Création" : "Edition" }} d'un arrêté cadre</h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <DsfrTabs class="tabs-light">
+  <DsfrTabs class="tabs-light" v-if="loadRefData">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" />
     </DsfrTabContent>

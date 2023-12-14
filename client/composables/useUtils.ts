@@ -41,6 +41,13 @@ export const useUtils = () => {
         return v$[inputName]?.$errors.map((e: any) => e.$message).join('.&nbsp;')
       }
       return ''
+    },
+
+    mergeArrays(a: any, b: any, predicate = (a: any, b: any) => a === b) {
+      const c = [...a]; // copy to avoid side effects
+      // add all items from B to copy C if they're not already present
+      b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)))
+      return c;
     }
   }
 }

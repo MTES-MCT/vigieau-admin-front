@@ -5,6 +5,7 @@ import useVuelidate from "@vuelidate/core";
 import type { Ref } from "vue";
 import type { Departement } from "~/dto/departement.dto";
 import { useAuthStore } from "~/stores/auth";
+import { useRefDataStore } from "~/stores/refData";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
@@ -12,17 +13,14 @@ const props = defineProps<{
 
 const query: Ref<string> = ref("");
 const departementsTags = ref([]);
-const departements = ref([]);
 const departementsFiltered = ref([]);
-const api = useApi();
 const utils = useUtils();
 const authStore = useAuthStore();
+const refDataStore = useRefDataStore();
 
-const { data, error } = api.departement.list();
-if (data.value) {
-  departements.value = data.value;
+if (refDataStore.departements) {
   if(!props.arreteCadre.departements && authStore.user.role === 'departement') {
-    props.arreteCadre.departements = departements.value.filter(d => d.code === authStore.user.roleDepartement);
+    props.arreteCadre.departements = refDataStore.departements.filter(d => d.code === authStore.user.roleDepartement);
   }
 }
 
@@ -49,7 +47,7 @@ const rules = computed(() => {
 });
 
 const filterDepartements = () => {
-  departementsFiltered.value = query.value ? departements.value.filter(d => {
+  departementsFiltered.value = query.value ? refDataStore.departements.filter(d => {
     return !props.arreteCadre.departements.map(ad => ad.id).includes(d.id)
       && d.nom.toLowerCase().includes(query.value.toLowerCase());
   }) : [];
