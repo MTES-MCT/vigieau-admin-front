@@ -87,16 +87,16 @@ showButtons()
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2">
-      Panel 2
+      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3">
-      Panel 3
+      <ArreteCadreFormZones :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
-      Panel 4
+      <ArreteCadreFormUsages :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
-      Panel 5
+      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
   </DsfrTabs>
   <DsfrButtonGroup
