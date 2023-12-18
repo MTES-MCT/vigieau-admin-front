@@ -1,5 +1,5 @@
 export class ArreteCadre {
-  id: number;
+  id: number | null;
   numero: string;
   dateDebut: string;
   dateFin: string;
@@ -7,6 +7,10 @@ export class ArreteCadre {
   zonesAlerte: any[];
   usagesArreteCadre: any[];
   statut: 'a_valider' | 'publie' | 'abroge';
+
+  sameZoneCommuneRule: 'all' | 'eap' | 'none' | null;
+  customEapNiveau: boolean | null;
+  customEapZone: 'esu' | 'eso' | 'max' | null
   
   constructor() {
     this.id = null;
@@ -17,6 +21,9 @@ export class ArreteCadre {
     this.departements = [];
     this.zonesAlerte = [];
     this.usagesArreteCadre = [];
+    this.sameZoneCommuneRule = null;
+    this.customEapNiveau = null;
+    this.customEapZone = null
   }
 }
 
