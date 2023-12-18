@@ -7,6 +7,10 @@ body {
   width: 100%;
 }
 
+.divider {
+  border-bottom: 1px solid var(--grey-925-125);
+}
+
 // PAGINATION
 a:not([href]) {
   cursor: pointer;

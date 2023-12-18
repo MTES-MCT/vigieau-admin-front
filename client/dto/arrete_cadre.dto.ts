@@ -5,6 +5,7 @@ export class ArreteCadre {
   dateFin: string;
   departements: any[];
   zonesAlerte: any[];
+  usagesArreteCadre: any[];
   statut: 'a_valider' | 'publie' | 'abroge';
   
   constructor() {
@@ -15,6 +16,7 @@ export class ArreteCadre {
     this.statut = 'a_valider';
     this.departements = [];
     this.zonesAlerte = [];
+    this.usagesArreteCadre = [];
   }
 }
 

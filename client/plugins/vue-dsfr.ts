@@ -17,7 +17,8 @@ import {
   RiLoader4Line,
   RiCalendarFill,
   RiArrowLeftLine,
-  RiSettings3Line
+  RiSettings3Line,
+  RiEdit2Fill,
 } from "oh-vue-icons/icons";
 
 const icons = [
@@ -37,7 +38,8 @@ const icons = [
   RiMore2Fill,
   RiSunFill,
   RiLoader4Line,
-  RiCalendarFill
+  RiCalendarFill,
+  RiEdit2Fill
 ]
 
 export default defineNuxtPlugin((nuxtApp) => {

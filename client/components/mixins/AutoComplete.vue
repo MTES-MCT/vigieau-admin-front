@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from "vue";
 
 const container = ref(undefined)
 const optionsList = ref(undefined)
@@ -128,7 +128,7 @@ function checkKeyboardNav($event) {
   }
 }
 
-function displayOption(option) {
+function displayOption(option: any) {
   if (!props.displayKey) {
     return option;
   }
@@ -167,8 +167,8 @@ function displayOption(option) {
           :key="option"
           class="list-item fr-p-1w fr-pl-2w"
           :class="{ 'active-option': activeOption === i }"
-          @click.stop="selectOption(option)">
-        {{ displayOption(option) }}
+          @click.stop="selectOption(option)"
+          v-html="displayOption(option)">
       </li>
     </ul>
   </div>
