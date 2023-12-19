@@ -4,12 +4,16 @@ import useVuelidate from "@vuelidate/core";
 import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
 import type { Ref } from "vue";
 import { useRefDataStore } from "~/stores/refData";
-import type { Usage } from "~/dto/usage.dto";
+import { Usage } from "~/dto/usage.dto";
 import { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
 }>();
+const modalUsageOpened: Ref<boolean> = ref(false)
+const modalTitle: Ref<string> = ref("Création d'un nouvel usage")
+const modalActions: Ref<any[]> = ref([])
+const usageToEdit: Ref<Usage | undefined> = ref(new Usage())
 
 const query: Ref<string> = ref("");
 const usagesFiltered: Ref<Usage[]> = ref([]);
@@ -62,7 +66,11 @@ watch(query, useUtils().debounce(async () => {
   <form @submit.prevent="">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <h6>Ajouter un usage</h6>
+        <h6>
+          Ajouter un usage
+          <DsfrButton label="Ajouter"
+                      @click="modalUsageOpened=true"/>
+        </h6>
         <MixinsAutoComplete
           class="show-label"
           buttonText="Ajouter"
@@ -87,6 +95,14 @@ watch(query, useUtils().debounce(async () => {
       </div>
     </div>
   </form>
+  <DsfrModal
+    :opened="modalUsageOpened"
+    :title="modalTitle"
+    :actions="modalActions"
+    @close="modalUsageOpened = false"
+  >
+    <UsageForm :usage="usageToEdit" />
+  </DsfrModal>
 </template>
 
 <style lang="scss" scoped>

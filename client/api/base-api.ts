@@ -12,6 +12,7 @@ export class BaseApi {
   }
 
   create (payload: any) {
+    console.log('CREATE');
     return useFetch(`/${this.resource}`, {
       method: 'POST',
       baseURL: '/api',
@@ -26,7 +27,8 @@ export class BaseApi {
     })
   }
 
-  update (payload: any, id: string) {
+  update (id: string, payload: any) {
+    console.log('UPDATE');
     return useFetch(`/${this.resource}/${id}`, {
       method: 'PATCH',
       baseURL: '/api',

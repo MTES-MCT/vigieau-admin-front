@@ -10,5 +10,6 @@ export const useApi = () => {
     user: new UserApi('user'),
     departement: new UserApi('departement'),
     usage: new BaseApi('usage'),
+    thematique: new BaseApi('thematique'),
   }
 }

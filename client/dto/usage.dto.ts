@@ -1,10 +1,9 @@
-export interface Usage {
+import type { Thematique } from "~/dto/thematique.dto";
+
+export class Usage {
   id: number;
   nom: string;
-  thematique: {
-    id: string;
-    nom: string
-  },
+  thematique: Thematique;
   isTemplate: boolean;
   concerneParticulier: boolean;
   concerneEntreprise: boolean;
@@ -18,4 +17,14 @@ export interface Usage {
   // Frontend only
   isAlreadyUsed: boolean;
   display: any;
+  
+  constructor() {
+    this.id = null;
+    this.nom = '';
+    this.thematique = null;
+    this.concerneParticulier = false;
+    this.concerneEntreprise = false;
+    this.concerneCollectivite = false;
+    this.concerneExploitation = false;
+  }
 }

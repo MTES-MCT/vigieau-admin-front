@@ -1,8 +1,8 @@
 export class ArreteCadre {
   id: number | null;
   numero: string;
-  dateDebut: string;
-  dateFin: string;
+  dateDebut: string | null;
+  dateFin: string | null;
   departements: any[];
   zonesAlerte: any[];
   usagesArreteCadre: any[];
@@ -15,8 +15,8 @@ export class ArreteCadre {
   constructor() {
     this.id = null;
     this.numero = '';
-    this.dateDebut = '';
-    this.dateFin = '';
+    this.dateDebut = null;
+    this.dateFin = null;
     this.statut = 'a_valider';
     this.departements = [];
     this.zonesAlerte = [];

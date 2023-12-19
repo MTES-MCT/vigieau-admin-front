@@ -14,7 +14,7 @@ const props = defineProps<{
 const refDataStore = useRefDataStore();
 const expandedIndex: Ref<string | undefined> = ref();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map(z => z.id));
-const departementsFiletered:  Ref<any[]> = ref(refDataStore.departements.filter(d => props.arreteCadre.departements.map(ad => ad.id).includes(d.id)));
+const departementsFiletered: Ref<any[]> = ref(refDataStore.departements.filter(d => props.arreteCadre.departements.map(ad => ad.id).includes(d.id)));
 
 const rules = computed(() => {
   return {
@@ -37,25 +37,31 @@ const zonesOptionsCheckBox = (dep: Departement) => {
 };
 
 const selectAll = (d: any) => {
-  if(d.nbZonesSelected === d.zonesAlerte.length) {
+  if (d.nbZonesSelected === d.zonesAlerte.length) {
     zonesSelected.value = zonesSelected.value.filter(z => !d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z));
   } else {
     zonesSelected.value = useUtils().mergeArrays(zonesSelected.value, d.zonesAlerte.map((za: ZoneAlerte) => za.id));
   }
-}
+};
 
 const computeDepSelected = () => {
   departementsFiletered.value.forEach(d => {
     d.nbZonesSelected = zonesSelected.value.filter(z => d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
-  })
-}
+  });
+};
 
 watch(zonesSelected, () => {
   props.arreteCadre.zonesAlerte = refDataStore.zonesAlerte.filter(z => zonesSelected.value.includes(z.id));
-  computeDepSelected()
-})
+  computeDepSelected();
+});
 
-computeDepSelected()
+watch(() => props.arreteCadre.departements, () => {
+  departementsFiletered.value = refDataStore.departements.filter(d => props.arreteCadre.departements.map(ad => ad.id).includes(d.id));
+  zonesSelected.value = zonesSelected.value.filter(z => departementsFiletered.value.map((d: Departement) => d.zonesAlerte.map((za: ZoneAlerte) => za.id)).flat().includes(z));
+  computeDepSelected();
+});
+
+computeDepSelected();
 </script>
 
 <template>

@@ -6,9 +6,11 @@ import type { Ref } from "vue";
 import type { Departement } from "~/dto/departement.dto";
 import { useAuthStore } from "~/stores/auth";
 import { useRefDataStore } from "~/stores/refData";
+import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
+  fullValidation: boolean,
 }>();
 
 const query: Ref<string> = ref("");
@@ -30,14 +32,14 @@ const rules = computed(() => {
       required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required)
     },
     departements: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins un département", required)
+      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un département", requiredIf(props.fullValidation))
     },
     dateDebut: {
-      required: helpers.withMessage("La date de début de l'arrêté est obligatoire.", required)
+      required: helpers.withMessage("La date de début de l'arrêté est obligatoire.", requiredIf(props.fullValidation))
     },
     dateFin: {
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val) => {
-        if(props.arreteCadre.dateDebut) {
+        if(props.arreteCadre.dateDebut && val) {
           return new Date(val) > new Date(props.arreteCadre.dateDebut);          
         }
         return true

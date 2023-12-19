@@ -2,11 +2,13 @@ import type { Ref } from "vue";
 import type { Departement } from "~/dto/departement.dto";
 import type { ZoneAlerte } from "~/dto/zone_alerte.dto";
 import type { Usage } from "~/dto/usage.dto";
+import type { Thematique } from "~/dto/thematique.dto";
 
 export const useRefDataStore = defineStore("rafDataStore", () => {
   const departements: Ref<Departement[]> = ref([]);
   const usages: Ref<Usage[]> = ref([]);
   const zonesAlerte: Ref<ZoneAlerte[]> = ref([]);
+  const thematiques: Ref<Thematique[]> = ref([]);
 
   function setDepartements(value: Departement[]): void {
     departements.value = value;
@@ -17,5 +19,9 @@ export const useRefDataStore = defineStore("rafDataStore", () => {
     usages.value = value;
   }
 
-  return { setDepartements, departements, zonesAlerte, setUsages, usages };
+  function setThematiques(value: Thematique[]): void {
+    thematiques.value = value;
+  }
+
+  return { setDepartements, departements, zonesAlerte, setUsages, usages, setThematiques, thematiques };
 });

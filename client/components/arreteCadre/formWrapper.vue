@@ -5,8 +5,10 @@ import useVuelidate from "@vuelidate/core/dist/index";
 import { useRefDataStore } from "~/stores/refData";
 import type { Departement } from "~/dto/departement.dto";
 import type { Usage } from "~/dto/usage.dto";
+import type { Thematique } from "~/dto/thematique.dto";
 
-const arreteCadre: Ref<ArreteCadre | null> = ref(null);
+const arreteCadre: Ref<ArreteCadre> = ref();
+const fullValidation: Ref<boolean> = ref(false);
 
 const route = useRoute();
 const api = useApi();
@@ -17,15 +19,19 @@ const currentStep: Ref<number> = ref(1);
 const steps = ["Informations générales", "Règles de gestion des niveaux d'alerte", "Liste des zones d'alertes", "Les usages", "Récapitulatif"];
 
 // Départements
-const [fecthDep, fetchUsage] = await Promise.all([
+const [fecthDep, fetchUsage, fetchThematique] = await Promise.all([
   api.departement.list(),
-  api.usage.list()
+  api.usage.list(),
+  api.thematique.list()
 ]);
 if (fecthDep.data.value) {
   useRefDataStore().setDepartements(<Departement[]>fecthDep.data.value);
 }
 if (fetchUsage.data.value) {
   useRefDataStore().setUsages(<Usage[]>fetchUsage.data.value);
+}
+if (fetchThematique.data.value) {
+  useRefDataStore().setThematiques(<Thematique[]>fetchThematique.data.value);
 }
 loadRefData.value = true;
 
@@ -50,7 +56,17 @@ const previousStep = () => {
 };
 const saveArrete = async () => {
   await v$.value.$validate();
-  console.log(v$.value);
+  if (v$.value.$error) {
+    return;
+  }
+  const {
+    data,
+    error
+  } = arreteCadre.value.id ? await api.arreteCadre.update(arreteCadre.value.id.toString(), arreteCadre.value)
+    : await api.arreteCadre.create({ ...arreteCadre.value });
+  if (data.value) {
+    arreteCadre.value.id = data.value.id;
+  }
 };
 
 const showButtons = () => {
@@ -101,16 +117,20 @@ showButtons();
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <DsfrTabs class="tabs-light" v-if="loadRefData">
     <DsfrTabContent :selected="currentStep === 1">
-      <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" />
+      <ArreteCadreFormGeneral :arrete-cadre="arreteCadre"
+                              :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2">
-      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" />
+      <ArreteCadreFormRegles :arrete-cadre="arreteCadre"
+                             :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3">
-      <ArreteCadreFormZones :arrete-cadre="arreteCadre" />
+      <ArreteCadreFormZones :arrete-cadre="arreteCadre"
+                            :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
-      <ArreteCadreFormUsages :arrete-cadre="arreteCadre" />
+      <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
+                             :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
       <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre" />
