@@ -9,15 +9,18 @@ import { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
+  fullValidation: boolean
 }>();
 const modalUsageOpened: Ref<boolean> = ref(false)
 const modalTitle: Ref<string> = ref("Création d'un nouvel usage")
-const modalActions: Ref<any[]> = ref([])
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage())
+const usageFormRef = ref(null)
+const loading: Ref<boolean> = ref(false)
 
 const query: Ref<string> = ref("");
 const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
+const api = useApi();
 const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
 
 const rules = computed(() => {
@@ -56,6 +59,38 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
     usageArreteCadreToEdit.value = <UsageArreteCadre> usage;    
   }
 };
+
+const closeModal = () => {
+  modalUsageOpened.value = false
+}
+
+const validateUsageForm = () => {
+  usageFormRef.value?.submitForm()
+}
+
+const modalActions: Ref<any[]> = ref([
+  {
+    label: 'Annuler',
+    onclick: closeModal,
+  },
+  {
+    label: 'Enregistrer',
+    onclick: validateUsageForm,
+  },
+])
+
+const createEditUsage = async (usage: Usage) => {
+  loading.value = true
+  console.log(usage)
+  const { data, error } = await api.usage.create(usage);
+  loading.value = false
+  closeModal()
+  if (data.value) {
+    refDataStore.setUsages([...refDataStore.usages, data.value])
+    selectUsage(data.value)
+  }
+}
+
 
 watch(query, useUtils().debounce(async () => {
   filterUsages();
@@ -99,9 +134,13 @@ watch(query, useUtils().debounce(async () => {
     :opened="modalUsageOpened"
     :title="modalTitle"
     :actions="modalActions"
-    @close="modalUsageOpened = false"
+    @close="closeModal"
   >
-    <UsageForm :usage="usageToEdit" />
+    <UsageForm
+      ref="usageFormRef"
+      :loading="loading"
+      :usage="usageToEdit"
+      @createEdit="createEditUsage($event)"/>
   </DsfrModal>
 </template>
 
