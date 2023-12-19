@@ -62,6 +62,7 @@ const askEditUser = (user) => {
   modalActions.value = [
     {
       label: 'Annuler',
+      secondary: true,
       onclick: closeModal,
     },
     {
@@ -80,6 +81,7 @@ const askAddUser = () => {
   modalActions.value = [
     {
       label: 'Annuler',
+      secondary: true,
       onclick: closeModal,
     },
     {
@@ -99,6 +101,7 @@ const askDeleteUser = (user) => {
   modalActions.value = [
     {
       label: 'Annuler',
+      secondary: true,
       onclick: closeModal,
     },
     {

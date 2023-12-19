@@ -11,11 +11,11 @@ const props = defineProps<{
   arreteCadre: ArreteCadre,
   fullValidation: boolean
 }>();
-const modalUsageOpened: Ref<boolean> = ref(false)
-const modalTitle: Ref<string> = ref("Création d'un nouvel usage")
-const usageToEdit: Ref<Usage | undefined> = ref(new Usage())
-const usageFormRef = ref(null)
-const loading: Ref<boolean> = ref(false)
+const modalUsageOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
+const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
+const usageFormRef = ref(null);
+const loading: Ref<boolean> = ref(false);
 
 const query: Ref<string> = ref("");
 const usagesFiltered: Ref<Usage[]> = ref([]);
@@ -35,12 +35,12 @@ const v$ = useVuelidate(rules, props.arreteCadre);
 
 const filterUsages = () => {
   const tmp = query.value ? refDataStore.usages.filter(u => {
-     return u.nom.toLowerCase().includes(query.value.toLowerCase());
+    return u.nom.toLowerCase().includes(query.value.toLowerCase());
   }) : [];
   tmp.map(u => {
     u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex(uac => uac.usage.id === u.id) > -1;
-    u.display = u.isAlreadyUsed ? '<b>' + u.nom + '</b>' : u.nom;
-  })
+    u.display = u.isAlreadyUsed ? "<b>" + u.nom + "</b>" : u.nom;
+  });
   usagesFiltered.value = tmp;
 };
 
@@ -49,48 +49,67 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
     return;
   }
   query.value = "";
-  if(!isUsageArreteCadre) {
-    let usageArreteCadre = props.arreteCadre.usagesArreteCadre.find(uac => uac.usage.id === (<Usage> usage).id);
-    if(!usageArreteCadre) {
-      usageArreteCadre = new UsageArreteCadre(<Usage> usage)
+  if (!isUsageArreteCadre) {
+    let usageArreteCadre = props.arreteCadre.usagesArreteCadre.find(uac => uac.usage.id === (<Usage>usage).id);
+    if (!usageArreteCadre) {
+      usageArreteCadre = new UsageArreteCadre(<Usage>usage);
     }
     usageArreteCadreToEdit.value = usageArreteCadre;
   } else {
-    usageArreteCadreToEdit.value = <UsageArreteCadre> usage;    
+    usageArreteCadreToEdit.value = <UsageArreteCadre>usage;
   }
 };
 
 const closeModal = () => {
-  modalUsageOpened.value = false
-}
+  modalUsageOpened.value = false;
+};
 
 const validateUsageForm = () => {
-  usageFormRef.value?.submitForm()
-}
+  usageFormRef.value?.submitForm();
+};
 
 const modalActions: Ref<any[]> = ref([
   {
-    label: 'Annuler',
-    onclick: closeModal,
+    label: "Enregistrer",
+    onclick: validateUsageForm
   },
   {
-    label: 'Enregistrer',
-    onclick: validateUsageForm,
-  },
-])
+    label: "Annuler",
+    secondary: true,
+    onclick: closeModal
+  }
+]);
 
 const createEditUsage = async (usage: Usage) => {
-  loading.value = true
-  console.log(usage)
+  loading.value = true;
+  console.log(usage);
   const { data, error } = await api.usage.create(usage);
-  loading.value = false
-  closeModal()
+  loading.value = false;
+  closeModal();
   if (data.value) {
-    refDataStore.setUsages([...refDataStore.usages, data.value])
-    selectUsage(data.value)
+    refDataStore.setUsages([...refDataStore.usages, data.value]);
+    selectUsage(data.value);
   }
-}
+};
 
+const addEditUsageArreteCadre = () => {
+  // TMP
+  console.log(usageArreteCadreToEdit.value);
+};
+
+const usageArreteCadreFormButtons: Ref<any[]> = ref([
+  {
+    label: "Annuler",
+    secondary: true,
+    onclick: () => {
+      usageArreteCadreToEdit.value = null;
+    }
+  },
+  {
+    label: "Enregistrer",
+    onclick: addEditUsageArreteCadre
+  },
+]);
 
 watch(query, useUtils().debounce(async () => {
   filterUsages();
@@ -104,7 +123,7 @@ watch(query, useUtils().debounce(async () => {
         <h6>
           Ajouter un usage
           <DsfrButton label="Ajouter"
-                      @click="modalUsageOpened=true"/>
+                      @click="modalUsageOpened=true" />
         </h6>
         <MixinsAutoComplete
           class="show-label"
@@ -119,7 +138,12 @@ watch(query, useUtils().debounce(async () => {
         <div v-if="usageArreteCadreToEdit"
              class="usage-form-wrapper fr-p-2w fr-mt-2w">
           <UsageArreteCadreForm
-            :usageArreteCadre="usageArreteCadreToEdit" />          
+            :usageArreteCadre="usageArreteCadreToEdit" />
+          <DsfrButtonGroup :buttons="usageArreteCadreFormButtons"
+                           class="fr-mt-2w"
+                           align="right"
+                           inlineLayoutWhen="always"
+          />
         </div>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
@@ -140,7 +164,7 @@ watch(query, useUtils().debounce(async () => {
       ref="usageFormRef"
       :loading="loading"
       :usage="usageToEdit"
-      @createEdit="createEditUsage($event)"/>
+      @createEdit="createEditUsage($event)" />
   </DsfrModal>
 </template>
 
