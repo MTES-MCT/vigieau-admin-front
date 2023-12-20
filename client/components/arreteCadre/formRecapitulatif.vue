@@ -62,7 +62,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           <DsfrBadge label="Alerte" type="new" />
         </th>
         <th>
-          <DsfrBadge label="Alerte renforcée" type="warning" />
+          <DsfrBadge label="Alerte&nbsp;renforcée" type="warning" />
         </th>
         <th>
           <DsfrBadge label="Crise" type="error" />

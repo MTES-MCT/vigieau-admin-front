@@ -7,6 +7,10 @@ const props = defineProps<{
   arreteCadre: ArreteCadre,
 }>();
 
+const emit = defineEmits<{
+  delete: any;
+}>();
+
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const frBadgeClass: Ref<string> = ref("");
 const actionsOpened: Ref<boolean> = ref(false);
@@ -38,7 +42,7 @@ const arreteCadreActions: Ref<any> = ref([
   {
     text: "Supprimer",
     onclick: () => {
-      console.log("click");
+      deleteArreteCadre(props.arreteCadre.id);
     }
   }
 ]);
@@ -86,6 +90,14 @@ onUnmounted(() => {
   document.removeEventListener('click', onDocumentClick)
   document.removeEventListener('keydown', onKeyDown)
 })
+
+const api = useApi();
+const deleteArreteCadre = async (id: string) => {
+  const { data, error } = await api.arreteCadre.delete(id);
+  if(!error.value) {
+    emit('delete');    
+  }
+};
 </script>
 
 <template>
