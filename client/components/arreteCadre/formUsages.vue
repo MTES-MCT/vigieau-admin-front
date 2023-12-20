@@ -10,7 +10,8 @@ import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
-  fullValidation: boolean
+  fullValidation: boolean,
+  viewOnly: boolean,
 }>();
 const modalUsageOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
@@ -159,6 +160,7 @@ watch(query, useUtils().debounce(async () => {
             :required="true"
             @update:modelValue="selectUsage($event)"
             @search="selectUsage($event)"
+            :disabled="viewOnly"
           />
         </DsfrInputGroup>
         <div v-if="usageArreteCadreToEdit"
@@ -177,6 +179,7 @@ watch(query, useUtils().debounce(async () => {
           <ArreteCadreUsageList :usagesArreteCadre="arreteCadre.usagesArreteCadre"
                                 @usage-selected="selectUsage($event, true)"
                                 @usage-removed="deleteUsage($event)"
+                                :view-only="viewOnly"
                                 :key="componentKey" />
         </div>
       </div>

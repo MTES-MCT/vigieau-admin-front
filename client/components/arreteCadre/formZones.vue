@@ -11,6 +11,7 @@ import { requiredIf } from "@vuelidate/validators";
 const props = defineProps<{
   arreteCadre: ArreteCadre,
   fullValidation: boolean,
+  viewOnly: boolean,
 }>();
 
 const refDataStore = useRefDataStore();
@@ -84,11 +85,13 @@ computeDepSelected();
                 <template #title>
                   <DsfrCheckbox :label="`${d.nom} (${d.nbZonesSelected}/${d.zonesAlerte.length})`"
                                 :onUpdate:modelValue="() => selectAll(d)"
-                                :checked="d.nbZonesSelected === d.zonesAlerte.length" />
+                                :checked="d.nbZonesSelected === d.zonesAlerte.length"
+                                :disabled="viewOnly" />
                 </template>
                 <DsfrCheckboxSet :small="false"
                                  v-model="zonesSelected"
-                                 :options="zonesOptionsCheckBox(d)" />
+                                 :options="zonesOptionsCheckBox(d)"
+                                 :disabled="viewOnly" />
               </DsfrAccordion>
             </li>
           </DsfrAccordionsGroup>

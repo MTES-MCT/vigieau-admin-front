@@ -5,6 +5,8 @@ import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
+  fullValidation: boolean,
+  viewOnly: boolean,
 }>();
 
 const rules = computed(() => {
@@ -70,6 +72,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.sameZoneCommuneRule"
           name="sameZoneCommuneRules"
           :small="false"
+          :disabled="viewOnly"
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
@@ -87,6 +90,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.customEapNiveau"
           name="customEapNiveauRules"
           :small="false"
+          :disabled="viewOnly"
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
@@ -104,6 +108,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.customEapZone"
           name="customEapZoneRules"
           :small="false"
+          :disabled="viewOnly"
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">

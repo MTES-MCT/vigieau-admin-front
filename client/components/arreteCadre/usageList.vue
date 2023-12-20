@@ -3,6 +3,7 @@ import type { Ref } from "vue";
 
 const props = defineProps<{
   usagesArreteCadre: any[],
+  viewOnly: boolean,
 }>();
 
 const emit = defineEmits(["usageSelected", "usageRemoved"]);
@@ -20,6 +21,7 @@ const generateRows = () => {
         {
           icon: "ri-edit-2-fill",
           iconOnly: true,
+          disabled: props.viewOnly,
           label: "Editer",
           onClick: () => {
             emit("usageSelected", u);
@@ -28,6 +30,7 @@ const generateRows = () => {
         {
           icon: "ri-delete-bin-5-line",
           iconOnly: true,
+          disabled: props.viewOnly,
           label: "Supprimer",
           onClick: () => {
             emit("usageRemoved", u);
@@ -53,3 +56,11 @@ generateRows();
     :key="componentKey"
   />
 </template>
+
+<style lang="scss">
+.fr-table {
+  .fr-btns-group {
+    flex-wrap: nowrap;
+  }
+}
+</style>

@@ -173,6 +173,11 @@ showButtons();
     :closed="isAlerteClosed"
     @close="isAlerteClosed = true"
   />
+  <DsfrButtonGroup
+    class="fr-mt-4w"
+    :buttons="buttonsFiltered"
+    inline-layout-when="always"
+  />
   <DsfrTabs class="tabs-light" v-if="loadRefData">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre"
@@ -181,15 +186,18 @@ showButtons();
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2">
       <ArreteCadreFormRegles :arrete-cadre="arreteCadre"
-                             :fullValidation="fullValidation" />
+                             :fullValidation="fullValidation"
+                             :viewOnly="viewOnly" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3">
       <ArreteCadreFormZones :arrete-cadre="arreteCadre"
-                            :fullValidation="fullValidation" />
+                            :fullValidation="fullValidation"
+                            :viewOnly="viewOnly" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
                              :fullValidation="fullValidation"
+                             :viewOnly="viewOnly"
                              :key="componentKey" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
@@ -197,9 +205,4 @@ showButtons();
                                     :key="componentKey" />
     </DsfrTabContent>
   </DsfrTabs>
-  <DsfrButtonGroup
-    class="fr-mt-4w"
-    :buttons="buttonsFiltered"
-    inline-layout-when="medium"
-  />
 </template>

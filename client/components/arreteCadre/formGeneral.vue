@@ -11,7 +11,7 @@ import { requiredIf } from "@vuelidate/validators";
 const props = defineProps<{
   arreteCadre: ArreteCadre,
   fullValidation: boolean,
-  viewOnly: boolean
+  viewOnly: boolean,
 }>();
 
 const query: Ref<string> = ref("");
@@ -74,9 +74,11 @@ const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements.map(d => {
     return {
       label: d.nom,
-      class: "fr-tag--dismiss",
+      class: props.viewOnly ? "" :  "fr-tag--dismiss",
       tagName: "button",
-      onclick: () => deleteDepartement(d.id)
+      onclick: () => {
+        if(!props.viewOnly) deleteDepartement(d.id);
+      }
     };
   });
 };
@@ -129,7 +131,6 @@ watch(query, useUtils().debounce(async () => {
             />
 
             <DsfrTags class="fr-mt-2w"
-                      :closeable="!viewOnly"
                       :tags="departementsTags" />
           </DsfrInputGroup>
         </div>
