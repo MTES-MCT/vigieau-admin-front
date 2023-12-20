@@ -98,6 +98,13 @@ const deleteArreteCadre = async (id: string) => {
     emit('delete');    
   }
 };
+
+// Permet de faire un retour à la ligne sur les underscores
+const numeroToDisplay = computed(() => {
+  let num = props.arreteCadre.numero;
+  num = num.replace(/_/g, '_<wbr/>')
+  return num
+})
 </script>
 
 <template>
@@ -105,8 +112,8 @@ const deleteArreteCadre = async (id: string) => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id">
-            {{ arreteCadre.numero }}
+          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id"
+                    v-html="numeroToDisplay">
           </NuxtLink>
         </h3>
         <p class="fr-card__desc">
