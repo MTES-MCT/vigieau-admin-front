@@ -10,8 +10,8 @@ export class ArreteCadre {
 
   sameZoneCommuneRule: 'all' | 'eap' | 'none' | null;
   customEapNiveau: boolean | null;
-  customEapZone: 'esu' | 'eso' | 'max' | null
-  
+  customEapZone: 'esu' | 'eso' | 'max' | null;
+
   constructor() {
     this.id = null;
     this.numero = '';
@@ -23,7 +23,7 @@ export class ArreteCadre {
     this.usagesArreteCadre = [];
     this.sameZoneCommuneRule = null;
     this.customEapNiveau = null;
-    this.customEapZone = null
+    this.customEapZone = null;
   }
 }
 

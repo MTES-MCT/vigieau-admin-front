@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
+import type { Ref } from 'vue';
 
 definePageMeta({
   layout: 'basic',
-})
+});
 
 useHead({
   title: `Cookies - ${useRuntimeConfig().public.appName}`,
-})
+});
 
-const links: Ref<any[]> = ref([{ to: '/', text: 'Accueil' }, { text: 'Cookies' }])
+const links: Ref<any[]> = ref([{ to: '/', text: 'Accueil' }, { text: 'Cookies' }]);
 </script>
 
 <template>

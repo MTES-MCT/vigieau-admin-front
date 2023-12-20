@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { helpers, required } from "@vuelidate/validators/dist";
-import useVuelidate from "@vuelidate/core";
-import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import { helpers, required } from '@vuelidate/validators/dist';
+import useVuelidate from '@vuelidate/core';
+import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 
 const props = defineProps<{
-  arreteCadre: ArreteCadre,
-  fullValidation: boolean,
-  viewOnly: boolean,
+  arreteCadre: ArreteCadre;
+  fullValidation: boolean;
+  viewOnly: boolean;
 }>();
 
 const rules = computed(() => {
   return {
     numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required)
-    }
+      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required),
+    },
   };
 });
 
@@ -23,14 +23,14 @@ const sameZoneCommuneRules = [
     value: 'all',
   },
   {
-    label: 'Oui, pour l\'AEP (eau potable) uniquement',
+    label: "Oui, pour l'AEP (eau potable) uniquement",
     value: 'aep',
   },
   {
     label: 'Non',
     value: 'none',
   },
-]
+];
 
 const customEapNiveauRules = [
   {
@@ -38,10 +38,11 @@ const customEapNiveauRules = [
     value: false,
   },
   {
-    label: 'Oui, des niveaux de gravité spécifiques aux usages issus de l’AEP peuvent être appliqués sur des périmètres géographiques distincts',
+    label:
+      'Oui, des niveaux de gravité spécifiques aux usages issus de l’AEP peuvent être appliqués sur des périmètres géographiques distincts',
     value: true,
   },
-]
+];
 
 const customEapZoneRules = [
   {
@@ -56,7 +57,7 @@ const customEapZoneRules = [
     label: 'Le niveau de gravité maximal',
     value: 'max',
   },
-]
+];
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 </script>

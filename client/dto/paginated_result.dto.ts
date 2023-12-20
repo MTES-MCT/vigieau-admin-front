@@ -8,7 +8,7 @@ export interface PaginatedResult<T> {
     dsfrPages: {
       label: string;
       title: string;
-    }[]
+    }[];
   };
   links: {
     first: string;
@@ -16,5 +16,5 @@ export interface PaginatedResult<T> {
     current: string;
     next: string;
     last: string;
-  }
+  };
 }

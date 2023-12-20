@@ -46,18 +46,18 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
 .fr-search-bar {
   &.show-label {
     flex-wrap: wrap;
-    
+
     .fr-label {
       position: relative;
       width: 100%;
       height: initial;
     }
-    
+
     .fr-input {
       margin-top: 0.5rem;
       flex: 1;
     }
-    
+
     .fr-btn {
       margin-top: 0.5rem;
       flex: none;

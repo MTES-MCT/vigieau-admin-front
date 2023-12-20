@@ -1,14 +1,13 @@
 <script setup lang="ts">
-
-import useVuelidate from "@vuelidate/core/dist";
-import { required } from "@vuelidate/validators/dist";
-import { Usage } from "~/dto/usage.dto";
-import { useRefDataStore } from "~/stores/refData";
-import { helpers } from "@vuelidate/validators";
+import useVuelidate from '@vuelidate/core/dist';
+import { required } from '@vuelidate/validators/dist';
+import { Usage } from '~/dto/usage.dto';
+import { useRefDataStore } from '~/stores/refData';
+import { helpers } from '@vuelidate/validators';
 
 const props = defineProps<{
-  usage: Usage,
-  loading: boolean
+  usage: Usage;
+  loading: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -17,37 +16,42 @@ const emit = defineEmits<{
 
 const utils = useUtils();
 const refDataStore = useRefDataStore();
-const thematiquesOptions = refDataStore.thematiques.map(t => {
+const thematiquesOptions = refDataStore.thematiques.map((t) => {
   return {
     value: t.id,
-    text: t.nom
+    text: t.nom,
   };
 });
 
 console.log(props.usage);
 
-const concernes = [{
-  attribute: "concerneParticulier",
-  name: "Particulier"
-}, {
-  attribute: "concerneEntreprise",
-  name: "Entreprise"
-}, {
-  attribute: "concerneCollectivite",
-  name: "Collectivité"
-}, {
-  attribute: "concerneExploitation",
-  name: "Exploitant agricole"
-}];
+const concernes = [
+  {
+    attribute: 'concerneParticulier',
+    name: 'Particulier',
+  },
+  {
+    attribute: 'concerneEntreprise',
+    name: 'Entreprise',
+  },
+  {
+    attribute: 'concerneCollectivite',
+    name: 'Collectivité',
+  },
+  {
+    attribute: 'concerneExploitation',
+    name: 'Exploitant agricole',
+  },
+];
 
 const rules = computed(() => {
   return {
-    nom: { required: helpers.withMessage("Le nom est obligatoire.", required) },
-    thematique: { required: helpers.withMessage("La thématique est obligatoire.", required) },
+    nom: { required: helpers.withMessage('Le nom est obligatoire.', required) },
+    thematique: { required: helpers.withMessage('La thématique est obligatoire.', required) },
     concerneParticulier: { required },
     concerneEntreprise: { required },
     concerneCollectivite: { required },
-    concerneExploitation: { required }
+    concerneExploitation: { required },
   };
 });
 
@@ -56,38 +60,26 @@ const v$ = useVuelidate(rules, props.usage);
 const submitForm = async () => {
   await v$.value.$validate();
   if (!v$.value.$error && !props.loading) {
-    emit("createEdit", props.usage);
+    emit('createEdit', props.usage);
   }
 };
 
 const thematiqueSelected = ($event: number) => {
-  props.usage.thematique = refDataStore.thematiques.findLast(t => t.id == $event);
+  props.usage.thematique = refDataStore.thematiques.findLast((t) => t.id == $event);
 };
 
 defineExpose({
-  submitForm
+  submitForm,
 });
 </script>
 
 <template>
   <div class="divider fr-mb-2w" />
   <h6>Informations</h6>
-  <DsfrInputGroup
-    :error-message="utils.showInputError(v$, 'nom')"
-  >
-    <DsfrInput
-      id="nom"
-      v-model="usage.nom"
-      label="Nom de l'usage"
-      label-visible
-      type="text"
-      name="nom"
-      :required="true"
-    />
+  <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
+    <DsfrInput id="nom" v-model="usage.nom" label="Nom de l'usage" label-visible type="text" name="nom" :required="true" />
   </DsfrInputGroup>
-  <DsfrInputGroup
-    :error-message="utils.showInputError(v$, 'thematique')"
-  >
+  <DsfrInputGroup :error-message="utils.showInputError(v$, 'thematique')">
     <DsfrSelect
       :required="true"
       label="Choisir une thématique pour l'affichage dans VigiEau"
@@ -97,14 +89,7 @@ defineExpose({
     />
   </DsfrInputGroup>
   <div class="fr-my-2w">Usagers</div>
-  <DsfrInputGroup
-    v-for="concerne of concernes"
-    :error-message="utils.showInputError(v$, concerne.attribute)"
-  >
-    <DsfrCheckbox
-      :label="concerne.name"
-      :name="concerne.attribute"
-      v-model="usage[concerne.attribute]"
-    />
+  <DsfrInputGroup v-for="concerne of concernes" :error-message="utils.showInputError(v$, concerne.attribute)">
+    <DsfrCheckbox :label="concerne.name" :name="concerne.attribute" v-model="usage[concerne.attribute]" />
   </DsfrInputGroup>
 </template>

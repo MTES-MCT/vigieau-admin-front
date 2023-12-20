@@ -1,18 +1,18 @@
 export const useUtils = () => {
   return {
     debounce(fn: Function, delay: number) {
-      let timeoutID: any = null
-      return function() {
-        clearTimeout(timeoutID)
+      let timeoutID: any = null;
+      return function () {
+        clearTimeout(timeoutID);
         // eslint-disable-next-line prefer-rest-params
-        const args = arguments
+        const args = arguments;
         // @ts-ignore
         // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const that = this
-        timeoutID = setTimeout(function() {
-          fn.apply(that, args)
-        }, delay)
-      }
+        const that = this;
+        timeoutID = setTimeout(function () {
+          fn.apply(that, args);
+        }, delay);
+      };
     },
 
     isWebglSupported() {
@@ -35,19 +35,19 @@ export const useUtils = () => {
       // WebGL not supported
       return false;
     },
-    
+
     showInputError(v$: any, inputName: string): string {
-      if(v$[inputName]?.$errors.length > 0) {
-        return v$[inputName]?.$errors.map((e: any) => e.$message).join('.&nbsp;')
+      if (v$[inputName]?.$errors.length > 0) {
+        return v$[inputName]?.$errors.map((e: any) => e.$message).join('.&nbsp;');
       }
-      return ''
+      return '';
     },
 
     mergeArrays(a: any, b: any, predicate = (a: any, b: any) => a === b) {
       const c = [...a]; // copy to avoid side effects
       // add all items from B to copy C if they're not already present
-      b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)))
+      b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
       return c;
-    }
-  }
-}
+    },
+  };
+};

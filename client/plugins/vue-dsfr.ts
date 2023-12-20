@@ -1,4 +1,4 @@
-import VueDsfr from '@gouvminint/vue-dsfr'
+import VueDsfr from '@gouvminint/vue-dsfr';
 
 import {
   RiCloseLine,
@@ -19,7 +19,7 @@ import {
   RiArrowLeftLine,
   RiSettings3Line,
   RiEdit2Fill,
-} from "oh-vue-icons/icons";
+} from 'oh-vue-icons/icons';
 
 const icons = [
   RiCloseLine,
@@ -39,9 +39,9 @@ const icons = [
   RiSunFill,
   RiLoader4Line,
   RiCalendarFill,
-  RiEdit2Fill
-]
+  RiEdit2Fill,
+];
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(VueDsfr, { icons })
-})
+  nuxtApp.vueApp.use(VueDsfr, { icons });
+});

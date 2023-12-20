@@ -1,4 +1,4 @@
-import type { ZoneAlerte } from "~/dto/zone_alerte.dto";
+import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
 
 export interface Departement {
   id: number;

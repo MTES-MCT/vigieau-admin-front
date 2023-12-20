@@ -1,4 +1,4 @@
-import type { Usage } from "~/dto/usage.dto";
+import type { Usage } from '~/dto/usage.dto';
 
 export class UsageArreteCadre {
   id: number | null;
@@ -11,7 +11,7 @@ export class UsageArreteCadre {
   descriptionAlerte: string;
   descriptionAlerteRenforcee: string;
   descriptionCrise: string;
-  
+
   constructor(usage: Usage) {
     this.id = null;
     this.usage = usage;

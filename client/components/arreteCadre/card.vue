@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
-import { ArreteCadreStatutFr } from "~/dto/arrete_cadre.dto";
-import type { Ref } from "vue";
+import type { Ref } from 'vue';
+import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
 
 const props = defineProps<{
-  arreteCadre: ArreteCadre,
+  arreteCadre: ArreteCadre;
 }>();
 
 const emit = defineEmits<{
@@ -12,50 +12,50 @@ const emit = defineEmits<{
 }>();
 
 const arreteCadreStatutFr = ArreteCadreStatutFr;
-const frBadgeClass: Ref<string> = ref("");
+const frBadgeClass: Ref<string> = ref('');
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
   {
-    text: "Créer un arrêté de restriction associé",
+    text: 'Créer un arrêté de restriction associé',
     onclick: () => {
-      console.log("click");
-    }
+      console.log('click');
+    },
   },
   {
-    text: "Modifier",
+    text: 'Modifier',
     onclick: () => {
-      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/edition`)
-    }
+      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/edition`);
+    },
   },
   {
-    text: "Exporter",
+    text: 'Exporter',
     onclick: () => {
-      console.log("click");
-    }
+      console.log('click');
+    },
   },
   {
-    text: "Dupliquer",
+    text: 'Dupliquer',
     onclick: () => {
-      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`)
-    }
+      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
+    },
   },
   {
-    text: "Supprimer",
+    text: 'Supprimer',
     onclick: () => {
       deleteArreteCadre(props.arreteCadre.id);
-    }
-  }
+    },
+  },
 ]);
 
 switch (props.arreteCadre.statut) {
-  case "a_valider":
-    frBadgeClass.value = "fr-badge--info";
+  case 'a_valider':
+    frBadgeClass.value = 'fr-badge--info';
     break;
-  case "publie":
-    frBadgeClass.value = "fr-badge--success";
+  case 'publie':
+    frBadgeClass.value = 'fr-badge--success';
     break;
-  case "abroge":
-    frBadgeClass.value = "";
+  case 'abroge':
+    frBadgeClass.value = '';
     break;
 }
 
@@ -63,48 +63,48 @@ const onKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
     actionsOpened.value = false;
   }
-}
+};
 
 const onDocumentClick = (e: MouseEvent) => {
-  handleElementClick(e.target as HTMLElement)
-}
+  handleElementClick(e.target as HTMLElement);
+};
 
 const handleElementClick = (el: HTMLElement) => {
   if (el === document.getElementById(`action_${props.arreteCadre.id}`)) {
-    return
+    return;
   }
 
-    if (!el?.parentNode) {
-      actionsOpened.value = false;
-    return
+  if (!el?.parentNode) {
+    actionsOpened.value = false;
+    return;
   }
 
-  handleElementClick(el.parentNode as HTMLElement)
-}
+  handleElementClick(el.parentNode as HTMLElement);
+};
 
 onMounted(() => {
-  document.addEventListener('click', onDocumentClick)
-  document.addEventListener('keydown', onKeyDown)
-})
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('keydown', onKeyDown);
+});
 onUnmounted(() => {
-  document.removeEventListener('click', onDocumentClick)
-  document.removeEventListener('keydown', onKeyDown)
-})
+  document.removeEventListener('click', onDocumentClick);
+  document.removeEventListener('keydown', onKeyDown);
+});
 
 const api = useApi();
 const deleteArreteCadre = async (id: string) => {
   const { data, error } = await api.arreteCadre.delete(id);
-  if(!error.value) {
-    emit('delete');    
+  if (!error.value) {
+    emit('delete');
   }
 };
 
 // Permet de faire un retour à la ligne sur les underscores
 const numeroToDisplay = computed(() => {
   let num = props.arreteCadre.numero;
-  num = num.replace(/_/g, '_<wbr/>')
-  return num
-})
+  num = num.replace(/_/g, '_<wbr/>');
+  return num;
+});
 </script>
 
 <template>
@@ -112,48 +112,37 @@ const numeroToDisplay = computed(() => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id"
-                    v-html="numeroToDisplay">
-          </NuxtLink>
+          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id" v-html="numeroToDisplay"></NuxtLink>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:
-          <template v-for="dep in arreteCadre.departements">
-            {{ dep.nom }}&nbsp;;
-          </template>
+          <template v-for="dep in arreteCadre.departements"> {{ dep.nom }}&nbsp;;</template>
         </p>
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
-              <DsfrBadge
-                :label="arreteCadreStatutFr[arreteCadre.statut]"
-                :class="frBadgeClass"
-                :type="null"
-                :no-icon="true"
-              />
+              <DsfrBadge :label="arreteCadreStatutFr[arreteCadre.statut]" :class="frBadgeClass" :type="null" :no-icon="true" />
             </li>
           </ul>
           <p class="fr-card__detail">
             <VIcon name="ri-calendar-fill" />
             &nbsp;
             {{ arreteCadre.dateDebut }}
-            <span v-if="arreteCadre.dateFin">
-              &nbsp;au {{ arreteCadre.dateFin }}
-            </span>
+            <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
           </p>
-          <div class="fr-card__actions"
-               :id="'action_' + arreteCadre.id">
-            <DsfrButton label="Actions"
-                        icon-only
-                        secondary
-                        icon="ri-more-2-fill"
-                        @click="actionsOpened = !actionsOpened" />
-            <div class="fr-card__actions__menu"
-                 v-if="actionsOpened">
+          <div :id="'action_' + arreteCadre.id" class="fr-card__actions">
+            <DsfrButton label="Actions" icon-only secondary icon="ri-more-2-fill" @click="actionsOpened = !actionsOpened" />
+            <div v-if="actionsOpened" class="fr-card__actions__menu">
               <div class="fr-menu">
                 <ul class="fr-menu__list">
                   <li v-for="action of arreteCadreActions">
-                    <a class="fr-nav__link" @click="action.onclick(); actionsOpened = false;">
+                    <a
+                      class="fr-nav__link"
+                      @click="
+                        action.onclick();
+                        actionsOpened = false;
+                      "
+                    >
                       {{ action.text }}
                     </a>
                   </li>
@@ -166,12 +155,7 @@ const numeroToDisplay = computed(() => {
       <div class="fr-card__footer">
         <ul class="fr-links-group">
           <li>
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-              href="#"
-            >
-              Arrêté de restriction 1
-            </a>
+            <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#"> Arrêté de restriction 1 </a>
           </li>
         </ul>
       </div>
@@ -194,10 +178,10 @@ const numeroToDisplay = computed(() => {
     z-index: 1;
     position: absolute;
     top: 40px;
-    
+
     ul {
       list-style-type: none;
-      
+
       li {
         padding: 0;
       }
@@ -205,7 +189,7 @@ const numeroToDisplay = computed(() => {
 
     a:not([href]) {
       color: inherit;
-      
+
       &:hover {
         background-color: var(--hover-tint);
         --underline-hover-width: var(--underline-max-width);

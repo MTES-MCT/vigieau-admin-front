@@ -1,45 +1,49 @@
 <script setup lang="ts">
-import type { Ref } from "vue";
+import type { Ref } from 'vue';
 
 const props = defineProps<{
-  usagesArreteCadre: any[],
-  viewOnly: boolean,
+  usagesArreteCadre: any[];
+  viewOnly: boolean;
 }>();
 
-const emit = defineEmits(["usageSelected", "usageRemoved"]);
+const emit = defineEmits(['usageSelected', 'usageRemoved']);
 
-const headers = ["Usages", "Actions"];
+const headers = ['Usages', 'Actions'];
 const rows: Ref<any[]> = ref([]);
 const componentKey = ref(0);
 
 const generateRows = () => {
-  rows.value = [...props.usagesArreteCadre.map((u: any) => {
-    return [u.usage.nom, {
-      component: "DsfrButtonGroup",
-      inlineLayoutWhen: "always",
-      buttons: [
+  rows.value = [
+    ...props.usagesArreteCadre.map((u: any) => {
+      return [
+        u.usage.nom,
         {
-          icon: "ri-edit-2-fill",
-          iconOnly: true,
-          disabled: props.viewOnly,
-          label: "Editer",
-          onClick: () => {
-            emit("usageSelected", u);
-          }
+          component: 'DsfrButtonGroup',
+          inlineLayoutWhen: 'always',
+          buttons: [
+            {
+              icon: 'ri-edit-2-fill',
+              iconOnly: true,
+              disabled: props.viewOnly,
+              label: 'Editer',
+              onClick: () => {
+                emit('usageSelected', u);
+              },
+            },
+            {
+              icon: 'ri-delete-bin-5-line',
+              iconOnly: true,
+              disabled: props.viewOnly,
+              label: 'Supprimer',
+              onClick: () => {
+                emit('usageRemoved', u);
+              },
+            },
+          ],
         },
-        {
-          icon: "ri-delete-bin-5-line",
-          iconOnly: true,
-          disabled: props.viewOnly,
-          label: "Supprimer",
-          onClick: () => {
-            emit("usageRemoved", u);
-          }
-        }
-
-      ]
-    }];
-  })];
+      ];
+    }),
+  ];
   componentKey.value += 1;
 };
 
@@ -48,13 +52,7 @@ generateRows();
 
 <template>
   <h6>Récapitulatif des usages</h6>
-  <DsfrTable
-    :headers="headers"
-    :rows="rows"
-    :no-caption="false"
-    :pagination="false"
-    :key="componentKey"
-  />
+  <DsfrTable :headers="headers" :rows="rows" :no-caption="false" :pagination="false" :key="componentKey" />
 </template>
 
 <style lang="scss">

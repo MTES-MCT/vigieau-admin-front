@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const errorFileUpload = ref('')
-const files = ref(null)
-const fileName = ref('')
-const loading = ref(false)
-const api = useApi()
-const route = useRoute()
-const zoneType = ref('SUP')
+const errorFileUpload = ref('');
+const files = ref(null);
+const fileName = ref('');
+const loading = ref(false);
+const api = useApi();
+const route = useRoute();
+const zoneType = ref('SUP');
 const options = [
   {
     label: 'ESU',
@@ -15,24 +15,24 @@ const options = [
     label: 'ESO',
     value: 'SOU',
   },
-]
+];
 
 const verifyZones = async () => {
-  if(!files.value && !files.value[0]) {
+  if (!files.value && !files.value[0]) {
     return;
   }
-  loading.value = true
-  console.log(files.value)
-  const { data, error } = await api.zoneAlerte.importTmp(<string> route.params.id_dep, zoneType.value, files.value[0])
-  loading.value = false
-  if(!error.value) {
-    navigateTo(`/zone-alerte/${route.params.id_dep}/${zoneType.value}`)
+  loading.value = true;
+  console.log(files.value);
+  const { data, error } = await api.zoneAlerte.importTmp(<string>route.params.id_dep, zoneType.value, files.value[0]);
+  loading.value = false;
+  if (!error.value) {
+    navigateTo(`/zone-alerte/${route.params.id_dep}/${zoneType.value}`);
   }
-}
+};
 
 const onFileChanged = (fileImported) => {
-  files.value = fileImported
-}
+  files.value = fileImported;
+};
 </script>
 
 <template>
@@ -45,14 +45,7 @@ const onFileChanged = (fileImported) => {
       :accept="['.gpkg', '.shp', '.geojson']"
       @change="onFileChanged($event)"
     />
-    <DsfrRadioButtonSet
-      class="fr-ml-4w"
-      legend="Type de zone"
-      :options="options"
-      v-model="zoneType"
-      :small="false"
-      :inline="true"
-    />
+    <DsfrRadioButtonSet class="fr-ml-4w" legend="Type de zone" :options="options" v-model="zoneType" :small="false" :inline="true" />
     <DsfrButton
       class="fr-ml-4w"
       label="Vérifier les zones"
@@ -60,6 +53,6 @@ const onFileChanged = (fileImported) => {
       :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
       :icon-right="true"
       @click="verifyZones()"
-    />    
+    />
   </div>
 </template>

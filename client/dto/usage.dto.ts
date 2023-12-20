@@ -1,4 +1,4 @@
-import type { Thematique } from "~/dto/thematique.dto";
+import type { Thematique } from '~/dto/thematique.dto';
 
 export class Usage {
   id: number;
@@ -13,11 +13,11 @@ export class Usage {
   descriptionAlerte: string;
   descriptionAlerteRenforcee: string;
   descriptionCrise: string;
-  
+
   // Frontend only
   isAlreadyUsed: boolean;
   display: any;
-  
+
   constructor() {
     this.id = null;
     this.nom = '';

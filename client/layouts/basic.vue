@@ -1,79 +1,86 @@
 <script setup lang="ts">
-import { useScheme } from "@gouvminint/vue-dsfr";
-import { useAuthStore } from "~/stores/auth";
-import type { Ref } from "vue";
+import { useScheme } from '@gouvminint/vue-dsfr';
+import { useAuthStore } from '~/stores/auth';
+import type { Ref } from 'vue';
 
 const runTimeConfig = useRuntimeConfig().public;
 const authStore = useAuthStore();
 const serviceTitle = <string>runTimeConfig.appName;
-const logoText = ["Ministère", "de la transition", "écologique", "et de la cohésion", "des territoires"];
+const logoText = ['Ministère', 'de la transition', 'écologique', 'et de la cohésion', 'des territoires'];
 const modalSchemeOpened = ref(false);
 const schemeFormRef = ref(null);
 const { theme, scheme, setScheme } = <any>useScheme();
 
-const logout = function() {
+const logout = function () {
   authStore.logout();
-  navigateTo("/api/auth/logout", { external: true });
+  navigateTo('/api/auth/logout', { external: true });
 };
 
-const a11yCompliance: string = "Non conforme";
-const quickLinks = await authStore.isAuthenticated ? [
+const a11yCompliance: string = 'Non conforme';
+const quickLinks = (await authStore.isAuthenticated)
+  ? [
+      {
+        label: 'AC',
+        to: '/arrete-cadre',
+        icon: 'ri-article-line',
+      },
+      {
+        label: 'ZA',
+        to: '/zone-alerte',
+        icon: 'gi-france',
+      },
+      {
+        label: 'Utilisateurs',
+        to: '/utilisateurs',
+        icon: 'ri-group-line',
+      },
+      {
+        label: 'Déconnexion',
+        onclick: logout,
+        button: true,
+        icon: 'ri-logout-box-r-line',
+      },
+      {
+        label: "Paramètres d'affichage",
+        onclick: () => {
+          modalSchemeOpened.value = true;
+        },
+        button: true,
+        icon: 'ri-sun-fill',
+      },
+    ]
+  : [];
+const mandatoryLinks: any[] = [
   {
-    label: "AC",
-    to: "/arrete-cadre",
-    icon: "ri-article-line"
+    label: `Accessibilité : ${a11yCompliance}`,
+    to: '/accessibilite',
   },
   {
-    label: "ZA",
-    to: "/zone-alerte",
-    icon: "gi-france"
+    label: 'Mentions légales',
+    to: '/mentions-legales',
   },
   {
-    label: "Utilisateurs",
-    to: "/utilisateurs",
-    icon: "ri-group-line"
+    label: 'Données personnelles',
+    to: '/donnees-personnelles',
   },
   {
-    label: "Déconnexion",
-    onclick: logout,
-    button: true,
-    icon: "ri-logout-box-r-line"
+    label: 'Cookies',
+    to: '/cookies',
   },
-  {
-    label: "Paramètres d'affichage",
-    onclick: () => {
-      modalSchemeOpened.value = true;
-    },
-    button: true,
-    icon: "ri-sun-fill"
-  }
-] : [];
-const mandatoryLinks: any[] = [{
-  label: `Accessibilité : ${a11yCompliance}`,
-  to: "/accessibilite"
-}, {
-  label: "Mentions légales",
-  to: "/mentions-legales"
-}, {
-  label: "Données personnelles",
-  to: "/donnees-personnelles"
-}, {
-  label: "Cookies",
-  to: "/cookies"
-}];
+];
 const ecosystemLinks: any[] = [
   {
-    "label": "beta.gouv.fr",
-    "href": "https://beta.gouv.fr"
+    label: 'beta.gouv.fr',
+    href: 'https://beta.gouv.fr',
   },
   {
-    "label": "gouvernement.fr",
-    "href": "https://gouvernement.fr"
+    label: 'gouvernement.fr',
+    href: 'https://gouvernement.fr',
   },
   {
-    "label": "data.gouv.fr",
-    "href": "https://data.gouv.fr"
-  }
+    label: 'data.gouv.fr',
+    href: 'https://data.gouv.fr',
+  },
 ];
 const closeModal = () => {
   modalSchemeOpened.value = false;
@@ -82,15 +89,21 @@ const saveScheme = () => {
   preferences.scheme = schemeFormRef.value?.currentScheme;
   closeModal();
 };
-const modalActions: Ref<any[]> = ref([{
-  label: "Enregistrer", onClick: saveScheme
-}, {
-  label: "Annuler", onClick: closeModal, secondary: true
-}]);
+const modalActions: Ref<any[]> = ref([
+  {
+    label: 'Enregistrer',
+    onClick: saveScheme,
+  },
+  {
+    label: 'Annuler',
+    onClick: closeModal,
+    secondary: true,
+  },
+]);
 
 const preferences = reactive({
   theme: undefined,
-  scheme: undefined
+  scheme: undefined,
 });
 
 onMounted(() => {
@@ -104,7 +117,6 @@ onMounted(() => {
 
   watchEffect(() => setScheme(preferences.scheme));
 });
-
 </script>
 
 <template>
@@ -120,17 +132,8 @@ onMounted(() => {
       <slot />
     </div>
   </main>
-  <DsfrFooter :logo-text="logoText"
-              :mandatoryLinks="mandatoryLinks"
-              :ecosystemLinks="ecosystemLinks"
-              home-link="/arrete-cadre"
-  />
-  <DsfrModal
-    :opened="modalSchemeOpened"
-    title="Paramètres d'affichage"
-    :actions="modalActions"
-    @close="closeModal"
-  >
+  <DsfrFooter :logo-text="logoText" :mandatoryLinks="mandatoryLinks" :ecosystemLinks="ecosystemLinks" home-link="/arrete-cadre" />
+  <DsfrModal :opened="modalSchemeOpened" title="Paramètres d'affichage" :actions="modalActions" @close="closeModal">
     <SchemeForm ref="schemeFormRef" />
   </DsfrModal>
 </template>

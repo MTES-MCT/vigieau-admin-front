@@ -1,6 +1,6 @@
-import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtConfig } from 'nuxt/config';
 
-const appName = 'Règl\'Eau'
+const appName = "Règl'Eau";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -26,17 +26,13 @@ export default defineNuxtConfig({
         { property: 'og:locale', content: 'fr_FR' },
         { property: 'og:image', content: `https://${process.env.DOMAIN_NAME}/favicon.svg` },
       ],
-      link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-      ],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       htmlAttrs: {
         lang: 'fr',
       },
     },
   },
-  buildModules: [
-    '@nuxt/typescript-build',
-  ],
+  buildModules: ['@nuxt/typescript-build'],
   css: [
     '@gouvfr/dsfr/dist/core/core.main.min.css',
     '@gouvfr/dsfr/dist/component/component.main.min.css',
@@ -46,19 +42,12 @@ export default defineNuxtConfig({
 
     'assets/main.scss',
   ],
-  ignore: [
-    '**/*.test.*',
-    '**/*.spec.*',
-    '**/*.cy.*',
-  ],
+  ignore: ['**/*.test.*', '**/*.spec.*', '**/*.cy.*'],
   srcDir: 'client/',
   imports: {
     autoImport: true,
   },
-  modules: [
-    '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
-  ],
+  modules: ['@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   runtimeConfig: {
     public: {
       appName,
@@ -93,19 +82,14 @@ export default defineNuxtConfig({
     'build:manifest': (manifest) => {
       // Suppression du prefetch pour les icônes
       for (const key in manifest) {
-        const file = manifest[key]
+        const file = manifest[key];
 
         if (file.assets) {
-          file.assets = file.assets
-            .filter(
-              (asset: string) =>
-                !asset.endsWith('.webp') &&
-                !asset.endsWith('.jpg') &&
-                !asset.endsWith('.png') &&
-                !asset.endsWith('.svg'),
-            )
+          file.assets = file.assets.filter(
+            (asset: string) => !asset.endsWith('.webp') && !asset.endsWith('.jpg') && !asset.endsWith('.png') && !asset.endsWith('.svg'),
+          );
         }
       }
     },
   },
-})
+});

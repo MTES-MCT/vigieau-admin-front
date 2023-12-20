@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
-import { email, helpers, required, requiredIf } from '@vuelidate/validators'
-import useVuelidate from '@vuelidate/core'
-import type { User } from '~/dto/user.dto'
-import { UserRole } from '~/dto/user.dto'
-import { useAuthStore } from '~/stores/auth'
+import type { Ref } from 'vue';
+import { email, helpers, required, requiredIf } from '@vuelidate/validators';
+import useVuelidate from '@vuelidate/core';
+import type { User } from '~/dto/user.dto';
+import { UserRole } from '~/dto/user.dto';
+import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
-  user: User | null,
-  loading: boolean
-}>()
+  user: User | null;
+  loading: boolean;
+}>();
 
 const emit = defineEmits<{
   createEdit: any;
-}>()
+}>();
 
-const rolesAvailable = []
-const authStore = useAuthStore()
+const rolesAvailable = [];
+const authStore = useAuthStore();
 for (const ur in UserRole) {
   if (!(ur === 'mte' && authStore.user.role === 'departement')) {
     rolesAvailable.push({
       text: UserRole[ur],
       value: ur,
-    })
+    });
   }
 }
 
@@ -33,14 +33,14 @@ const formData = reactive({
   role: props.user ? props.user.role : rolesAvailable.length > 1 ? null : rolesAvailable[0],
   roleDepartement: props.user ? props.user.roleDepartement : null,
   isNewUser: !props.user,
-})
-const errorMessage: Ref<string> = ref('')
+});
+const errorMessage: Ref<string> = ref('');
 
 const rules = computed(() => {
   return {
     email: {
-      required: helpers.withMessage('L\'email est obligatoire.', required),
-      email: helpers.withMessage('L\'email n\'est pas valide.', email),
+      required: helpers.withMessage("L'email est obligatoire.", required),
+      email: helpers.withMessage("L'email n'est pas valide.", email),
     },
     firstName: {},
     lastName: {},
@@ -49,37 +49,34 @@ const rules = computed(() => {
     },
     roleDepartement: {
       requiredIf: helpers.withMessage('Le département est obligatoire.', requiredIf(formData.role === 'departement')),
-      regex: helpers.withMessage('Le département n\'existe pas', helpers.regex(/^([0|2][1-9]|[1|3-8][0-9]|9[0-5]|97[1-4]|2[AB]|976)$/)),
+      regex: helpers.withMessage("Le département n'existe pas", helpers.regex(/^([0|2][1-9]|[1|3-8][0-9]|9[0-5]|97[1-4]|2[AB]|976)$/)),
     },
-  }
-})
+  };
+});
 
-const v$ = useVuelidate(rules, formData)
+const v$ = useVuelidate(rules, formData);
 
 const computeErrorMessage = () => {
-  errorMessage.value = v$.value.$errors.map(e => e.$message).join(' ')
-}
+  errorMessage.value = v$.value.$errors.map((e) => e.$message).join(' ');
+};
 
 const submitForm = async () => {
-  await v$.value.$validate()
+  await v$.value.$validate();
   if (!v$.value.$error && !props.loading) {
-    emit('createEdit', formData)
+    emit('createEdit', formData);
   } else {
-    computeErrorMessage()
+    computeErrorMessage();
   }
-}
+};
 
 defineExpose({
   submitForm,
-})
+});
 </script>
 
 <template>
   <form @submit.prevent="">
-    <DsfrInputGroup
-      :error-message="errorMessage"
-      :valid-message="''"
-    >
+    <DsfrInputGroup :error-message="errorMessage" :valid-message="''">
       <DsfrInput
         id="email"
         v-model="formData.email"
