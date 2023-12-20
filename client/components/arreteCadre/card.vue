@@ -20,7 +20,7 @@ const arreteCadreActions: Ref<any> = ref([
   {
     text: "Modifier",
     onclick: () => {
-      navigateTo(`/arrete-cadre/${props.arreteCadre.id}`)
+      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/edition`)
     }
   },
   {
@@ -32,7 +32,7 @@ const arreteCadreActions: Ref<any> = ref([
   {
     text: "Dupliquer",
     onclick: () => {
-      console.log("click");
+      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`)
     }
   },
   {

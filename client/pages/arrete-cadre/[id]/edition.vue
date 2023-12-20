@@ -10,5 +10,5 @@ useHead({
 </script>
 
 <template>
-  <ArreteCadreFormWrapper :view-only="true" />
+  <ArreteCadreFormWrapper />
 </template>

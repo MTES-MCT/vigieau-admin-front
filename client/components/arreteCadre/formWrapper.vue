@@ -8,6 +8,11 @@ import type { Usage } from "~/dto/usage.dto";
 import type { Thematique } from "~/dto/thematique.dto";
 import type { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
 
+const props = defineProps<{
+  viewOnly?: boolean,
+  duplicate?: boolean,
+}>();
+
 const arreteCadre: Ref<ArreteCadre> = ref();
 const fullValidation: Ref<boolean> = ref(false);
 
@@ -50,6 +55,13 @@ if (isNewArreteCadre) {
   const { data, error } = await api.arreteCadre.get(<string>route.params.id);
   if (data.value) {
     arreteCadre.value = <ArreteCadre>data.value;
+    if(props.duplicate) {
+      arreteCadre.value.id = null;
+      arreteCadre.value.usagesArreteCadre.map(u => {
+        u.id = null;
+        return u;
+      });
+    }
   }
 }
 
@@ -101,12 +113,22 @@ const showButtons = () => {
     case 1:
       buttonsFiltered.value.splice(2, 1);
       buttonsFiltered.value.splice(0, 1);
+      if(props.viewOnly) {
+        buttonsFiltered.value.splice(0, 1);
+      }
       break;
     case 5:
       buttonsFiltered.value.splice(3, 1);
+      buttonsFiltered.value.splice(2, 1);
+      if(props.viewOnly) {
+        buttonsFiltered.value.splice(1, 1);
+      }
       break;
     default:
       buttonsFiltered.value.splice(2, 1);
+      if(props.viewOnly) {
+        buttonsFiltered.value.splice(1, 1);
+      }
   }
 };
 
@@ -154,7 +176,8 @@ showButtons();
   <DsfrTabs class="tabs-light" v-if="loadRefData">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre"
-                              :fullValidation="fullValidation" />
+                              :fullValidation="fullValidation"
+                              :viewOnly="viewOnly" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2">
       <ArreteCadreFormRegles :arrete-cadre="arreteCadre"

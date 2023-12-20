@@ -11,6 +11,7 @@ import { requiredIf } from "@vuelidate/validators";
 const props = defineProps<{
   arreteCadre: ArreteCadre,
   fullValidation: boolean,
+  viewOnly: boolean
 }>();
 
 const query: Ref<string> = ref("");
@@ -105,6 +106,7 @@ watch(query, useUtils().debounce(async () => {
             type="text"
             name="numero"
             :required="true"
+            :disabled="viewOnly"
           />
         </DsfrInputGroup>
 
@@ -121,11 +123,13 @@ watch(query, useUtils().debounce(async () => {
               v-model="query"
               :options="departementsFiltered"
               :required="true"
+              :disabled="viewOnly"
               @update:modelValue="selectDepartement($event)"
               @search="selectDepartement($event)"
             />
 
             <DsfrTags class="fr-mt-2w"
+                      :closeable="!viewOnly"
                       :tags="departementsTags" />
           </DsfrInputGroup>
         </div>
@@ -144,6 +148,7 @@ watch(query, useUtils().debounce(async () => {
                 type="date"
                 name="dateDebut"
                 :required="true"
+                :disabled="viewOnly"
               />
             </DsfrInputGroup>
           </div>
@@ -158,6 +163,7 @@ watch(query, useUtils().debounce(async () => {
                 label-visible
                 type="date"
                 name="dateFin"
+                :disabled="viewOnly"
               />
             </DsfrInputGroup>
           </div>
