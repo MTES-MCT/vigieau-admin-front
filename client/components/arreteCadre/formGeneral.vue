@@ -93,7 +93,6 @@ watch(query, useUtils().debounce(async () => {
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
-
         <h6>Généralité</h6>
         <DsfrInputGroup
           :error-message="utils.showInputError(v$, 'numero')"
@@ -130,9 +129,10 @@ watch(query, useUtils().debounce(async () => {
                       :tags="departementsTags" />
           </DsfrInputGroup>
         </div>
-
+      </div>
+      <div class="fr-col-12">
         <div class="fr-mt-2w fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-lg-6">
+          <div class="fr-col-6 fr-col-lg-3">
             <DsfrInputGroup
               :error-message="utils.showInputError(v$, 'dateDebut')"
             >
@@ -147,7 +147,7 @@ watch(query, useUtils().debounce(async () => {
               />
             </DsfrInputGroup>
           </div>
-          <div class="fr-col-12 fr-col-lg-6">
+          <div class="fr-col-6 fr-col-lg-3">
             <DsfrInputGroup
               :error-message="utils.showInputError(v$, 'dateFin')"
             >
@@ -160,6 +160,13 @@ watch(query, useUtils().debounce(async () => {
                 name="dateFin"
               />
             </DsfrInputGroup>
+          </div>
+          <div class="fr-col-12 fr-col-lg-6">
+            <DsfrAlert
+              type="info"
+              title="Information"
+              description="L’arrêté sera automatiquement publié / dépublié en fonction des dates  sélectionnées ici."
+            />
           </div>
         </div>
       </div>

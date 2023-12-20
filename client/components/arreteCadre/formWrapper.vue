@@ -6,6 +6,7 @@ import { useRefDataStore } from "~/stores/refData";
 import type { Departement } from "~/dto/departement.dto";
 import type { Usage } from "~/dto/usage.dto";
 import type { Thematique } from "~/dto/thematique.dto";
+import type { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
 
 const arreteCadre: Ref<ArreteCadre> = ref();
 const fullValidation: Ref<boolean> = ref(false);
@@ -14,9 +15,15 @@ const route = useRoute();
 const api = useApi();
 const isNewArreteCadre = route.params.id === "nouveau";
 const loadRefData = ref(false);
+const loading = ref(false);
+const componentKey = ref(0);
 
 const currentStep: Ref<number> = ref(1);
 const steps = ["Informations générales", "Règles de gestion des niveaux d'alerte", "Liste des zones d'alertes", "Les usages", "Récapitulatif"];
+
+const titleAlerte: Ref<string> = ref(`Impossible de publier l'arrêté cadre`);
+const descriptionAlerte: Ref<string> = ref("");
+const isAlerteClosed: Ref<boolean> = ref(true);
 
 // Départements
 const [fecthDep, fetchUsage, fetchThematique] = await Promise.all([
@@ -55,18 +62,37 @@ const previousStep = () => {
   showButtons();
 };
 const saveArrete = async () => {
-  await v$.value.$validate();
-  if (v$.value.$error) {
+  if(loading.value) {
     return;
   }
+  await v$.value.$validate();
+  if (v$.value.$error) {
+    descriptionAlerte.value = v$.value.$errors.map((e: any) => e.$message).join(", ");
+    isAlerteClosed.value = false;
+    return;
+  }
+  loading.value = true;
   const {
     data,
     error
   } = arreteCadre.value.id ? await api.arreteCadre.update(arreteCadre.value.id.toString(), arreteCadre.value)
     : await api.arreteCadre.create({ ...arreteCadre.value });
   if (data.value) {
+    // Mise à jour des ids des objets nouvellement crées
     arreteCadre.value.id = data.value.id;
+    arreteCadre.value.usagesArreteCadre.map((usageArreteCadre: UsageArreteCadre) => {
+      usageArreteCadre.id = (<ArreteCadre> data.value).usagesArreteCadre.find((uac: UsageArreteCadre) => uac.usage.id === usageArreteCadre.usage.id).id;
+      return usageArreteCadre;
+    });
+    componentKey.value ++;
   }
+  loading.value = false;
+};
+
+const publishArrete = () => {
+  fullValidation.value = true;
+  saveArrete();
+  // TODO Publish
 };
 
 const showButtons = () => {
@@ -99,7 +125,8 @@ const buttons = ref([
     onclick: saveArrete
   },
   {
-    label: "Publier"
+    label: "Publier",
+    onclick: publishArrete
   },
   {
     label: "Suivant",
@@ -115,6 +142,15 @@ showButtons();
 <template>
   <h1>{{ isNewArreteCadre ? "Création" : "Edition" }} d'un arrêté cadre</h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
+  <DsfrAlert
+    class="fr-mb-2w"
+    :title="titleAlerte"
+    :description="descriptionAlerte"
+    type="error"
+    :closeable="true"
+    :closed="isAlerteClosed"
+    @close="isAlerteClosed = true"
+  />
   <DsfrTabs class="tabs-light" v-if="loadRefData">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre"
@@ -130,10 +166,12 @@ showButtons();
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
-                             :fullValidation="fullValidation" />
+                             :fullValidation="fullValidation"
+                             :key="componentKey" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
-      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre" />
+      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
+                                    :key="componentKey" />
     </DsfrTabContent>
   </DsfrTabs>
   <DsfrButtonGroup

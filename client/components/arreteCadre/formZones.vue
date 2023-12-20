@@ -6,20 +6,23 @@ import { useRefDataStore } from "~/stores/refData";
 import type { Departement } from "~/dto/departement.dto";
 import type { Ref } from "vue";
 import type { ZoneAlerte } from "~/dto/zone_alerte.dto";
+import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
+  fullValidation: boolean,
 }>();
 
 const refDataStore = useRefDataStore();
+const utils = useUtils();
 const expandedIndex: Ref<string | undefined> = ref();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map(z => z.id));
 const departementsFiletered: Ref<any[]> = ref(refDataStore.departements.filter(d => props.arreteCadre.departements.map(ad => ad.id).includes(d.id)));
 
 const rules = computed(() => {
   return {
-    numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required)
+    zonesAlerte: {
+      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", requiredIf(props.fullValidation))
     }
   };
 });
@@ -69,23 +72,27 @@ computeDepSelected();
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Sélectionner les zones d'alerte</h6>
-        <DsfrAccordionsGroup>
-          <li v-for="d of departementsFiletered">
-            <DsfrAccordion
-              :expanded-id="expandedIndex"
-              @expand="expandedIndex = $event"
-            >
-              <template #title>
-                <DsfrCheckbox :label="`${d.nom} (${d.nbZonesSelected}/${d.zonesAlerte.length})`"
-                              :onUpdate:modelValue="() => selectAll(d)"
-                              :checked="d.nbZonesSelected === d.zonesAlerte.length" />
-              </template>
-              <DsfrCheckboxSet :small="false"
-                               v-model="zonesSelected"
-                               :options="zonesOptionsCheckBox(d)" />
-            </DsfrAccordion>
-          </li>
-        </DsfrAccordionsGroup>
+        <DsfrInputGroup
+          :error-message="utils.showInputError(v$, 'zonesAlerte')"
+        >
+          <DsfrAccordionsGroup>
+            <li v-for="d of departementsFiletered">
+              <DsfrAccordion
+                :expanded-id="expandedIndex"
+                @expand="expandedIndex = $event"
+              >
+                <template #title>
+                  <DsfrCheckbox :label="`${d.nom} (${d.nbZonesSelected}/${d.zonesAlerte.length})`"
+                                :onUpdate:modelValue="() => selectAll(d)"
+                                :checked="d.nbZonesSelected === d.zonesAlerte.length" />
+                </template>
+                <DsfrCheckboxSet :small="false"
+                                 v-model="zonesSelected"
+                                 :options="zonesOptionsCheckBox(d)" />
+              </DsfrAccordion>
+            </li>
+          </DsfrAccordionsGroup>
+        </DsfrInputGroup>
       </div>
     </div>
   </form>

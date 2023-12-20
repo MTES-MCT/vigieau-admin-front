@@ -1,6 +1,7 @@
 import type { Usage } from "~/dto/usage.dto";
 
 export class UsageArreteCadre {
+  id: number | null;
   usage: Usage;
   concerneParticulier: boolean;
   concerneEntreprise: boolean;
@@ -12,6 +13,7 @@ export class UsageArreteCadre {
   descriptionCrise: string;
   
   constructor(usage: Usage) {
+    this.id = null;
     this.usage = usage;
     this.concerneParticulier = false;
     this.concerneEntreprise = false;

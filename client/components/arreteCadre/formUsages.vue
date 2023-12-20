@@ -6,6 +6,7 @@ import type { Ref } from "vue";
 import { useRefDataStore } from "~/stores/refData";
 import { Usage } from "~/dto/usage.dto";
 import { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
+import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre,
@@ -16,17 +17,19 @@ const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
 const usageFormRef = ref(null);
 const loading: Ref<boolean> = ref(false);
+const componentKey = ref(0);
 
 const query: Ref<string> = ref("");
 const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
+const utils = useUtils();
 const api = useApi();
 const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
 
 const rules = computed(() => {
   return {
-    numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required)
+    usagesArreteCadre: {
+      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un usage", requiredIf(props.fullValidation))
     }
   };
 });
@@ -34,13 +37,20 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, props.arreteCadre);
 
 const filterUsages = () => {
-  const tmp = query.value ? refDataStore.usages.filter(u => {
-    return u.nom.toLowerCase().includes(query.value.toLowerCase());
-  }) : [];
-  tmp.map(u => {
-    u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex(uac => uac.usage.id === u.id) > -1;
-    u.display = u.isAlreadyUsed ? "<b>" + u.nom + "</b>" : u.nom;
-  });
+  let tmp: any[] = [];
+  if(query.value) {
+    tmp = refDataStore.usages.filter(u => {
+      return u.nom.toLowerCase().includes(query.value.toLowerCase());
+    });
+    tmp.map(u => {
+      u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex(uac => uac.usage.id === u.id) > -1;
+      u.display = u.isAlreadyUsed ? "<b>" + u.nom + "</b>" : u.nom;
+    });
+    tmp.push({
+      id: null,
+      display: "Vous ne trouvez pas l’usage que vous cherchez ? Créez un nouvel usage",
+    })
+  }
   usagesFiltered.value = tmp;
 };
 
@@ -48,7 +58,11 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
   if (typeof usage === "string") {
     return;
   }
-  query.value = "";
+  query.value = '';
+  if(!usage.id) {
+    modalUsageOpened.value = true;
+    return;
+  }
   if (!isUsageArreteCadre) {
     let usageArreteCadre = props.arreteCadre.usagesArreteCadre.find(uac => uac.usage.id === (<Usage>usage).id);
     if (!usageArreteCadre) {
@@ -58,6 +72,11 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
   } else {
     usageArreteCadreToEdit.value = <UsageArreteCadre>usage;
   }
+};
+
+const deleteUsage = (usage: UsageArreteCadre) => {
+  props.arreteCadre.usagesArreteCadre = props.arreteCadre.usagesArreteCadre.filter(uac => uac.usage.id !== usage.usage.id);
+  componentKey.value += 1;
 };
 
 const closeModal = () => {
@@ -82,7 +101,6 @@ const modalActions: Ref<any[]> = ref([
 
 const createEditUsage = async (usage: Usage) => {
   loading.value = true;
-  console.log(usage);
   const { data, error } = await api.usage.create(usage);
   loading.value = false;
   closeModal();
@@ -93,8 +111,14 @@ const createEditUsage = async (usage: Usage) => {
 };
 
 const addEditUsageArreteCadre = () => {
-  // TMP
-  console.log(usageArreteCadreToEdit.value);
+  const idx = props.arreteCadre.usagesArreteCadre.findIndex((u: UsageArreteCadre) => u.usage.id === usageArreteCadreToEdit.value?.usage.id);
+  if (idx > -1) {
+    props.arreteCadre.usagesArreteCadre[idx] = usageArreteCadreToEdit.value;
+  } else {
+    props.arreteCadre.usagesArreteCadre.push(usageArreteCadreToEdit.value);
+  }
+  componentKey.value += 1;
+  usageArreteCadreToEdit.value = null;
 };
 
 const usageArreteCadreFormButtons: Ref<any[]> = ref([
@@ -108,7 +132,7 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
   {
     label: "Enregistrer",
     onclick: addEditUsageArreteCadre
-  },
+  }
 ]);
 
 watch(query, useUtils().debounce(async () => {
@@ -122,19 +146,21 @@ watch(query, useUtils().debounce(async () => {
       <div class="fr-col-12 fr-col-lg-6">
         <h6>
           Ajouter un usage
-          <DsfrButton label="Ajouter"
-                      @click="modalUsageOpened=true" />
         </h6>
-        <MixinsAutoComplete
-          class="show-label"
-          buttonText="Ajouter"
-          display-key="display"
-          v-model="query"
-          :options="usagesFiltered"
-          :required="true"
-          @update:modelValue="selectUsage($event)"
-          @search="selectUsage($event)"
-        />
+        <DsfrInputGroup
+          :error-message="utils.showInputError(v$, 'usagesArreteCadre')"
+        >
+          <MixinsAutoComplete
+            class="show-label"
+            buttonText="Ajouter"
+            display-key="display"
+            v-model="query"
+            :options="usagesFiltered"
+            :required="true"
+            @update:modelValue="selectUsage($event)"
+            @search="selectUsage($event)"
+          />
+        </DsfrInputGroup>
         <div v-if="usageArreteCadreToEdit"
              class="usage-form-wrapper fr-p-2w fr-mt-2w">
           <UsageArreteCadreForm
@@ -149,7 +175,9 @@ watch(query, useUtils().debounce(async () => {
       <div class="fr-col-12 fr-col-lg-6">
         <div class="arrete-cadre-usage-list fr-p-2w fr-mt-7w">
           <ArreteCadreUsageList :usagesArreteCadre="arreteCadre.usagesArreteCadre"
-                                @usage-selected="selectUsage($event, true)" />
+                                @usage-selected="selectUsage($event, true)"
+                                @usage-removed="deleteUsage($event)"
+                                :key="componentKey" />
         </div>
       </div>
     </div>

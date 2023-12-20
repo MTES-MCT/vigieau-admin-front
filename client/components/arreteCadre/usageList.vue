@@ -5,37 +5,51 @@ const props = defineProps<{
   usagesArreteCadre: any[],
 }>();
 
-const emit = defineEmits(['usageSelected'])
+const emit = defineEmits(["usageSelected", "usageRemoved"]);
 
-const headers = ['Usages', 'Actions']
-const rows: Ref<any[]> = ref([])
-const componentKey = ref(0)
+const headers = ["Usages", "Actions"];
+const rows: Ref<any[]> = ref([]);
+const componentKey = ref(0);
 
 const generateRows = () => {
   rows.value = [...props.usagesArreteCadre.map((u: any) => {
     return [u.usage.nom, {
-      component: 'DsfrButton',
-      icon: 'ri-edit-2-fill',
-      iconOnly: true,
-      label: 'Editer',
-      onClick: () => {
-        emit('usageSelected', u)
-      },
-    }]
-  })]
-  componentKey.value += 1
-}
+      component: "DsfrButtonGroup",
+      inlineLayoutWhen: "always",
+      buttons: [
+        {
+          icon: "ri-edit-2-fill",
+          iconOnly: true,
+          label: "Editer",
+          onClick: () => {
+            emit("usageSelected", u);
+          }
+        },
+        {
+          icon: "ri-delete-bin-5-line",
+          iconOnly: true,
+          label: "Supprimer",
+          onClick: () => {
+            emit("usageRemoved", u);
+          }
+        }
 
-generateRows()
+      ]
+    }];
+  })];
+  componentKey.value += 1;
+};
+
+generateRows();
 </script>
 
 <template>
-    <h6>Récapitulatif des usages</h6>
-    <DsfrTable
-      :headers="headers"
-      :rows="rows"
-      :no-caption="false"
-      :pagination="false"
-      :key="componentKey"
-    /> 
+  <h6>Récapitulatif des usages</h6>
+  <DsfrTable
+    :headers="headers"
+    :rows="rows"
+    :no-caption="false"
+    :pagination="false"
+    :key="componentKey"
+  />
 </template>
