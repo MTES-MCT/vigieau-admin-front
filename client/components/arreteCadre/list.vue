@@ -10,11 +10,11 @@ const loading = ref(false);
 const statusFilter = ref("publie");
 const statusOptions = ref([
   {
-    label: "Publié",
+    label: "En vigueur",
     value: "publie"
   },
   {
-    label: "Terminé",
+    label: "Abrogé",
     value: "abroge"
   }
 ]);

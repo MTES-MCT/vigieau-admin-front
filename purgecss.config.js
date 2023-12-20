@@ -11,7 +11,8 @@ module.exports = {
     /^fr-badge/,
     /^maplibregl/,
     /^fr-tooltip/,
-    /^fr-placement/
+    /^fr-placement/,
+    /^fr-alert/
   ],
   output: [".output/public/_nuxt"]
 };
