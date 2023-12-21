@@ -60,7 +60,7 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
     return;
   }
   query.value = '';
-  if (!usage.id) {
+  if (!usage.id && !isUsageArreteCadre) {
     modalUsageOpened.value = true;
     return;
   }
