@@ -17,7 +17,7 @@ const rules = computed(() => {
   };
 });
 
-const sameZoneCommuneRules = [
+const communeNiveauGraviteMaxOptions = [
   {
     label: 'Oui pour toutes les ressources',
     value: 'all',
@@ -32,7 +32,7 @@ const sameZoneCommuneRules = [
   },
 ];
 
-const customEapNiveauRules = [
+const niveauGraviteSpecifiqueEapOptions = [
   {
     label: 'Non, le niveau de gravité ESO/ESU s’applique à l’ensemble des usages y compris l’eau potable.',
     value: false,
@@ -44,7 +44,7 @@ const customEapNiveauRules = [
   },
 ];
 
-const customEapZoneRules = [
+const ressourcePrioritaireOptions = [
   {
     label: 'Eaux superficielles (ESU)',
     value: 'esu',
@@ -52,6 +52,10 @@ const customEapZoneRules = [
   {
     label: 'Eaux souterraines (ESO)',
     value: 'eso',
+  },
+  {
+    label: 'AEP',
+    value: 'aep',
   },
   {
     label: 'Le niveau de gravité maximal',
@@ -68,9 +72,9 @@ const v$ = useVuelidate(rules, props.arreteCadre);
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Cas particuliers</h6>
         <DsfrRadioButtonSet
-          legend="Dans cet arrêté cadre, précisez-vous que le niveau de gravité maximal s'applique si une commune est touchée par plusieurs zones de mêmes types ?"
-          :options="sameZoneCommuneRules"
-          v-model="arreteCadre.sameZoneCommuneRule"
+          legend="Dans cet arrêté cadre, si une commune est touchée par plusieurs zones de mêmes types choisissez-vous d’uniformiser au niveau de gravité maximal  ?"
+          :options="communeNiveauGraviteMaxOptions"
+          v-model="arreteCadre.communeNiveauGraviteMax"
           name="sameZoneCommuneRules"
           :small="false"
           :disabled="viewOnly"
@@ -79,16 +83,16 @@ const v$ = useVuelidate(rules, props.arreteCadre);
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrAlert
           type="info"
-          title="Information"
-          description="Cette règle sera effective sur toutes les zones d'alerte de votre arrêté cadre et visible par tous les usagers."
+          title="Exemple"
+          description="Si une commune est traversée par plusieurs nappes souterraines et que l’une d’elle est en alerte et l’autre en alerte renforcée. On peut choisir d’appliquer le niveau le plus restrictif sur l’ensemble de la commune."
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Gestion de l'eau potable</h6>
         <DsfrRadioButtonSet
           legend="Dans cet arrêté cadre, prévoyez-vous d’appliquer des niveaux de gravité spécifiques aux usages issus de l'eau potable ?"
-          :options="customEapNiveauRules"
-          v-model="arreteCadre.customEapNiveau"
+          :options="niveauGraviteSpecifiqueEapOptions"
+          v-model="arreteCadre.niveauGraviteSpecifiqueEap"
           name="customEapNiveauRules"
           :small="false"
           :disabled="viewOnly"
@@ -104,20 +108,15 @@ const v$ = useVuelidate(rules, props.arreteCadre);
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Affichage VigiEau</h6>
         <DsfrRadioButtonSet
-          legend="Précisez quel niveau de gravité s'applique à l'eau potable si des zones ESU et ESO se superposent ?"
-          :options="customEapZoneRules"
-          v-model="arreteCadre.customEapZone"
+          legend="Quelle ressource afficher en priorité pour chaque type d'usager ?"
+          :options="ressourcePrioritaireOptions"
+          v-model="arreteCadre.ressourcePrioritaire"
           name="customEapZoneRules"
           :small="false"
           :disabled="viewOnly"
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-        <DsfrAlert
-          type="info"
-          title="Information"
-          description="P our une localisation géographique donnée, un seul niveau d'alerte sera communiqué pour l'eau potable"
-        />
       </div>
     </div>
   </form>

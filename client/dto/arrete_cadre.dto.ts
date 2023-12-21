@@ -8,9 +8,9 @@ export class ArreteCadre {
   usagesArreteCadre: any[];
   statut: 'a_valider' | 'publie' | 'abroge';
 
-  sameZoneCommuneRule: 'all' | 'eap' | 'none' | null;
-  customEapNiveau: boolean | null;
-  customEapZone: 'esu' | 'eso' | 'max' | null;
+  communeNiveauGraviteMax: 'all' | 'eap' | 'none' | null;
+  niveauGraviteSpecifiqueEap: boolean | null;
+  ressourcePrioritaire: 'esu' | 'eso' | 'max' | 'eap' | null;
 
   constructor() {
     this.id = null;
@@ -21,9 +21,9 @@ export class ArreteCadre {
     this.departements = [];
     this.zonesAlerte = [];
     this.usagesArreteCadre = [];
-    this.sameZoneCommuneRule = null;
-    this.customEapNiveau = null;
-    this.customEapZone = null;
+    this.communeNiveauGraviteMax = null;
+    this.niveauGraviteSpecifiqueEap = null;
+    this.ressourcePrioritaire = null;
   }
 }
 

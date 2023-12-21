@@ -25,11 +25,11 @@ const generateRows = () => {
     ...props.arreteCadre.usagesArreteCadre.map((u: UsageArreteCadre) => {
       return [
         u.usage.nom,
-        generateUsagers(u),
         u.descriptionVigilance || '',
         u.descriptionAlerte || '',
         u.descriptionAlerteRenforcee || '',
         u.descriptionCrise || '',
+        generateUsagers(u),
       ];
     }),
   ];
@@ -55,7 +55,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
     <template v-slot:header>
       <tr>
         <th>Usages</th>
-        <th>Usagers</th>
         <th>
           <DsfrBadge label="Vigilance" type="info" />
         </th>
@@ -68,6 +67,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
         <th>
           <DsfrBadge label="Crise" type="error" />
         </th>
+        <th>Usagers</th>
       </tr>
     </template>
   </DsfrTable>
