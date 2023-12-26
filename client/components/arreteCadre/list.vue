@@ -65,7 +65,7 @@ watch(statusFilter, () => {
       <DsfrButton label="Créer un nouvel arrêté" />
     </NuxtLink>
     <div class="fr-col-12 fr-col-md-8">
-      <DsfrRadioButtonSet v-model="statusFilter"
+      <DsfrSegmentedSet v-model="statusFilter"
                           :inline="true"
                           :options="statusOptions" />
     </div>

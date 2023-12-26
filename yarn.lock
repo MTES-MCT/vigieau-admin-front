@@ -609,9 +609,9 @@
   integrity sha512-RD+kUk9iJJ4B7xFdAFCNQz0LRqYiMy9dajlKfgnmDPSrYHm+JCJpYCzXhNjYyp4FJggMafRd1ZqJJ6KW6aM0Jw==
 
 "@gouvminint/vue-dsfr@^5.6.0":
-  version "5.6.2"
-  resolved "https://registry.yarnpkg.com/@gouvminint/vue-dsfr/-/vue-dsfr-5.6.2.tgz#3c066e0f6cc8ebe7cb1375f4aaa6696c041db527"
-  integrity sha512-RmWH4XpoaAJVAxPX2C2XkDN2oQKdxeWRs4HeTzuTIjlVqcnQma6QHqIlWd1l06LAy9hunB5S7YvwJ17HY/5FSg==
+  version "5.6.3"
+  resolved "https://registry.yarnpkg.com/@gouvminint/vue-dsfr/-/vue-dsfr-5.6.3.tgz#6ff6a9846706a473c11087e413dc0f659b703f71"
+  integrity sha512-7SOVAAi/LdRlEA+3zQSwGUc0tdEpjnaqz+migNPsjZT41W29N4ZizrqfUo/c436KyZmSjcov5323cOPXb32uHQ==
   dependencies:
     "@gouvfr/dsfr" "~1.11.0"
     focus-trap "^7.5.4"
