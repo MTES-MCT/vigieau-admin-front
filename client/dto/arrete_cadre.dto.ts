@@ -1,3 +1,5 @@
+import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+
 export class ArreteCadre {
   id: number | null;
   numero: string;
@@ -7,6 +9,7 @@ export class ArreteCadre {
   zonesAlerte: any[];
   usagesArreteCadre: any[];
   statut: 'a_valider' | 'publie' | 'abroge';
+  arretesRestriction: ArreteRestriction[];
 
   communeNiveauGraviteMax: 'all' | 'eap' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
@@ -24,6 +27,7 @@ export class ArreteCadre {
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourcePrioritaire = null;
+    this.arretesRestriction = [];
   }
 }
 

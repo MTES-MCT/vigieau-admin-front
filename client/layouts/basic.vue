@@ -25,6 +25,11 @@ const quickLinks = (await authStore.isAuthenticated)
         icon: 'ri-article-line',
       },
       {
+        label: 'AR',
+        to: '/arrete-restriction',
+        icon: 'ri-article-line',
+      },
+      {
         label: 'ZA',
         to: '/zone-alerte',
         icon: 'gi-france',

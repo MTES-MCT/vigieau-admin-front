@@ -6,6 +6,7 @@ import { BaseApi } from '~/api/base-api';
 export const useApi = () => {
   return {
     arreteCadre: new BaseApiPagination('arrete-cadre'),
+    arreteRestriction: new BaseApiPagination('arrete-restriction'),
     zoneAlerte: new ZoneAlerteApi('zone-alerte'),
     user: new UserApi('user'),
     departement: new UserApi('departement'),
