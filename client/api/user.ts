@@ -7,4 +7,10 @@ export class UserApi extends BaseApi {
       baseURL: '/api',
     });
   };
+  listDev = () => {
+    return useFetch(`/${this.resource}/dev`, {
+      method: 'GET',
+      baseURL: '/api',
+    });
+  };
 }

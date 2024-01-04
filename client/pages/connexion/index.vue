@@ -4,6 +4,18 @@ definePageMeta({
 });
 
 const runTimeConfig = useRuntimeConfig().public;
+const api = useApi();
+const userSelected = ref(null);
+const userList = ref([]);
+const { data, error } = await api.user.listDev();
+if(data.value) {
+  userList.value = data.value.map((user: any) => {
+    return {
+      text: `${user.email} - ${user.role} - ${user.roleDepartement}`,
+      value: user.email,
+    };
+  });
+}
 
 useHead({
   title: `Connexion - ${runTimeConfig.appName}`,
@@ -14,7 +26,7 @@ const loginAgentConnect = () => {
 };
 
 const loginDev = () => {
-  navigateTo(`${runTimeConfig.apiUrl}/auth/login/dev`, { external: true });
+  navigateTo(`${runTimeConfig.apiUrl}/auth/login/dev/${userSelected.value}`, { external: true });
 };
 </script>
 
@@ -38,7 +50,11 @@ const loginDev = () => {
           </div>
           <div class="fr-mb-6v">
             <h2>Se connecter (DEV Only)</h2>
-            <DsfrButton label="Se connecter" @click="loginDev()" />
+            <DsfrSelect v-model="userSelected"
+                        :options="userList" />
+            <DsfrButton label="Se connecter"
+                        @click="loginDev()"
+                        :disabled="!userSelected" />
           </div>
         </div>
       </div>
