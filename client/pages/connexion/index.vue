@@ -9,8 +9,12 @@ useHead({
   title: `Connexion - ${runTimeConfig.appName}`,
 });
 
-const loginGoogle = () => {
+const loginAgentConnect = () => {
   navigateTo(`${runTimeConfig.apiUrl}/auth/login`, { external: true });
+};
+
+const loginDev = () => {
+  navigateTo(`${runTimeConfig.apiUrl}/auth/login/dev`, { external: true });
 };
 </script>
 
@@ -22,7 +26,7 @@ const loginGoogle = () => {
         <div class="fr-mb-6v">
           <h2>Se connecter avec AgentConnect</h2>
           <div class="fr-connect-group">
-            <button class="fr-connect">
+            <button class="fr-connect" @click="loginAgentConnect()">
               <span class="fr-connect__login">S’identifier avec</span>
               <span class="fr-connect__brand">AgentConnect</span>
             </button>
@@ -33,8 +37,8 @@ const loginGoogle = () => {
             </p>
           </div>
           <div class="fr-mb-6v">
-            <h2>Se connecter avec Google (DEV Only)</h2>
-            <DsfrButton label="Se connecter avec Google" @click="loginGoogle()" />
+            <h2>Se connecter (DEV Only)</h2>
+            <DsfrButton label="Se connecter" @click="loginDev()" />
           </div>
         </div>
       </div>
