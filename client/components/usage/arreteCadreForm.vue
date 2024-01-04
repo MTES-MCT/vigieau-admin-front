@@ -92,6 +92,10 @@ const v$ = useVuelidate(rules, props.usageArreteCadre);
     </DsfrInputGroup>
     <div class="fr-my-2w divider" />
     <h6>Niveau de restriction</h6>
+    <DsfrAlert type="warning"
+               title="Rédaction des mesures"
+               class="fr-mb-2w"
+               description="Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;: -&nbsp;éviter les acronymes -&nbsp;simplifier au maximum les tournures de phrases -&nbsp;ajouter “voir exceptions listées dans l’arrêté préfectoral” lorsque le texte est trop long"/>
     <template v-for="(niveau, index) of niveauxRestriction">
       <div v-if="index !== 0" class="fr-mb-2w divider" />
       <DsfrBadge :label="niveau.name" :type="niveau.badgeType" />
@@ -105,6 +109,7 @@ const v$ = useVuelidate(rules, props.usageArreteCadre);
           type="text"
           :name="niveau.attribute"
         />
+        <span class="fr-input-group__sub-hint">{{ usageArreteCadre[niveau.attribute] ? usageArreteCadre[niveau.attribute].length : 0 }}/1000</span>
       </DsfrInputGroup>
     </template>
   </div>

@@ -90,7 +90,7 @@ const validateUsageForm = () => {
 
 const modalActions: Ref<any[]> = ref([
   {
-    label: 'Enregistrer',
+    label: 'Enregistrer le nouvel usage',
     onclick: validateUsageForm,
   },
   {

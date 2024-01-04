@@ -30,22 +30,25 @@ if (refDataStore.departements) {
 const rules = computed(() => {
   return {
     numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire.", required),
+      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
     },
     departements: {
       requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un département", requiredIf(props.fullValidation)),
     },
-    dateDebut: {
-      required: helpers.withMessage("La date de début de l'arrêté est obligatoire.", requiredIf(props.fullValidation)),
+    url: {
+      requiredIf: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(props.fullValidation)),
     },
-    dateFin: {
-      minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val) => {
-        if (props.arreteCadre.dateDebut && val) {
-          return new Date(val) > new Date(props.arreteCadre.dateDebut);
-        }
-        return true;
-      }),
-    },
+    // dateDebut: {
+    //   required: helpers.withMessage("La date de début de l'arrêté est obligatoire.", requiredIf(props.fullValidation)),
+    // },
+    // dateFin: {
+    //   minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
+    //     if (props.arreteCadre.dateDebut && val) {
+    //       return new Date(val) > new Date(props.arreteCadre.dateDebut);
+    //     }
+    //     return true;
+    //   }),
+    // },
   };
 });
 
@@ -133,43 +136,14 @@ watch(
             <DsfrTags class="fr-mt-2w" :tags="departementsTags" />
           </DsfrInputGroup>
         </div>
-      </div>
-      <div class="fr-col-12">
-        <div class="fr-mt-2w fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6 fr-col-lg-3">
-            <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
-              <DsfrInput
-                id="dateDebut"
-                v-model="arreteCadre.dateDebut"
-                label="Date de début de l'arrêté"
-                label-visible
-                type="date"
-                name="dateDebut"
-                :required="true"
-                :disabled="viewOnly"
-              />
-            </DsfrInputGroup>
-          </div>
-          <div class="fr-col-6 fr-col-lg-3">
-            <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
-              <DsfrInput
-                id="dateFin"
-                v-model="arreteCadre.dateFin"
-                label="Date de fin de l'arrêté"
-                label-visible
-                type="date"
-                name="dateFin"
-                :disabled="viewOnly"
-              />
-            </DsfrInputGroup>
-          </div>
-          <div class="fr-col-12 fr-col-lg-6">
-            <DsfrAlert
-              type="info"
-              title="Information"
-              description="L’arrêté sera automatiquement publié / dépublié en fonction des dates  sélectionnées ici."
+
+        <div class="fr-mt-2w">
+          <DsfrInputGroup :error-message="utils.showInputError(v$, 'url')">
+            <DsfrFileUpload
+              label="Importer le PDF de l'arrêté cadre"
+              :accept="['application/pdf']"
             />
-          </div>
+          </DsfrInputGroup>
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@ const niveauGraviteSpecifiqueEapOptions = [
   },
 ];
 
-const ressourcePrioritaireOptions = [
+const ressourceEapCommuniqueOptions = [
   {
     label: 'Eaux superficielles (ESU)',
     value: 'esu',
@@ -54,12 +54,23 @@ const ressourcePrioritaireOptions = [
     value: 'eso',
   },
   {
-    label: 'AEP',
-    value: 'aep',
-  },
-  {
     label: 'Le niveau de gravité maximal',
     value: 'max',
+  },
+];
+
+const affichageRessourceOptions = [
+  {
+    text: 'Eaux superficielles (ESU)',
+    value: 'esu',
+  },
+  {
+    text: 'Eaux souterraines (ESO)',
+    value: 'eso',
+  },
+  {
+    text: 'Eau potable (AEP)',
+    value: 'aep',
   },
 ];
 
@@ -75,10 +86,11 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           legend="Dans cet arrêté cadre, si une commune est touchée par plusieurs zones de mêmes types choisissez-vous d’uniformiser au niveau de gravité maximal  ?"
           :options="communeNiveauGraviteMaxOptions"
           v-model="arreteCadre.communeNiveauGraviteMax"
-          name="sameZoneCommuneRules"
+          name="communeNiveauGraviteMax"
           :small="false"
           :disabled="viewOnly"
         />
+        <div class="divider" />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrAlert
@@ -93,28 +105,79 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           legend="Dans cet arrêté cadre, prévoyez-vous d’appliquer des niveaux de gravité spécifiques aux usages issus de l'eau potable ?"
           :options="niveauGraviteSpecifiqueEapOptions"
           v-model="arreteCadre.niveauGraviteSpecifiqueEap"
-          name="customEapNiveauRules"
+          name="niveauGraviteSpecifiqueEap"
           :small="false"
           :disabled="viewOnly"
         />
+        <DsfrRadioButtonSet
+          v-if="arreteCadre.niveauGraviteSpecifiqueEap == false"
+          legend="Pour une localisation géographique donnée, un seul niveau de gravité sera communiqué pour l'eau potable. Précisez quel niveau de gravité s'applique à l'eau potable si des zones ESU et ESO se superposent ?"
+          :options="ressourceEapCommuniqueOptions"
+          v-model="arreteCadre.ressourceEapCommunique"
+          name="ressourceEapCommunique"
+          :small="false"
+          :disabled="viewOnly"
+        />
+        <div class="divider" />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrAlert
           type="info"
           title="Information"
-          description="Vous aurez la possibilité d'appliquer des restrictions sur l'eau potable lors de la saisie de vos arrêtés de restriction."
+          description="Vous aurez la possibilité de créer une zone géographique spécifique pour l'eau potable lors de la saisie de vos arrêtés de restriction."
         />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Affichage VigiEau</h6>
-        <DsfrRadioButtonSet
-          legend="Quelle ressource afficher en priorité pour chaque type d'usager ?"
-          :options="ressourcePrioritaireOptions"
-          v-model="arreteCadre.ressourcePrioritaire"
-          name="customEapZoneRules"
-          :small="false"
-          :disabled="viewOnly"
-        />
+        <p>Quelle ressource souhaitez-vous afficher en priorité pour chaque type d'usager ?</p>
+        <div class="fr-mt-2w fr-select-group--inline">
+          <DsfrSelect
+            id="affichageRessourceParticulier"
+            v-model="arreteCadre.affichageRessourceParticulier"
+            :options="affichageRessourceOptions"
+            label="Pour les particuliers&nbsp;:"
+            label-visible
+            type="text"
+            name="affichageRessourceParticulier"
+            :disabled="viewOnly"
+          />
+        </div>
+        <div class="fr-mt-2w fr-select-group--inline">
+          <DsfrSelect
+            id="affichageRessourceCollectivite"
+            v-model="arreteCadre.affichageRessourceCollectivite"
+            :options="affichageRessourceOptions"
+            label="Pour les collectivités&nbsp;:"
+            label-visible
+            type="text"
+            name="affichageRessourceCollectivite"
+            :disabled="viewOnly"
+          />
+        </div>
+        <div class="fr-mt-2w fr-select-group--inline">
+          <DsfrSelect
+            id="affichageRessourceEntreprise"
+            v-model="arreteCadre.affichageRessourceEntreprise"
+            :options="affichageRessourceOptions"
+            label="Pour les entreprises&nbsp;:"
+            label-visible
+            type="text"
+            name="affichageRessourceEntreprise"
+            :disabled="viewOnly"
+          />
+        </div>
+        <div class="fr-mt-2w fr-select-group--inline">
+          <DsfrSelect
+            id="affichageRessourceExploitation"
+            v-model="arreteCadre.affichageRessourceExploitation"
+            :options="affichageRessourceOptions"
+            label="Pour les exploitations agricoles&nbsp;:"
+            label-visible
+            type="text"
+            name="affichageRessourceExploitation"
+            :disabled="viewOnly"
+          />
+        </div>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
       </div>

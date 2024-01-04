@@ -32,7 +32,7 @@ const steps = [
   'Récapitulatif',
 ];
 
-const titleAlerte: Ref<string> = ref(`Impossible de publier l'arrêté cadre`);
+const titleAlerte: Ref<string> = ref(`Impossible d'enregistrer l'arrêté cadre`);
 const descriptionAlerte: Ref<string> = ref('');
 const isAlerteClosed: Ref<boolean> = ref(true);
 
@@ -81,6 +81,7 @@ const saveArrete = async () => {
   }
   await v$.value.$validate();
   if (v$.value.$error) {
+    console.log(v$.value.$errors);
     descriptionAlerte.value = v$.value.$errors.map((e: any) => e.$message).join(', ');
     isAlerteClosed.value = false;
     return;
@@ -105,7 +106,9 @@ const saveArrete = async () => {
 
 const publishArrete = () => {
   fullValidation.value = true;
+  titleAlerte.value = `Impossible de publier l'arrêté cadre`;
   saveArrete();
+  titleAlerte.value = `Impossible d'enregistrer l'arrêté cadre`;
   // TODO Publish
 };
 

@@ -64,3 +64,38 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
     }
   }
 }
+
+// SELECT
+.fr-select {
+  &-group--inline {
+    
+    .fr-select-group {
+      display: flex;
+      align-items: center;
+      
+      .fr-label {
+        flex: none;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+// ACCORDION
+.fr-accordion {
+  &__title {
+    .fr-fieldset__element {
+      flex: none;
+    }
+  }
+}
+
+// INPUT GROUP
+.fr-input-group {
+  &__sub-hint {
+    color: var(--text-mention-grey);
+    font-size: .75rem;
+    display: block;
+    text-align: right;
+  }
+}

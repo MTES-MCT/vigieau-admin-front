@@ -16,7 +16,6 @@ const props = defineProps<{
 
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const expandedIndex: Ref<string | undefined> = ref();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map((z) => z.id));
 const departementsFiletered: Ref<any[]> = ref(
   refDataStore.departements.filter((d) => props.arreteCadre.departements.map((ad) => ad.id).includes(d.id)),
@@ -32,14 +31,16 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 
-const zonesOptionsCheckBox = (dep: Departement) => {
-  return dep.zonesAlerte.map((z) => {
-    return {
-      id: z.id,
-      name: z.id,
-      label: `${z.nom} (${z.type})`,
-    };
-  });
+const zonesOptionsCheckBox = (dep: Departement, type: string) => {
+  return dep.zonesAlerte
+    .filter((z) => z.type === type)
+    .map((z) => {
+      return {
+        id: z.id,
+        name: z.id,
+        label: z.nom,
+      };
+    });
 };
 
 const selectAll = (d: any) => {
@@ -85,25 +86,85 @@ computeDepSelected();
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
-        <h6>Sélectionner les zones d'alerte</h6>
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
-          <DsfrAccordionsGroup>
-            <li v-for="d of departementsFiletered">
-              <DsfrAccordion :expanded-id="expandedIndex" @expand="expandedIndex = $event">
-                <template #title>
-                  <DsfrCheckbox
-                    :label="`${d.nom} (${d.nbZonesSelected}/${d.zonesAlerte.length})`"
-                    :onUpdate:modelValue="() => selectAll(d)"
-                    :checked="d.nbZonesSelected === d.zonesAlerte.length"
-                    :disabled="viewOnly"
-                  />
-                </template>
-                <DsfrCheckboxSet :small="false" v-model="zonesSelected" :options="zonesOptionsCheckBox(d)" :disabled="viewOnly" />
-              </DsfrAccordion>
-            </li>
-          </DsfrAccordionsGroup>
+          <div v-for="d of departementsFiletered">
+            <div class="zone-alerte__title">
+              <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>
+              <div>
+                Tout sélectionner
+                <DsfrCheckbox
+                  :onUpdate:modelValue="() => selectAll(d)"
+                  :checked="d.nbZonesSelected === d.zonesAlerte.length"
+                  :disabled="viewOnly"
+                />
+              </div>
+            </div>
+            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
+              <p><b>Eaux superficielles</b></p>
+              <DsfrCheckboxSet :small="false" v-model="zonesSelected" :options="zonesOptionsCheckBox(d, 'SUP')" :disabled="viewOnly" />
+            </div>
+            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SOU').length > 0">
+              <p><b>Eaux souterraines</b></p>
+              <DsfrCheckboxSet :small="false" v-model="zonesSelected" :options="zonesOptionsCheckBox(d, 'SOU')" :disabled="viewOnly" />
+            </div>
+          </div>
         </DsfrInputGroup>
       </div>
     </div>
   </form>
 </template>
+
+<style lang="scss">
+.zone-alerte {
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    h6 {
+      margin: 0;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+
+      & > * {
+        flex: none;
+      }
+
+      .fr-fieldset__element {
+        margin-bottom: 1.5rem;
+      }
+    }
+  }
+
+  &__body {
+    & > p {
+      margin: 0;
+    }
+
+    .fr-checkbox-group {
+      input[type='checkbox'] + label {
+        margin-left: 0;
+        padding-right: 2.5rem;
+
+        &::before {
+          left: auto;
+          right: 0.5rem;
+        }
+
+        &::after {
+          content: "";
+          display: block;
+          position: absolute;
+          width: 100%;
+          border-top: 1px solid var(--grey-925-125);
+          top: -0.5rem;
+        }
+      }
+    }
+  }
+}
+</style>

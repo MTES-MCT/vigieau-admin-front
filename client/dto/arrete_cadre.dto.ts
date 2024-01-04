@@ -5,6 +5,7 @@ export class ArreteCadre {
   numero: string;
   dateDebut: string | null;
   dateFin: string | null;
+  url: string | null;
   departements: any[];
   zonesAlerte: any[];
   usagesArreteCadre: any[];
@@ -13,20 +14,31 @@ export class ArreteCadre {
 
   communeNiveauGraviteMax: 'all' | 'eap' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
+  ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
   ressourcePrioritaire: 'esu' | 'eso' | 'max' | 'eap' | null;
+  affichageRessourceParticulier: 'esu' | 'eso' | 'eap' | null;
+  affichageRessourceCollectivite: 'esu' | 'eso' | 'eap' | null;
+  affichageRessourceEntreprise: 'esu' | 'eso' | 'eap' | null;
+  affichageRessourceExploitation: 'esu' | 'eso' | 'eap' | null;
 
   constructor() {
     this.id = null;
     this.numero = '';
     this.dateDebut = null;
     this.dateFin = null;
+    this.url = null;
     this.statut = 'a_valider';
     this.departements = [];
     this.zonesAlerte = [];
     this.usagesArreteCadre = [];
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
+    this.ressourceEapCommunique = null;
     this.ressourcePrioritaire = null;
+    this.affichageRessourceParticulier = null;
+    this.affichageRessourceCollectivite = null;
+    this.affichageRessourceEntreprise = null;
+    this.affichageRessourceExploitation = null;
     this.arretesRestriction = [];
   }
 }

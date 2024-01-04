@@ -4,7 +4,7 @@ definePageMeta({
 });
 
 useHead({
-  title: `Consultation arrêté cadre - ${useRuntimeConfig().public.appName}`,
+  title: `Edition arrêté cadre - ${useRuntimeConfig().public.appName}`,
 });
 </script>
 

@@ -31,7 +31,7 @@ const generateRows = () => {
               },
             },
             {
-              icon: 'ri-delete-bin-5-line',
+              icon: 'ri-delete-bin-5-fill',
               iconOnly: true,
               disabled: props.viewOnly,
               label: 'Supprimer',

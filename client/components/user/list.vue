@@ -43,7 +43,7 @@ const generateRows = () => {
         {
           component: 'DsfrButton',
           label: 'Supprimer',
-          icon: 'ri-delete-bin-5-line',
+          icon: 'ri-delete-bin-5-fill',
           iconOnly: true,
           onclick: () => askDeleteUser(d),
         },
@@ -102,7 +102,7 @@ const askDeleteUser = (user) => {
   modalEditOpened.value = false;
   modalDeleteOpened.value = true;
   modalTitle.value = "Suppression d'un utilisateur";
-  modalIcon.value = 'ri-delete-bin-5-line';
+  modalIcon.value = 'ri-delete-bin-5-fill';
   modalText.value = `<p>Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.firstName || ''} ${user.lastName || ''} (${
     user.email
   }) ?</p>`;

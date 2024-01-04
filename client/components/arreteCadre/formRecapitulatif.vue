@@ -24,7 +24,10 @@ const generateRows = () => {
   rows.value = [
     ...props.arreteCadre.usagesArreteCadre.map((u: UsageArreteCadre) => {
       return [
-        u.usage.nom,
+        {
+          component: 'b',
+          text: u.usage.nom,
+        },
         u.descriptionVigilance || '',
         u.descriptionAlerte || '',
         u.descriptionAlerteRenforcee || '',

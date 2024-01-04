@@ -61,7 +61,7 @@ watch(statusFilter, () => {
 
       <VIcon v-if="loading" name="ri-loader-4-line" animation="spin" :width="40" :height="40" />
     </h1>
-    <NuxtLink to="/arrete-cadre/nouveau">
+    <NuxtLink to="/arrete-cadre/nouveau/edition">
       <DsfrButton label="Créer un nouvel arrêté" />
     </NuxtLink>
     <div class="fr-col-12 fr-col-md-8">
