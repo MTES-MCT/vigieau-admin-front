@@ -194,12 +194,13 @@ showButtons();
     <DsfrTabContent :selected="currentStep === 4">
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
                              :fullValidation="fullValidation"
-                             :viewOnly="viewOnly"
                              :usageSelected="usageSelected"
+                             :viewOnly="viewOnly"
                              :key="componentKey" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
       <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
+                                    :viewOnly="viewOnly"
                                     :key="componentKey"
                                     @usageSelected="usageSelected = $event; previousStep()" />
     </DsfrTabContent>

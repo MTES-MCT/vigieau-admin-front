@@ -2,34 +2,35 @@
 import type { Ref } from "vue";
 
 const props = defineProps<{
+  viewOnly: boolean;
   html: string | null;
   onClickEdit: Function;
 }>();
 
 const modalOpened: Ref<boolean> = ref(false);
-const modalActions: Ref<any[]> = ref([
-  {
+const modalActions: Ref<any[]> = ref(
+  props.viewOnly ?  [] :[{
     label: 'Modifier',
     onclick: () => {
       modalOpened.value = false;
       props.onClickEdit();
     },
+  }]
+);
+modalActions.value.push({
+  label: 'Fermer',
+  secondary: true,
+  onclick: () => {
+    modalOpened.value = false;
   },
-  {
-    label: 'Fermer',
-    secondary: true,
-    onclick: () => {
-      modalOpened.value = false;
-    },
-  },
-]);
+})
 
 const lengthTruncated = 200;
 const htmlTruncated = computed(() => {
   return props.html?.length > lengthTruncated ? props.html.substring(0, lengthTruncated) + '...' : props.html;
 });
 
-const buttons = [
+const buttons = props.viewOnly ? [] : [
   {
     icon: 'ri-edit-2-fill',
     iconOnly: true,

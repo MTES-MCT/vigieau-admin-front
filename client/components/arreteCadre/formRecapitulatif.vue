@@ -6,6 +6,7 @@ import type { Ref } from 'vue';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 
 const props = defineProps<{
+  viewOnly: boolean;
   arreteCadre: ArreteCadre;
 }>();
 
@@ -33,31 +34,37 @@ const generateRows = () => {
       return [
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html: `<b>${u.usage.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.usage.thematique.nom}</b>`,
           onClickEdit: () => editUsage(u)
         },
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html:  u.descriptionVigilance,
           onClickEdit: () => editUsage(u)
         },
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html:  u.descriptionAlerte,
           onClickEdit: () => editUsage(u)
         },
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html:  u.descriptionAlerteRenforcee,
           onClickEdit: () => editUsage(u)
         },
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html:  u.descriptionCrise,
           onClickEdit: () => editUsage(u)
         },
         {
           component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
           html:  generateUsagers(u),
           onClickEdit: () => editUsage(u)
         },
