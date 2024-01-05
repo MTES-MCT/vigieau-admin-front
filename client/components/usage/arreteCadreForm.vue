@@ -92,8 +92,12 @@ const v$ = useVuelidate(rules, props.usageArreteCadre);
     <h6>Niveau de restriction</h6>
     <DsfrAlert type="warning"
                title="Rédaction des mesures"
-               class="fr-mb-2w"
-               description="Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;: -&nbsp;éviter les acronymes -&nbsp;simplifier au maximum les tournures de phrases -&nbsp;ajouter “voir exceptions listées dans l’arrêté préfectoral” lorsque le texte est trop long"/>
+               class="fr-mb-2w">
+      Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;:
+      <br/>-&nbsp;éviter les acronymes
+      <br/>-&nbsp;simplifier au maximum les tournures de phrases
+      <br/>-&nbsp;ajouter “voir exceptions listées dans l’arrêté préfectoral” lorsque le texte est trop long
+    </DsfrAlert>
     <template v-for="(niveau, index) of niveauxRestriction">
       <div v-if="index !== 0" class="fr-mb-2w divider" />
       <DsfrBadge :label="niveau.name" :type="niveau.badgeType" />
