@@ -9,8 +9,11 @@ const props = defineProps<{
   arreteCadre: ArreteCadre;
 }>();
 
+const emit = defineEmits(['usageSelected']);
+
 const rows: Ref<any[]> = ref([]);
 const componentKey = ref(0);
+const arreteCadreRecapitulatifCell = shallowRef(resolveComponent('ArreteCadreRecapitulatifCell'));
 
 const rules = computed(() => {
   return {
@@ -20,19 +23,44 @@ const rules = computed(() => {
   };
 });
 
+const editUsage = (u: UsageArreteCadre) => {
+  emit('usageSelected', u);
+};
+
 const generateRows = () => {
   rows.value = [
     ...props.arreteCadre.usagesArreteCadre.map((u: UsageArreteCadre) => {
       return [
         {
-          component: 'b',
-          text: u.usage.nom,
+          component: arreteCadreRecapitulatifCell,
+          html: `<b>${u.usage.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.usage.thematique.nom}</b>`,
+          onClickEdit: () => editUsage(u)
         },
-        u.descriptionVigilance || '',
-        u.descriptionAlerte || '',
-        u.descriptionAlerteRenforcee || '',
-        u.descriptionCrise || '',
-        generateUsagers(u),
+        {
+          component: arreteCadreRecapitulatifCell,
+          html:  u.descriptionVigilance,
+          onClickEdit: () => editUsage(u)
+        },
+        {
+          component: arreteCadreRecapitulatifCell,
+          html:  u.descriptionAlerte,
+          onClickEdit: () => editUsage(u)
+        },
+        {
+          component: arreteCadreRecapitulatifCell,
+          html:  u.descriptionAlerteRenforcee,
+          onClickEdit: () => editUsage(u)
+        },
+        {
+          component: arreteCadreRecapitulatifCell,
+          html:  u.descriptionCrise,
+          onClickEdit: () => editUsage(u)
+        },
+        {
+          component: arreteCadreRecapitulatifCell,
+          html:  generateUsagers(u),
+          onClickEdit: () => editUsage(u)
+        },
       ];
     }),
   ];
@@ -75,3 +103,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
     </template>
   </DsfrTable>
 </template>
+
+<style lang="scss">
+</style>

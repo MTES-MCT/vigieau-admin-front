@@ -23,6 +23,8 @@ const loadRefData = ref(false);
 const loading = ref(false);
 const componentKey = ref(0);
 
+const usageSelected = ref();
+
 const currentStep: Ref<number> = ref(1);
 const steps = [
   'Informations générales',
@@ -190,10 +192,16 @@ showButtons();
       <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
-      <ArreteCadreFormUsages :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" :key="componentKey" />
+      <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
+                             :fullValidation="fullValidation"
+                             :viewOnly="viewOnly"
+                             :usageSelected="usageSelected"
+                             :key="componentKey" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5">
-      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre" :key="componentKey" />
+      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
+                                    :key="componentKey"
+                                    @usageSelected="usageSelected = $event; previousStep()" />
     </DsfrTabContent>
   </DsfrTabs>
 </template>

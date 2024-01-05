@@ -1,0 +1,96 @@
+<script setup lang="ts">
+import type { Ref } from "vue";
+
+const props = defineProps<{
+  html: string | null;
+  onClickEdit: Function;
+}>();
+
+const modalOpened: Ref<boolean> = ref(false);
+const modalActions: Ref<any[]> = ref([
+  {
+    label: 'Modifier',
+    onclick: () => {
+      modalOpened.value = false;
+      props.onClickEdit();
+    },
+  },
+  {
+    label: 'Fermer',
+    secondary: true,
+    onclick: () => {
+      modalOpened.value = false;
+    },
+  },
+]);
+
+const lengthTruncated = 200;
+const htmlTruncated = computed(() => {
+  return props.html?.length > lengthTruncated ? props.html.substring(0, lengthTruncated) + '...' : props.html;
+});
+
+const buttons = [
+  {
+    icon: 'ri-edit-2-fill',
+    iconOnly: true,
+    label: 'Editer',
+    onClick: props.onClickEdit,
+  },
+];
+
+if(props.html?.length > lengthTruncated) {
+  buttons.unshift({
+    icon: 'ri-eye-fill',
+    iconOnly: true,
+    label: 'Consulter',
+    onClick: () => {
+      modalOpened.value = true
+    },
+  })
+}
+</script>
+
+<template>
+  <div class="arrete-cadre-recapitulatif-cell">
+    <div v-html="htmlTruncated">
+    </div>
+    <div class="arrete-cadre-recapitulatif-cell__hover">
+      <DsfrButtonGroup 
+        inlineLayoutWhen="always" 
+        :buttons="buttons"/>   
+    </div>
+  </div>
+  <DsfrModal :opened="modalOpened"
+             :actions="modalActions"
+             @close="modalOpened = false">
+    <div v-html="html" />
+  </DsfrModal>
+</template>
+
+<style scoped lang="scss">
+.arrete-cadre-recapitulatif-cell {
+  position: relative;
+
+  &:hover {
+    & > *:first-child {
+      opacity: 0.5;
+    }
+    
+    .arrete-cadre-recapitulatif-cell__hover {
+      visibility: visible;
+    }
+  }
+  
+  &__hover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    visibility: hidden;
+  }
+}
+</style>

@@ -8,8 +8,6 @@ const props = defineProps<{
 }>();
 const utils = useUtils();
 
-console.log(props.usageArreteCadre);
-
 props.usageArreteCadre.concerneParticulier = props.usageArreteCadre.concerneParticulier || false;
 props.usageArreteCadre.concerneEntreprise = props.usageArreteCadre.concerneEntreprise || false;
 props.usageArreteCadre.concerneCollectivite = props.usageArreteCadre.concerneCollectivite || false;

@@ -12,6 +12,7 @@ const props = defineProps<{
   arreteCadre: ArreteCadre;
   fullValidation: boolean;
   viewOnly: boolean;
+  usageSelected?: Usage;
 }>();
 const modalUsageOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
@@ -141,6 +142,15 @@ watch(
   useUtils().debounce(async () => {
     filterUsages();
   }, 300),
+);
+
+watch(
+  () => props.usageSelected,
+  () => {
+    if(props.usageSelected) {
+      selectUsage(props.usageSelected, true);      
+    }
+  },
 );
 </script>
 
