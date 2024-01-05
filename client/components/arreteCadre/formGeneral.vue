@@ -22,7 +22,7 @@ const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
 
 if (refDataStore.departements) {
-  if (!props.arreteCadre.departements && authStore.user.role === 'departement') {
+  if (!props.arreteCadre.id && authStore.user.role === 'departement') {
     props.arreteCadre.departements = refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement);
   }
 }

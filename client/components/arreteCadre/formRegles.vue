@@ -72,6 +72,10 @@ const affichageRessourceOptions = [
     text: 'Eau potable (AEP)',
     value: 'aep',
   },
+  {
+    text: 'Le niveau de gravité maximal',
+    value: 'max',
+  },
 ];
 
 const v$ = useVuelidate(rules, props.arreteCadre);

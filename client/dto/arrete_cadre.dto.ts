@@ -12,14 +12,13 @@ export class ArreteCadre {
   statut: 'a_valider' | 'publie' | 'abroge';
   arretesRestriction: ArreteRestriction[];
 
-  communeNiveauGraviteMax: 'all' | 'eap' | 'none' | null;
+  communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
   ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
-  ressourcePrioritaire: 'esu' | 'eso' | 'max' | 'eap' | null;
-  affichageRessourceParticulier: 'esu' | 'eso' | 'eap' | null;
-  affichageRessourceCollectivite: 'esu' | 'eso' | 'eap' | null;
-  affichageRessourceEntreprise: 'esu' | 'eso' | 'eap' | null;
-  affichageRessourceExploitation: 'esu' | 'eso' | 'eap' | null;
+  affichageRessourceParticulier: 'esu' | 'eso' | 'aep' | 'max' | null;
+  affichageRessourceCollectivite: 'esu' | 'eso' | 'aep' | 'max' | null;
+  affichageRessourceEntreprise: 'esu' | 'eso' | 'aep' | 'max' | null;
+  affichageRessourceExploitation: 'esu' | 'eso' | 'aep' | 'max' | null;
 
   constructor() {
     this.id = null;
@@ -34,7 +33,6 @@ export class ArreteCadre {
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;
-    this.ressourcePrioritaire = null;
     this.affichageRessourceParticulier = null;
     this.affichageRessourceCollectivite = null;
     this.affichageRessourceEntreprise = null;
