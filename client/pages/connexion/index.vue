@@ -37,7 +37,8 @@ const loginDev = () => {
         <h1>Connexion à {{ runTimeConfig.appName }}</h1>
         <div class="fr-mb-6v">
           <h2>Se connecter avec AgentConnect</h2>
-          <div class="fr-connect-group">
+          <div class="fr-connect-group"
+               data-cy="LoginAgentConnectBtn">
             <button class="fr-connect" @click="loginAgentConnect()">
               <span class="fr-connect__login">S’identifier avec</span>
               <span class="fr-connect__brand">AgentConnect</span>
@@ -53,6 +54,7 @@ const loginDev = () => {
             <DsfrSelect v-model="userSelected"
                         :options="userList" />
             <DsfrButton label="Se connecter"
+                        data-cy="LoginDevBtn"
                         @click="loginDev()"
                         :disabled="!userSelected" />
           </div>
