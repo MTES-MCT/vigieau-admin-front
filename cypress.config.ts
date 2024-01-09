@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+require('dotenv').config();
 
 export default defineConfig({
   e2e: {
@@ -13,6 +14,7 @@ export default defineConfig({
     },
   },
   env: {
+    apiUrl: process.env.API_URL,
     codeCoverage: {
       url: "http://localhost:3001/api/app/__coverage__"
     }

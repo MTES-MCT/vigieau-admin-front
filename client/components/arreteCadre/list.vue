@@ -55,7 +55,8 @@ watch(statusFilter, () => {
 </script>
 
 <template>
-  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w">
+  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w"
+       data-cy="ArreteCadreListHeader">
     <h1 class="fr-my-0">
       Les arrêtés cadre
 
@@ -70,11 +71,12 @@ watch(statusFilter, () => {
                           :options="statusOptions" />
     </div>
     <div class="fr-col-12 fr-col-md-4 fr-mb-2w">
-      <DsfrSearchBar :labelVisible="false" v-model="query" />
+      <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar"/>
     </div>
   </div>
   <template v-if="arretesCadrePaginated">
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w"
+         data-cy="ArreteCadreList">
       <div v-for="arreteCadre in arretesCadrePaginated.data" class="fr-col-md-4 fr-col-12">
         <ArreteCadreCard :arrete-cadre="arreteCadre" :key="arreteCadre.id" @delete="paginate()" />
       </div>

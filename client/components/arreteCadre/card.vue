@@ -108,7 +108,7 @@ const numeroToDisplay = computed(() => {
 </script>
 
 <template>
-  <div class="fr-card">
+  <div class="fr-card" data-cy="ArreteCadreListCard">
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
