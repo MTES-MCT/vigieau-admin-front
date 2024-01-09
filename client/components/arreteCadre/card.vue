@@ -152,12 +152,10 @@ const numeroToDisplay = computed(() => {
           </div>
         </div>
       </div>
-      <div class="fr-card__footer" v-if="arreteCadre.arretesRestriction">
-        <ul class="fr-links-group">
-          <li v-for="arreteRestriction of arreteCadre.arretesRestriction">
-            <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#">{{ arreteRestriction.numero }}</a>
-          </li>
-        </ul>
+      <div class="fr-card__footer" v-if="arreteCadre.arretesRestriction && arreteCadre.arretesRestriction.length > 0">
+        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero" class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+          {{ arreteCadre.arretesRestriction.length }} arrêté(s) de restriction en vigueur
+        </NuxtLink>
       </div>
     </div>
   </div>

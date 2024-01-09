@@ -3,9 +3,11 @@ import type { Ref } from 'vue';
 import type { PaginatedResult } from '~/dto/paginated_result.dto';
 import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
+const route = useRoute();
+console.log(route.query);
 const arretesRestrictionPaginated: Ref<PaginatedResult<ArreteRestriction> | null> = ref(null);
 const currentPage: Ref<number> = ref(0);
-const query: Ref<string> = ref('');
+const query: Ref<string> = ref(route.query.query ? route.query.query : '');
 const loading = ref(false);
 const statusFilter = ref('publie');
 const statusOptions = ref([
