@@ -94,9 +94,11 @@ const v$ = useVuelidate(rules, props.usageArreteCadre);
                title="Rédaction des mesures"
                class="fr-mb-2w">
       Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;:
+      <b>
       <br/>-&nbsp;éviter les acronymes
       <br/>-&nbsp;simplifier au maximum les tournures de phrases
       <br/>-&nbsp;ajouter “voir exceptions listées dans l’arrêté préfectoral” lorsque le texte est trop long
+      </b>
     </DsfrAlert>
     <template v-for="(niveau, index) of niveauxRestriction">
       <div v-if="index !== 0" class="fr-mb-2w divider" />

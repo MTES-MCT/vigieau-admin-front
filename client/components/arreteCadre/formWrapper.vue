@@ -169,7 +169,7 @@ showButtons();
 </script>
 
 <template>
-  <h1>{{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre</h1>
+  <h1>{{ props.viewOnly ? 'Consultation' : isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre</h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <DsfrAlert
     class="fr-mb-2w"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { helpers, required } from '@vuelidate/validators/dist';
+import { helpers } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { useRefDataStore } from '~/stores/refData';
@@ -39,6 +39,7 @@ const zonesOptionsCheckBox = (dep: Departement, type: string) => {
         id: z.id,
         name: z.id,
         label: z.nom,
+        isAcAssociated: z.arretesCadre.filter(ac => ac.id !== props.arreteCadre.id).length > 0
       };
     });
 };
@@ -60,6 +61,12 @@ const computeDepSelected = () => {
   });
 };
 
+const onChange = ({ name, checked }: { name: number, checked: boolean }) => {
+  zonesSelected.value = checked
+    ? [...zonesSelected.value, name]
+    : zonesSelected.value.filter(val => val !== name)
+}
+
 watch(zonesSelected, () => {
   props.arreteCadre.zonesAlerte = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
   computeDepSelected();
@@ -68,6 +75,7 @@ watch(zonesSelected, () => {
 watch(
   () => props.arreteCadre.departements,
   () => {
+    console.log('poulet', props.arreteCadre.departements);
     departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.map((ad) => ad.id).includes(d.id));
     zonesSelected.value = zonesSelected.value.filter((z) =>
       departementsFiletered.value
@@ -101,11 +109,46 @@ computeDepSelected();
             </div>
             <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
               <p><b>Eaux superficielles</b></p>
-              <DsfrCheckboxSet :small="false" v-model="zonesSelected" :options="zonesOptionsCheckBox(d, 'SUP')" :disabled="viewOnly" />
+              <div class="form-group fr-fieldset fr-mt-2w">
+                <DsfrCheckbox
+                  v-for="option in zonesOptionsCheckBox(d, 'SUP')"
+                  :id="option.id"
+                  :key="option.id || option.name"
+                  :name="option.name"
+                  :disabled="viewOnly"
+                  :model-value="zonesSelected.includes(option.name)"
+                  :small="false"
+                  @update:model-value="onChange({ name: option.name, checked: $event })">
+                  <template #label>
+                    {{ option.label }}
+                    <div class="checkbox-label-info" v-if="option.isAcAssociated">
+                      <VIcon name="ri-information-fill" />
+                      Cette zone est utilisée dans un autre arrêté cadre actif
+                    </div>
+                  </template>
+                </DsfrCheckbox>
+              </div>
             </div>
             <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SOU').length > 0">
               <p><b>Eaux souterraines</b></p>
-              <DsfrCheckboxSet :small="false" v-model="zonesSelected" :options="zonesOptionsCheckBox(d, 'SOU')" :disabled="viewOnly" />
+              <div class="form-group fr-fieldset fr-mt-2w">
+                <DsfrCheckbox
+                  v-for="option in zonesOptionsCheckBox(d, 'SOU')"
+                  :id="option.id"
+                  :key="option.id || option.name"
+                  :name="option.name"
+                  :disabled="viewOnly"
+                  :model-value="zonesSelected.includes(option.name)"
+                  :small="false"
+                  @update:model-value="onChange({ name: option.name, checked: $event })">
+                  <template #label>
+                    {{ option.label }}
+                    <div v-if="option.isAcAssociated">
+                      Poulet
+                    </div>
+                  </template>
+                </DsfrCheckbox>
+              </div>
             </div>
           </div>
         </DsfrInputGroup>
@@ -148,7 +191,7 @@ computeDepSelected();
     .fr-checkbox-group {
       input[type='checkbox'] + label {
         margin-left: 0;
-        padding-right: 2.5rem;
+        padding-right: 3rem;
 
         &::before {
           left: auto;
@@ -162,6 +205,11 @@ computeDepSelected();
           width: 100%;
           border-top: 1px solid var(--grey-925-125);
           top: -0.5rem;
+        }
+        
+        .checkbox-label-info {
+          display: block;
+          color: var(--info-425-625);
         }
       }
     }

@@ -15,10 +15,6 @@ export class ArreteCadre {
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
   ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
-  affichageRessourceParticulier: 'esu' | 'eso' | 'aep' | 'max' | null;
-  affichageRessourceCollectivite: 'esu' | 'eso' | 'aep' | 'max' | null;
-  affichageRessourceEntreprise: 'esu' | 'eso' | 'aep' | 'max' | null;
-  affichageRessourceExploitation: 'esu' | 'eso' | 'aep' | 'max' | null;
 
   constructor() {
     this.id = null;
@@ -33,16 +29,13 @@ export class ArreteCadre {
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;
-    this.affichageRessourceParticulier = null;
-    this.affichageRessourceCollectivite = null;
-    this.affichageRessourceEntreprise = null;
-    this.affichageRessourceExploitation = null;
     this.arretesRestriction = [];
   }
 }
 
 export enum ArreteCadreStatutFr {
   a_valider = 'Brouillon',
-  publie = 'Publié',
+  a_venir = 'Publication à venir',
+  publie = 'En vigueur',
   abroge = 'Abrogé',
 }

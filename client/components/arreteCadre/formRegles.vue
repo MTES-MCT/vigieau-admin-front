@@ -59,25 +59,6 @@ const ressourceEapCommuniqueOptions = [
   },
 ];
 
-const affichageRessourceOptions = [
-  {
-    text: 'Eaux superficielles (ESU)',
-    value: 'esu',
-  },
-  {
-    text: 'Eaux souterraines (ESO)',
-    value: 'eso',
-  },
-  {
-    text: 'Eau potable (AEP)',
-    value: 'aep',
-  },
-  {
-    text: 'Le niveau de gravité maximal',
-    value: 'max',
-  },
-];
-
 const v$ = useVuelidate(rules, props.arreteCadre);
 </script>
 
@@ -130,58 +111,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           title="Information"
           description="Vous aurez la possibilité de créer une zone géographique spécifique pour l'eau potable lors de la saisie de vos arrêtés de restriction."
         />
-      </div>
-      <div class="fr-col-12 fr-col-lg-6">
-        <h6>Affichage VigiEau</h6>
-        <p>Quelle ressource souhaitez-vous afficher en priorité pour chaque type d'usager ?</p>
-        <div class="fr-mt-2w fr-select-group--inline">
-          <DsfrSelect
-            id="affichageRessourceParticulier"
-            v-model="arreteCadre.affichageRessourceParticulier"
-            :options="affichageRessourceOptions"
-            label="Pour les particuliers&nbsp;:"
-            label-visible
-            type="text"
-            name="affichageRessourceParticulier"
-            :disabled="viewOnly"
-          />
-        </div>
-        <div class="fr-mt-2w fr-select-group--inline">
-          <DsfrSelect
-            id="affichageRessourceCollectivite"
-            v-model="arreteCadre.affichageRessourceCollectivite"
-            :options="affichageRessourceOptions"
-            label="Pour les collectivités&nbsp;:"
-            label-visible
-            type="text"
-            name="affichageRessourceCollectivite"
-            :disabled="viewOnly"
-          />
-        </div>
-        <div class="fr-mt-2w fr-select-group--inline">
-          <DsfrSelect
-            id="affichageRessourceEntreprise"
-            v-model="arreteCadre.affichageRessourceEntreprise"
-            :options="affichageRessourceOptions"
-            label="Pour les entreprises&nbsp;:"
-            label-visible
-            type="text"
-            name="affichageRessourceEntreprise"
-            :disabled="viewOnly"
-          />
-        </div>
-        <div class="fr-mt-2w fr-select-group--inline">
-          <DsfrSelect
-            id="affichageRessourceExploitation"
-            v-model="arreteCadre.affichageRessourceExploitation"
-            :options="affichageRessourceOptions"
-            label="Pour les exploitations agricoles&nbsp;:"
-            label-visible
-            type="text"
-            name="affichageRessourceExploitation"
-            :disabled="viewOnly"
-          />
-        </div>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
       </div>

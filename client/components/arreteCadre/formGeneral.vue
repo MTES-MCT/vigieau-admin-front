@@ -20,12 +20,20 @@ const departementsFiltered = ref([]);
 const utils = useUtils();
 const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
+const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
 
-if (refDataStore.departements) {
-  if (!props.arreteCadre.id && authStore.user.role === 'departement') {
-    props.arreteCadre.departements = refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement);
+const assignDepartement = (force = false) => {
+  if (!props.arreteCadre.id || force) {
+    props.arreteCadre.departements = authStore.user.role === 'departement' ?
+      refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement) : [];
   }
 }
+
+onMounted(() => {
+  if (refDataStore.departements) {
+    assignDepartement();
+  }  
+})
 
 const rules = computed(() => {
   return {
@@ -65,7 +73,7 @@ const selectDepartement = (departement: Departement) => {
     return;
   }
   query.value = '';
-  props.arreteCadre.departements.push(departement);
+  props.arreteCadre.departements = [...props.arreteCadre.departements, departement];
   computeDepartementsTags();
 };
 
@@ -91,11 +99,32 @@ computeDepartementsTags();
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 
+const aciOptions = [
+  {
+    label: 'Interdépartemental',
+    value: true,
+  },
+  {
+    label: 'Départemental',
+    value: false,
+  },
+];
+
 watch(
   query,
   useUtils().debounce(async () => {
     filterDepartements();
   }, 300),
+);
+
+watch(
+  isAci,
+  () => {
+    console.log(isAci.value);
+    if(!isAci.value) {
+      assignDepartement(true);
+    }
+  },
 );
 </script>
 
@@ -104,6 +133,23 @@ watch(
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Généralité</h6>
+        <DsfrRadioButtonSet
+          legend="Cet arrêté est :"
+          :options="aciOptions"
+          v-model="isAci"
+          name="isAci"
+          :small="false"
+          :disabled="viewOnly"
+        />
+        <DsfrAlert
+          v-if="!isAci && !arreteCadre.departements[0]"
+          type="warning"
+          description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
+          small="small"
+          class="fr-mb-2w"
+        />
+        <DsfrHighlight v-if="!isAci && arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
+        
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
             id="numero"
@@ -117,7 +163,7 @@ watch(
           />
         </DsfrInputGroup>
 
-        <div class="fr-mt-2w">
+        <div class="fr-mt-2w" v-if="isAci">
           <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
             <MixinsAutoComplete
               label="Ajouter un/des départements"
