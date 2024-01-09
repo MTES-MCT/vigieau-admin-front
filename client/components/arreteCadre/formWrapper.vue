@@ -28,7 +28,7 @@ const usageSelected = ref();
 const currentStep: Ref<number> = ref(1);
 const steps = [
   'Informations générales',
-  "Règles de gestion des niveaux d'alerte",
+  // "Règles de gestion des niveaux d'alerte",
   "Liste des zones d'alertes",
   'Les usages',
   'Récapitulatif',
@@ -124,9 +124,8 @@ const showButtons = () => {
         buttonsFiltered.value.splice(0, 1);
       }
       break;
-    case 5:
+    case 4:
       buttonsFiltered.value.splice(3, 1);
-      buttonsFiltered.value.splice(2, 1);
       if (props.viewOnly) {
         buttonsFiltered.value.splice(1, 1);
       }
@@ -185,20 +184,20 @@ showButtons();
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
     </DsfrTabContent>
+<!--    <DsfrTabContent :selected="currentStep === 2">-->
+<!--      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />-->
+<!--    </DsfrTabContent>-->
     <DsfrTabContent :selected="currentStep === 2">
-      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
-    </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3">
       <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4">
+    <DsfrTabContent :selected="currentStep === 3">
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
                              :fullValidation="fullValidation"
                              :usageSelected="usageSelected"
                              :viewOnly="viewOnly"
                              :key="componentKey" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 5">
+    <DsfrTabContent :selected="currentStep === 4">
       <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
                                     :viewOnly="viewOnly"
                                     :key="componentKey"

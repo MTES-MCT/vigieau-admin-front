@@ -9,7 +9,7 @@ export class ArreteCadre {
   departements: any[];
   zonesAlerte: any[];
   usagesArreteCadre: any[];
-  statut: 'a_valider' | 'publie' | 'abroge';
+  statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
   arretesRestriction: ArreteRestriction[];
 
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;

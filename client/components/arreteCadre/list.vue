@@ -65,13 +65,15 @@ watch(statusFilter, () => {
     <NuxtLink to="/arrete-cadre/nouveau/edition">
       <DsfrButton label="Créer un nouvel arrêté" />
     </NuxtLink>
-    <div class="fr-col-12 fr-col-md-8">
-      <DsfrSegmentedSet v-model="statusFilter"
+    <div class="fr-col-12 fr-grid-row fr-mt-2w">
+      <div class="fr-col-12 fr-col-md-8">
+        <DsfrSegmentedSet v-model="statusFilter"
                           :inline="true"
                           :options="statusOptions" />
-    </div>
-    <div class="fr-col-12 fr-col-md-4 fr-mb-2w">
-      <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar"/>
+      </div>
+      <div class="fr-col-12 fr-col-md-4 fr-mb-2w">
+        <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar"/>
+      </div>      
     </div>
   </div>
   <template v-if="arretesCadrePaginated">

@@ -51,6 +51,9 @@ switch (props.arreteCadre.statut) {
   case 'a_valider':
     frBadgeClass.value = 'fr-badge--info';
     break;
+  case 'a_venir':
+    frBadgeClass.value = 'fr-badge--success';
+    break;
   case 'publie':
     frBadgeClass.value = 'fr-badge--success';
     break;
@@ -58,6 +61,10 @@ switch (props.arreteCadre.statut) {
     frBadgeClass.value = '';
     break;
 }
+
+const arEnVigueur = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_venir', 'publie'].includes(ar.statut));
+});
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
@@ -152,9 +159,9 @@ const numeroToDisplay = computed(() => {
           </div>
         </div>
       </div>
-      <div class="fr-card__footer" v-if="arreteCadre.arretesRestriction && arreteCadre.arretesRestriction.length > 0">
+      <div class="fr-card__footer" v-if="arEnVigueur && arEnVigueur.length > 0">
         <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero" class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
-          {{ arreteCadre.arretesRestriction.length }} arrêté(s) de restriction en vigueur
+          {{ arEnVigueur.length }} arrêté(s) de restriction en vigueur
         </NuxtLink>
       </div>
     </div>
