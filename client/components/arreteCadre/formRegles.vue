@@ -6,7 +6,6 @@ import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 const props = defineProps<{
   arreteCadre: ArreteCadre;
   fullValidation: boolean;
-  viewOnly: boolean;
 }>();
 
 const rules = computed(() => {
@@ -73,7 +72,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.communeNiveauGraviteMax"
           name="communeNiveauGraviteMax"
           :small="false"
-          :disabled="viewOnly"
         />
         <div class="divider" />
       </div>
@@ -92,7 +90,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.niveauGraviteSpecifiqueEap"
           name="niveauGraviteSpecifiqueEap"
           :small="false"
-          :disabled="viewOnly"
         />
         <DsfrRadioButtonSet
           v-if="arreteCadre.niveauGraviteSpecifiqueEap == false"
@@ -101,7 +98,6 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           v-model="arreteCadre.ressourceEapCommunique"
           name="ressourceEapCommunique"
           :small="false"
-          :disabled="viewOnly"
         />
         <div class="divider" />
       </div>

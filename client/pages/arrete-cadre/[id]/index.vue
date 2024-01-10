@@ -9,5 +9,5 @@ useHead({
 </script>
 
 <template>
-  <ArreteCadreFormWrapper :view-only="true" />
+  <ArreteCadreConsultation />
 </template>

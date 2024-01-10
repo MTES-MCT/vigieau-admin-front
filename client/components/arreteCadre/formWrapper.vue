@@ -3,13 +3,9 @@ import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
 import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
-import type { Departement } from '~/dto/departement.dto';
-import type { Usage } from '~/dto/usage.dto';
-import type { Thematique } from '~/dto/thematique.dto';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 
 const props = defineProps<{
-  viewOnly?: boolean;
   duplicate?: boolean;
 }>();
 
@@ -18,8 +14,8 @@ const fullValidation: Ref<boolean> = ref(false);
 
 const route = useRoute();
 const api = useApi();
+const refDataStore = useRefDataStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
-const loadRefData = ref(false);
 const loading = ref(false);
 const componentKey = ref(0);
 
@@ -37,19 +33,6 @@ const steps = [
 const titleAlerte: Ref<string> = ref(`Impossible d'enregistrer l'arrêté cadre`);
 const descriptionAlerte: Ref<string> = ref('');
 const isAlerteClosed: Ref<boolean> = ref(true);
-
-// Départements
-const [fecthDep, fetchUsage, fetchThematique] = await Promise.all([api.departement.list(), api.usage.list(), api.thematique.list()]);
-if (fecthDep.data.value) {
-  useRefDataStore().setDepartements(<Departement[]>fecthDep.data.value);
-}
-if (fetchUsage.data.value) {
-  useRefDataStore().setUsages(<Usage[]>fetchUsage.data.value);
-}
-if (fetchThematique.data.value) {
-  useRefDataStore().setThematiques(<Thematique[]>fetchThematique.data.value);
-}
-loadRefData.value = true;
 
 const v$ = useVuelidate();
 
@@ -148,7 +131,7 @@ const publierFormRef = ref(null);
 </script>
 
 <template>
-  <h1>{{ props.viewOnly ? 'Consultation' : isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre</h1>
+  <h1>{{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre</h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <DsfrAlert
     class="fr-mb-2w"
@@ -166,14 +149,14 @@ const publierFormRef = ref(null);
                   icon="ri-arrow-left-line"
                   @click="previousStep()"/>      
     </li>
-    <li v-if="!viewOnly">
+    <li>
       <DsfrButton label="Enregistrer en brouillon"
                   :secondary="true"
                   :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
                   :disabled="loading"
                   @click="saveArrete()"/>      
     </li>
-    <li v-if="!viewOnly && currentStep === 4">
+    <li v-if="currentStep === 4">
       <DsfrButton label="Publier"
                   :disabled="loading"
                   :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
@@ -187,7 +170,7 @@ const publierFormRef = ref(null);
                   @click="nextStep()"/>
     </li>
   </ul>
-  <DsfrTabs class="tabs-light" v-if="loadRefData">
+  <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
     </DsfrTabContent>
@@ -201,12 +184,10 @@ const publierFormRef = ref(null);
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
                              :fullValidation="fullValidation"
                              :usageSelected="usageSelected"
-                             :viewOnly="viewOnly"
                              :key="componentKey" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
       <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
-                                    :viewOnly="viewOnly"
                                     :key="componentKey"
                                     @usageSelected="usageSelected = $event; previousStep()" />
     </DsfrTabContent>

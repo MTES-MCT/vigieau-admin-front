@@ -11,7 +11,6 @@ import { requiredIf } from '@vuelidate/validators';
 const props = defineProps<{
   arreteCadre: ArreteCadre;
   fullValidation: boolean;
-  viewOnly: boolean;
 }>();
 
 const query: Ref<string> = ref('');
@@ -30,7 +29,7 @@ const assignDepartement = (force = false) => {
 }
 
 onMounted(() => {
-  if (refDataStore.departements && !props.viewOnly) {
+  if (refDataStore.departements) {
     assignDepartement();
   }  
 })
@@ -72,10 +71,10 @@ const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements.map((d) => {
     return {
       label: d.nom,
-      class: props.viewOnly ? '' : 'fr-tag--dismiss',
+      class: 'fr-tag--dismiss',
       tagName: 'button',
       onclick: () => {
-        if (!props.viewOnly) deleteDepartement(d.id);
+        deleteDepartement(d.id);
       },
     };
   });
@@ -124,10 +123,9 @@ watch(
           v-model="isAci"
           name="isAci"
           :small="false"
-          :disabled="viewOnly"
         />
         <DsfrAlert
-          v-if="!isAci && !viewOnly && !arreteCadre.departements[0]"
+          v-if="!isAci && !arreteCadre.departements[0]"
           type="warning"
           description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
           small="small"
@@ -144,7 +142,6 @@ watch(
             type="text"
             name="numero"
             :required="true"
-            :disabled="viewOnly"
           />
         </DsfrInputGroup>
 
@@ -159,7 +156,6 @@ watch(
               v-model="query"
               :options="departementsFiltered"
               :required="true"
-              :disabled="viewOnly"
               @update:modelValue="selectDepartement($event)"
               @search="selectDepartement($event)"
             />

@@ -78,6 +78,12 @@ switch (props.arreteCadre.statut) {
 const arEnVigueur = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_venir', 'publie'].includes(ar.statut));
 });
+const arBrouillon = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_valider'].includes(ar.statut));
+});
+const arAbroges = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter((ar) => ['abroge'].includes(ar.statut));
+});
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
@@ -233,7 +239,7 @@ const repealArrete = async (ac: ArreteCadre) => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="'/arrete-cadre/' + arreteCadre.id" v-html="numeroToDisplay"></NuxtLink>
+          <NuxtLink :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' ? '/edition' : ''}`" v-html="numeroToDisplay"></NuxtLink>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:
@@ -275,9 +281,21 @@ const repealArrete = async (ac: ArreteCadre) => {
           </div>
         </div>
       </div>
-      <div class="fr-card__footer" v-if="arEnVigueur && arEnVigueur.length > 0">
-        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero" class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+      <div class="fr-card__footer fr-grid-row" v-if="arreteCadre.arretesRestriction.length > 0">
+        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
+                  v-if="arEnVigueur.length > 0"
+                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
           {{ arEnVigueur.length }} arrêté(s) de restriction en vigueur
+        </NuxtLink>
+        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
+                  v-if="arBrouillon.length > 0"
+                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+          {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)
+        </NuxtLink>
+        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
+                  v-if="arAbroges.length > 0"
+                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+          {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)
         </NuxtLink>
       </div>
     </div>

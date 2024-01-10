@@ -11,7 +11,6 @@ import { requiredIf } from '@vuelidate/validators';
 const props = defineProps<{
   arreteCadre: ArreteCadre;
   fullValidation: boolean;
-  viewOnly: boolean;
 }>();
 
 const refDataStore = useRefDataStore();
@@ -101,7 +100,6 @@ computeDepSelected();
                 <DsfrCheckbox
                   :onUpdate:modelValue="() => selectAll(d)"
                   :checked="d.nbZonesSelected === d.zonesAlerte.length"
-                  :disabled="viewOnly"
                 />
               </div>
             </div>
@@ -113,7 +111,6 @@ computeDepSelected();
                   :id="option.id"
                   :key="option.id || option.name"
                   :name="option.name"
-                  :disabled="viewOnly"
                   :model-value="zonesSelected.includes(option.name)"
                   :small="false"
                   @update:model-value="onChange({ name: option.name, checked: $event })"
@@ -136,7 +133,6 @@ computeDepSelected();
                   :id="option.id"
                   :key="option.id || option.name"
                   :name="option.name"
-                  :disabled="viewOnly"
                   :model-value="zonesSelected.includes(option.name)"
                   :small="false"
                   @update:model-value="onChange({ name: option.name, checked: $event })"
