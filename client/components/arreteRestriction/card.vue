@@ -2,7 +2,7 @@
 import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
-import { type ArreteRestriction, ArreteRestrictionStatutFr } from "~/dto/arrete_restriction.dto";
+import { type ArreteRestriction, ArreteRestrictionStatutFr } from '~/dto/arrete_restriction.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -116,12 +116,15 @@ const numeroToDisplay = computed(() => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="'/arrete-restriction/' + arreteRestriction.id" v-html="numeroToDisplay"></NuxtLink>
+          <NuxtLink
+            :to="`/arrete-restriction/${arreteRestriction.id}${arreteRestriction.statut === 'a_valider' ? '/edition' : ''}`"
+            v-html="numeroToDisplay"
+          ></NuxtLink>
         </h3>
-<!--        <p class="fr-card__desc">-->
-<!--          Dep&nbsp;:-->
-<!--          <template v-for="dep in arreteRestriction.departements"> {{ dep.nom }}&nbsp;;</template>-->
-<!--        </p>-->
+        <!--        <p class="fr-card__desc">-->
+        <!--          Dep&nbsp;:-->
+        <!--          <template v-for="dep in arreteRestriction.departements"> {{ dep.nom }}&nbsp;;</template>-->
+        <!--        </p>-->
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
@@ -129,40 +132,45 @@ const numeroToDisplay = computed(() => {
             </li>
           </ul>
           <p class="fr-card__detail">
-            <VIcon name="ri-calendar-fill" />
-            &nbsp;
-            {{ arreteRestriction.dateDebut }}
-            <span v-if="arreteRestriction.dateFin"> &nbsp;au {{ arreteRestriction.dateFin }} </span>
+            <div class="fr-grid-row">
+              <VIcon name="ri-calendar-fill" />
+              &nbsp;
+              {{ arreteRestriction.dateDebut }}
+              <span v-if="arreteRestriction.dateFin"> &nbsp;au {{ arreteRestriction.dateFin }} </span>
+              <div class="fr-col-12" v-if="arreteRestriction.dateSignature">
+                signé le {{ arreteRestriction.dateSignature }}
+              </div>              
+            </div>
           </p>
-<!--          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions">-->
-<!--            <DsfrButton label="Actions" icon-only secondary icon="ri-more-2-fill" @click="actionsOpened = !actionsOpened" />-->
-<!--            <div v-if="actionsOpened" class="fr-card__actions__menu">-->
-<!--              <div class="fr-menu">-->
-<!--                <ul class="fr-menu__list">-->
-<!--                  <li v-for="action of arreteRestrictionActions">-->
-<!--                    <a-->
-<!--                      class="fr-nav__link"-->
-<!--                      @click="-->
-<!--                        action.onclick();-->
-<!--                        actionsOpened = false;-->
-<!--                      "-->
-<!--                    >-->
-<!--                      {{ action.text }}-->
-<!--                    </a>-->
-<!--                  </li>-->
-<!--                </ul>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
+          <!--          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions">-->
+          <!--            <DsfrButton label="Actions" icon-only secondary icon="ri-more-2-fill" @click="actionsOpened = !actionsOpened" />-->
+          <!--            <div v-if="actionsOpened" class="fr-card__actions__menu">-->
+          <!--              <div class="fr-menu">-->
+          <!--                <ul class="fr-menu__list">-->
+          <!--                  <li v-for="action of arreteRestrictionActions">-->
+          <!--                    <a-->
+          <!--                      class="fr-nav__link"-->
+          <!--                      @click="-->
+          <!--                        action.onclick();-->
+          <!--                        actionsOpened = false;-->
+          <!--                      "-->
+          <!--                    >-->
+          <!--                      {{ action.text }}-->
+          <!--                    </a>-->
+          <!--                  </li>-->
+          <!--                </ul>-->
+          <!--              </div>-->
+          <!--            </div>-->
+          <!--          </div>-->
         </div>
       </div>
-<!--      <div class="fr-card__footer">-->
-<!--        <ul class="fr-links-group">-->
-<!--          <li>-->
-<!--            <a class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right" href="#"> Arrêté de restriction 1 </a>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--      </div>-->
+      <!--      <div class="fr-card__footer">-->
+      <!--        <ul class="fr-links-group">-->
+      <!--          <li>-->
+      <!--            <a class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right" href="#"> Arrêté de restriction 1 </a>-->
+      <!--          </li>-->
+      <!--        </ul>-->
+      <!--      </div>-->
     </div>
   </div>
 </template>
