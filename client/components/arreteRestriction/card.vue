@@ -52,6 +52,9 @@ switch (props.arreteRestriction.statut) {
   case 'a_valider':
     frBadgeClass.value = 'fr-badge--info';
     break;
+  case 'a_venir':
+    frBadgeClass.value = 'fr-badge--new';
+    break;
   case 'publie':
     frBadgeClass.value = 'fr-badge--success';
     break;

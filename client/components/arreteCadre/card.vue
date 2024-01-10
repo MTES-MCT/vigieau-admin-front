@@ -15,24 +15,27 @@ const arreteCadreStatutFr = ArreteCadreStatutFr;
 const frBadgeClass: Ref<string> = ref('');
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
-  {
-    text: 'Créer un arrêté de restriction associé',
-    onclick: () => {
-      console.log('click');
-    },
-  },
+  // {
+  //   text: 'Créer un arrêté de restriction associé',
+  //   disabled: true,
+  //   onclick: () => {
+  //     console.log('click');
+  //   },
+  // },
   {
     text: 'Modifier',
+    hide: props.arreteCadre.statut === 'abroge',
     onclick: () => {
-      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/edition`);
+      askEditArreteCadre(props.arreteCadre);
     },
   },
-  {
-    text: 'Exporter',
-    onclick: () => {
-      console.log('click');
-    },
-  },
+  // {
+  //   text: 'Exporter',
+  //   disabled: true,
+  //   onclick: () => {
+  //     console.log('click');
+  //   },
+  // },
   {
     text: 'Dupliquer',
     onclick: () => {
@@ -41,6 +44,8 @@ const arreteCadreActions: Ref<any> = ref([
   },
   {
     text: 'Supprimer',
+    hide: props.arreteCadre.statut !== 'a_valider',
+    disabled: true,
     onclick: () => {
       deleteArreteCadre(props.arreteCadre.id);
     },
@@ -52,7 +57,7 @@ switch (props.arreteCadre.statut) {
     frBadgeClass.value = 'fr-badge--info';
     break;
   case 'a_venir':
-    frBadgeClass.value = 'fr-badge--success';
+    frBadgeClass.value = 'fr-badge--new';
     break;
   case 'publie':
     frBadgeClass.value = 'fr-badge--success';
@@ -112,6 +117,48 @@ const numeroToDisplay = computed(() => {
   num = num.replace(/_/g, '_<wbr/>');
   return num;
 });
+
+const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
+  if(arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
+    modalTitle.value = `Modification d’un arrêté cadre avec au moins un arrêté de restriction associé`;
+    modalDescription.value = `Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
+    modalOpened.value = true;
+  } else if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length < 1) {
+    editArreteCadre(arreteCadre.id);
+  } else if(arreteCadre.arretesRestriction.length < 1) {
+    modalTitle.value = `Modification d’un arrêté cadre en vigueur`;
+    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.`;
+    modalOpened.value = true;
+  } else {
+    modalTitle.value = `Modification d’un arrêté cadre en vigueur avec au moins un arrêté de restriction associé`;
+    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.<br/><br/>
+Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
+    modalOpened.value = true;
+  }
+}
+
+const editArreteCadre = (id: string) => {
+  navigateTo(`/arrete-cadre/${id}/edition`);  
+}
+
+const modalOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref('');
+const modalDescription: Ref<string> = ref('');
+const modalActions: Ref<any[]> = ref([
+  {
+    label: 'Confirmer',
+    onclick: () => {
+      editArreteCadre(props.arreteCadre.id);
+    }
+  },
+  {
+    label: 'Annuler',
+    secondary: true,
+    onclick: () => {
+      modalOpened.value = false;
+    },
+  },
+]);
 </script>
 
 <template>
@@ -142,17 +189,19 @@ const numeroToDisplay = computed(() => {
             <div v-if="actionsOpened" class="fr-card__actions__menu">
               <div class="fr-menu">
                 <ul class="fr-menu__list">
-                  <li v-for="action of arreteCadreActions">
-                    <a
-                      class="fr-nav__link"
-                      @click="
+                  <template v-for="action of arreteCadreActions">
+                    <li v-if="!action.hide">
+                      <a
+                        class="fr-nav__link"
+                        @click="
                         action.onclick();
                         actionsOpened = false;
                       "
-                    >
-                      {{ action.text }}
-                    </a>
-                  </li>
+                      >
+                        {{ action.text }}
+                      </a>
+                    </li>                    
+                  </template>
                 </ul>
               </div>
             </div>
@@ -166,6 +215,13 @@ const numeroToDisplay = computed(() => {
       </div>
     </div>
   </div>
+  <DsfrModal :opened="modalOpened"
+             icon="ri-arrow-right-line"
+             :title="modalTitle"
+             :actions="modalActions"
+             @close="modalOpened = false">
+    <div v-html="modalDescription"></div>
+  </DsfrModal>
 </template>
 
 <style lang="scss" scoped>

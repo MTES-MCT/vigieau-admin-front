@@ -30,7 +30,7 @@ const assignDepartement = (force = false) => {
 }
 
 onMounted(() => {
-  if (refDataStore.departements) {
+  if (refDataStore.departements && !props.viewOnly) {
     assignDepartement();
   }  
 })
@@ -43,20 +43,6 @@ const rules = computed(() => {
     departements: {
       requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un département", requiredIf(props.fullValidation)),
     },
-    url: {
-      requiredIf: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(props.fullValidation)),
-    },
-    // dateDebut: {
-    //   required: helpers.withMessage("La date de début de l'arrêté est obligatoire.", requiredIf(props.fullValidation)),
-    // },
-    // dateFin: {
-    //   minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
-    //     if (props.arreteCadre.dateDebut && val) {
-    //       return new Date(val) > new Date(props.arreteCadre.dateDebut);
-    //     }
-    //     return true;
-    //   }),
-    // },
   };
 });
 
@@ -120,7 +106,6 @@ watch(
 watch(
   isAci,
   () => {
-    console.log(isAci.value);
     if(!isAci.value) {
       assignDepartement(true);
     }
@@ -142,7 +127,7 @@ watch(
           :disabled="viewOnly"
         />
         <DsfrAlert
-          v-if="!isAci && !arreteCadre.departements[0]"
+          v-if="!isAci && !viewOnly && !arreteCadre.departements[0]"
           type="warning"
           description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
           small="small"
@@ -180,15 +165,6 @@ watch(
             />
 
             <DsfrTags class="fr-mt-2w" :tags="departementsTags" />
-          </DsfrInputGroup>
-        </div>
-
-        <div class="fr-mt-2w">
-          <DsfrInputGroup :error-message="utils.showInputError(v$, 'url')">
-            <DsfrFileUpload
-              label="Importer le PDF de l'arrêté cadre"
-              :accept="['application/pdf']"
-            />
           </DsfrInputGroup>
         </div>
       </div>

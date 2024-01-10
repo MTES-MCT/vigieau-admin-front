@@ -23,8 +23,6 @@ const thematiquesOptions = refDataStore.thematiques.map((t) => {
   };
 });
 
-console.log(props.usage);
-
 const concernes = [
   {
     attribute: 'concerneParticulier',

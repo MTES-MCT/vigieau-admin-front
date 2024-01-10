@@ -24,7 +24,7 @@ const api = useApi();
 const paginate = async () => {
   const filter = {
     attribute: 'statut',
-    filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider' : 'abroge'}`,
+    filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider,a_venir' : 'abroge'}`,
   };
   loading.value = true;
   const { data, error } = await api.arreteCadre.paginate(currentPage.value + 1, query.value, filter);
