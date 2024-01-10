@@ -127,15 +127,14 @@ const publishArrete = async (ac: ArreteCadre) => {
 };
 
 // PUBLISH MODAL
-const validatePublishForm = () => {
-  publishFormRef.value?.submitForm();
-};
 const modalPublishOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('Date de publication');
 const modalActions: Ref<any[]> = ref([
   {
     label: 'Publier',
-    onclick: validatePublishForm,
+    onclick: () => {
+      publierFormRef.value?.submitForm();
+    },
   },
   {
     label: 'Annuler',
@@ -145,7 +144,7 @@ const modalActions: Ref<any[]> = ref([
     },
   },
 ]);
-const publishFormRef = ref(null);
+const publierFormRef = ref(null);
 </script>
 
 <template>
@@ -217,9 +216,9 @@ const publishFormRef = ref(null);
              :title="modalTitle"
              :actions="modalActions"
              @close="modalPublishOpened = false">
-    <ArreteCadreFormPublish ref="publishFormRef"
+    <ArreteCadreFormPublier ref="publierFormRef"
                             :arrete-cadre="arreteCadre"
                             :loading="loading"
-                            @publish="publishArrete($event)" />
+                            @publier="publishArrete($event)" />
   </DsfrModal>
 </template>

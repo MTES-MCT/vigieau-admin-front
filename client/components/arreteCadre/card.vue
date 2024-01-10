@@ -2,6 +2,7 @@
 import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
+import { useAuthStore } from "~/stores/auth";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -11,6 +12,7 @@ const emit = defineEmits<{
   delete: any;
 }>();
 
+const authStore = useAuthStore();
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const frBadgeClass: Ref<string> = ref('');
 const actionsOpened: Ref<boolean> = ref(false);
@@ -43,11 +45,17 @@ const arreteCadreActions: Ref<any> = ref([
     },
   },
   {
-    text: 'Supprimer',
-    hide: props.arreteCadre.statut !== 'a_valider',
-    disabled: true,
+    text: 'Abroger',
+    hide: ['a_valider', 'abroge'].includes(props.arreteCadre.statut),
     onclick: () => {
-      deleteArreteCadre(props.arreteCadre.id);
+      repealModalOpened.value = true;
+    },
+  },
+  {
+    text: 'Supprimer',
+    hide: !authStore.isMte && props.arreteCadre.arretesRestriction.length > 0,
+    onclick: () => {
+      askDeleteArreteCadre(props.arreteCadre);
     },
   },
 ]);
@@ -104,6 +112,33 @@ onUnmounted(() => {
 });
 
 const api = useApi();
+const askDeleteArreteCadre = async(arreteCadre: ArreteCadre) => {
+  modalActions.value = [
+    {
+      label: 'Confirmer',
+      onclick: () => {
+        deleteArreteCadre(arreteCadre.id);
+      }
+    },
+    {
+      label: 'Annuler',
+      secondary: true,
+      onclick: () => {
+        modalOpened.value = false;
+      },
+    },
+  ];
+  modalTitle.value = `Suppression d’un arrêté cadre`;
+  modalDescription.value = `Vous confirmez que la suppression de cet arrêté cadre est justifiée par une erreur de saisie.`;
+  if(arreteCadre.arretesRestriction.length > 0) {
+    modalDescription.value += `<br/><br/>Les arrêtés de restriction suivant seront supprimés :`;
+    arreteCadre.arretesRestriction.forEach((ar) => {
+      modalDescription.value += `<br/>${ar.numero} - ${arreteCadreStatutFr[ar.statut]}`;
+    });
+  }
+  modalOpened.value = true;
+};
+
 const deleteArreteCadre = async (id: string) => {
   const { data, error } = await api.arreteCadre.delete(id);
   if (!error.value) {
@@ -119,6 +154,21 @@ const numeroToDisplay = computed(() => {
 });
 
 const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
+  modalActions.value = [
+    {
+      label: 'Confirmer',
+      onclick: () => {
+        editArreteCadre(arreteCadre.id);
+      }
+    },
+    {
+      label: 'Annuler',
+      secondary: true,
+      onclick: () => {
+        modalOpened.value = false;
+      },
+    },
+  ];
   if(arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
     modalTitle.value = `Modification d’un arrêté cadre avec au moins un arrêté de restriction associé`;
     modalDescription.value = `Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
@@ -144,21 +194,38 @@ const editArreteCadre = (id: string) => {
 const modalOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('');
 const modalDescription: Ref<string> = ref('');
-const modalActions: Ref<any[]> = ref([
+const modalActions: Ref<any[]> = ref([]);
+
+const abrogerFormRef = ref(null);
+const loading = ref(false);
+const repealModalOpened: Ref<boolean> = ref(false);
+const repealModalActions: Ref<any[]>  = ref([
   {
-    label: 'Confirmer',
+    label: 'Abroger',
     onclick: () => {
-      editArreteCadre(props.arreteCadre.id);
-    }
+      abrogerFormRef.value?.submitForm();
+    },
   },
   {
     label: 'Annuler',
     secondary: true,
     onclick: () => {
-      modalOpened.value = false;
+      repealModalOpened.value = false;
     },
   },
 ]);
+
+const repealArrete = async (ac: ArreteCadre) => {
+  if (loading.value) {
+    return;
+  }
+  loading.value = true;
+  const { data, error } = await api.arreteCadre.repeal(ac.id?.toString(), ac)
+  if(data.value) {
+    repealModalOpened.value = false;
+  }
+  loading.value = false;
+};
 </script>
 
 <template>
@@ -221,6 +288,16 @@ const modalActions: Ref<any[]> = ref([
              :actions="modalActions"
              @close="modalOpened = false">
     <div v-html="modalDescription"></div>
+  </DsfrModal>
+  <DsfrModal :opened="repealModalOpened"
+             icon="ri-arrow-right-line"
+             :title="`Abroger l'arrêté ${arreteCadre.numero}`"
+             :actions="repealModalActions"
+             @close="repealModalOpened = false">
+    <ArreteCadreFormAbroger ref="abrogerFormRef"
+                            :arrete-cadre="arreteCadre"
+                            :loading="loading"
+                            @abroger="repealArrete($event)" />
   </DsfrModal>
 </template>
 

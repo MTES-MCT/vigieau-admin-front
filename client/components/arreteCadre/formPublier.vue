@@ -9,7 +9,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  publish: any;
+  publier: any;
 }>();
 const utils = useUtils()
 const ac = ref({...props.arreteCadre});
@@ -38,7 +38,7 @@ const v$ = useVuelidate(rules, ac);
 const submitForm = async () => {
   await v$.value.$validate();
   if (!v$.value.$error) {
-    emit('publish', ac.value);
+    emit('publier', ac.value);
   }
 };
 

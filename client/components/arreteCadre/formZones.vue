@@ -39,7 +39,7 @@ const zonesOptionsCheckBox = (dep: Departement, type: string) => {
         id: z.id,
         name: z.id,
         label: z.nom,
-        isAcAssociated: z.arretesCadre.filter(ac => ac.id !== props.arreteCadre.id).length > 0
+        isAcAssociated: z.arretesCadre.filter((ac) => ac.id !== props.arreteCadre.id).length > 0,
       };
     });
 };
@@ -61,11 +61,9 @@ const computeDepSelected = () => {
   });
 };
 
-const onChange = ({ name, checked }: { name: number, checked: boolean }) => {
-  zonesSelected.value = checked
-    ? [...zonesSelected.value, name]
-    : zonesSelected.value.filter(val => val !== name)
-}
+const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
+  zonesSelected.value = checked ? [...zonesSelected.value, name] : zonesSelected.value.filter((val) => val !== name);
+};
 
 watch(zonesSelected, () => {
   props.arreteCadre.zonesAlerte = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
@@ -118,7 +116,8 @@ computeDepSelected();
                   :disabled="viewOnly"
                   :model-value="zonesSelected.includes(option.name)"
                   :small="false"
-                  @update:model-value="onChange({ name: option.name, checked: $event })">
+                  @update:model-value="onChange({ name: option.name, checked: $event })"
+                >
                   <template #label>
                     {{ option.label }}
                     <div class="checkbox-label-info" v-if="option.isAcAssociated">
@@ -140,12 +139,11 @@ computeDepSelected();
                   :disabled="viewOnly"
                   :model-value="zonesSelected.includes(option.name)"
                   :small="false"
-                  @update:model-value="onChange({ name: option.name, checked: $event })">
+                  @update:model-value="onChange({ name: option.name, checked: $event })"
+                >
                   <template #label>
                     {{ option.label }}
-                    <div v-if="option.isAcAssociated">
-                      Poulet
-                    </div>
+                    <div v-if="option.isAcAssociated">Poulet</div>
                   </template>
                 </DsfrCheckbox>
               </div>
@@ -199,17 +197,18 @@ computeDepSelected();
         }
 
         &::after {
-          content: "";
+          content: '';
           display: block;
           position: absolute;
           width: 100%;
           border-top: 1px solid var(--grey-925-125);
           top: -0.5rem;
         }
-        
+
         .checkbox-label-info {
           display: block;
           color: var(--info-425-625);
+          width: 100%;
         }
       }
     }
