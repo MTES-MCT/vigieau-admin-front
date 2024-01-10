@@ -139,7 +139,10 @@ computeDepSelected();
                 >
                   <template #label>
                     {{ option.label }}
-                    <div v-if="option.isAcAssociated">Poulet</div>
+                    <div class="checkbox-label-info" v-if="option.isAcAssociated">
+                      <VIcon name="ri-information-fill" />
+                      Cette zone est utilisée dans un autre arrêté cadre actif
+                    </div>
                   </template>
                 </DsfrCheckbox>
               </div>
