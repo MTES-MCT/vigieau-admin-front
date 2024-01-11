@@ -88,10 +88,10 @@ const saveArrete = async () => {
   loading.value = false;
 };
 
-const askPublishArrete = () => {
+const askPublishArrete = async () => {
   fullValidation.value = true;
   titleAlerte.value = `Impossible de publier l'arrêté cadre`;
-  saveArrete();
+  await saveArrete();
   if (!v$.value.$error) {
     modalPublishOpened.value = true;    
   }
