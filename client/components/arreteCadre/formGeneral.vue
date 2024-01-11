@@ -22,7 +22,7 @@ const refDataStore = useRefDataStore();
 const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
 
 const assignDepartement = (force = false) => {
-  if (!props.arreteCadre.id || force) {
+  if ((!props.arreteCadre.id || force) && props.arreteCadre.departements.length < 1) {
     props.arreteCadre.departements = authStore.user.role === 'departement' ?
       refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement) : [];
   }
