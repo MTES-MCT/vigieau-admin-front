@@ -155,7 +155,7 @@ const deleteArreteCadre = async (id: string) => {
 // Permet de faire un retour à la ligne sur les underscores
 const numeroToDisplay = computed(() => {
   let num = props.arreteCadre.numero;
-  num = num.replace(/_/g, '_<wbr/>');
+  num = num?.replace(/_/g, '_<wbr/>');
   return num;
 });
 
