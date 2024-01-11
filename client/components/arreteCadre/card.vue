@@ -14,7 +14,6 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const arreteCadreStatutFr = ArreteCadreStatutFr;
-const frBadgeClass: Ref<string> = ref('');
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
   // {
@@ -59,21 +58,6 @@ const arreteCadreActions: Ref<any> = ref([
     },
   },
 ]);
-
-switch (props.arreteCadre.statut) {
-  case 'a_valider':
-    frBadgeClass.value = 'fr-badge--info';
-    break;
-  case 'a_venir':
-    frBadgeClass.value = 'fr-badge--new';
-    break;
-  case 'publie':
-    frBadgeClass.value = 'fr-badge--success';
-    break;
-  case 'abroge':
-    frBadgeClass.value = '';
-    break;
-}
 
 const arEnVigueur = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_venir', 'publie'].includes(ar.statut));
@@ -137,7 +121,7 @@ const askDeleteArreteCadre = async(arreteCadre: ArreteCadre) => {
   modalTitle.value = `Suppression d’un arrêté cadre`;
   modalDescription.value = `Vous confirmez que la suppression de cet arrêté cadre est justifiée par une erreur de saisie.`;
   if(arreteCadre.arretesRestriction.length > 0) {
-    modalDescription.value += `<br/><br/>Les arrêtés de restriction suivant seront supprimés :`;
+    modalDescription.value += `<br/><br/>Les arrêtés de restriction suivant seront supprimés&nbsp;:`;
     arreteCadre.arretesRestriction.forEach((ar) => {
       modalDescription.value += `<br/>${ar.numero} - ${arreteCadreStatutFr[ar.statut]}`;
     });
@@ -248,7 +232,7 @@ const repealArrete = async (ac: ArreteCadre) => {
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
-              <DsfrBadge :label="arreteCadreStatutFr[arreteCadre.statut]" :class="frBadgeClass" :type="null" :no-icon="true" />
+              <MixinsStatutBadge :statut="arreteCadre.statut" />
             </li>
           </ul>
           <p class="fr-card__detail">

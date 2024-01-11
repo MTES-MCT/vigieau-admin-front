@@ -12,8 +12,6 @@ const emit = defineEmits<{
   delete: any;
 }>();
 
-const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
-const frBadgeClass: Ref<string> = ref('');
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteRestrictionActions: Ref<any> = ref([
   {
@@ -47,21 +45,6 @@ const arreteRestrictionActions: Ref<any> = ref([
     },
   },
 ]);
-
-switch (props.arreteRestriction.statut) {
-  case 'a_valider':
-    frBadgeClass.value = 'fr-badge--info';
-    break;
-  case 'a_venir':
-    frBadgeClass.value = 'fr-badge--new';
-    break;
-  case 'publie':
-    frBadgeClass.value = 'fr-badge--success';
-    break;
-  case 'abroge':
-    frBadgeClass.value = '';
-    break;
-}
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
@@ -128,7 +111,7 @@ const numeroToDisplay = computed(() => {
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
-              <DsfrBadge :label="arreteRestrictionStatutFr[arreteRestriction.statut]" :class="frBadgeClass" :type="null" :no-icon="true" />
+              <MixinsStatutBadge :statut="arreteRestriction.statut" />
             </li>
           </ul>
           <p class="fr-card__detail">
