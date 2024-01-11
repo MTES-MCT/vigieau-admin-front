@@ -68,6 +68,12 @@ const generateRows = () => {
           html:  generateUsagers(u),
           onClickEdit: () => editUsage(u)
         },
+        {
+          component: arreteCadreRecapitulatifCell,
+          viewOnly: props.viewOnly,
+          html:  generateRessources(u),
+          onClickEdit: () => editUsage(u)
+        },
       ];
     }),
   ];
@@ -80,6 +86,14 @@ const generateUsagers = (u: UsageArreteCadre) => {
   u.concerneEntreprise ? toReturn.push('Entreprise') : '';
   u.concerneCollectivite ? toReturn.push('Collectivité') : '';
   u.concerneExploitation ? toReturn.push('Exploitant agricole') : '';
+  return toReturn.join(', ');
+};
+
+const generateRessources = (u: UsageArreteCadre) => {
+  let toReturn = [];
+  u.concerneEso ? toReturn.push('ESO') : '';
+  u.concerneEsu ? toReturn.push('ESU') : '';
+  u.concerneAep ? toReturn.push('AEP') : '';
   return toReturn.join(', ');
 };
 
@@ -106,6 +120,7 @@ const v$ = useVuelidate(rules, props.arreteCadre);
           <DsfrBadge label="Crise" type="error" />
         </th>
         <th>Usagers</th>
+        <th>Ressources</th>
       </tr>
     </template>
   </DsfrTable>

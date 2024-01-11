@@ -6,9 +6,12 @@ export class Usage {
   thematique: Thematique;
   isTemplate: boolean;
   concerneParticulier: boolean;
-  concerneEntreprise: boolean;
   concerneCollectivite: boolean;
   concerneExploitation: boolean;
+  concerneEntreprise: boolean;
+  concerneEso: boolean;
+  concerneEsu: boolean;
+  concerneAep: boolean;
   descriptionVigilance: string;
   descriptionAlerte: string;
   descriptionAlerteRenforcee: string;
@@ -26,5 +29,8 @@ export class Usage {
     this.concerneEntreprise = false;
     this.concerneCollectivite = false;
     this.concerneExploitation = false;
+    this.concerneEso = false;
+    this.concerneEsu = false;
+    this.concerneAep = false;
   }
 }

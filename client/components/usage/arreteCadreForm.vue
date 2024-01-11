@@ -12,6 +12,9 @@ props.usageArreteCadre.concerneParticulier = props.usageArreteCadre.concernePart
 props.usageArreteCadre.concerneEntreprise = props.usageArreteCadre.concerneEntreprise || false;
 props.usageArreteCadre.concerneCollectivite = props.usageArreteCadre.concerneCollectivite || false;
 props.usageArreteCadre.concerneExploitation = props.usageArreteCadre.concerneExploitation || false;
+props.usageArreteCadre.concerneEso = props.usageArreteCadre.concerneEso || false;
+props.usageArreteCadre.concerneEsu = props.usageArreteCadre.concerneEsu || false;
+props.usageArreteCadre.concerneAep = props.usageArreteCadre.concerneAep || false;
 
 const concernes = [
   {
@@ -31,6 +34,22 @@ const concernes = [
     name: 'Exploitant agricole',
   },
 ];
+
+const resssources = [
+  {
+    attribute: 'concerneEso',
+    name: 'ESO',
+  },
+  {
+    attribute: 'concerneEsu',
+    name: 'ESU',
+  },
+  {
+    attribute: 'concerneAep',
+    name: 'AEP',
+  },
+];
+
 const niveauxRestriction = [
   {
     attribute: 'descriptionVigilance',
@@ -60,6 +79,9 @@ const rules = computed(() => {
     concerneEntreprise: { required },
     concerneCollectivite: { required },
     concerneExploitation: { required },
+    concerneEso: { required },
+    concerneEsu: { required },
+    concerneAep: { required },
     descriptionVigilance: {
       maxLength: helpers.withMessage('La description ne doit pas dépasser 1000 caractères.', maxLength(1000)),
     },
@@ -88,6 +110,12 @@ const v$ = useVuelidate(rules, props.usageArreteCadre);
     <DsfrInputGroup v-for="concerne of concernes" :error-message="utils.showInputError(v$, concerne.attribute)">
       <DsfrCheckbox :label="concerne.name" :name="concerne.attribute" v-model="usageArreteCadre[concerne.attribute]" />
     </DsfrInputGroup>
+
+    <div class="fr-my-2w">À quelle(s) ressource(s) cet usage est-il associé ?</div>
+    <DsfrInputGroup v-for="ressource of resssources" :error-message="utils.showInputError(v$, ressource.attribute)">
+      <DsfrCheckbox :label="ressource.name" :name="ressource.attribute" v-model="usageArreteCadre[ressource.attribute]" />
+    </DsfrInputGroup>
+    
     <div class="fr-my-2w divider" />
     <h6>Niveau de restriction</h6>
     <DsfrAlert type="warning"

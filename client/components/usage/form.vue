@@ -42,6 +42,21 @@ const concernes = [
   },
 ];
 
+const resssources = [
+  {
+    attribute: 'concerneEso',
+    name: 'ESO',
+  },
+  {
+    attribute: 'concerneEsu',
+    name: 'ESU',
+  },
+  {
+    attribute: 'concerneAep',
+    name: 'AEP',
+  },
+];
+
 const rules = computed(() => {
   return {
     nom: {
@@ -53,6 +68,9 @@ const rules = computed(() => {
     concerneEntreprise: { required },
     concerneCollectivite: { required },
     concerneExploitation: { required },
+    concerneEso: { required },
+    concerneEsu: { required },
+    concerneAep: { required },
   };
 });
 
@@ -94,8 +112,14 @@ defineExpose({
              title="Vérifier la thématique"
              class="fr-mb-2w"
              description="Pour éviter les incompréhensions des usagers de VigiEau, vérifiez que la thématique choisie est bien cohérente avec l’usage. Par exemple Arrosage peut être associé avec&nbsp;: arrosage des pelouses fleuris, arrosage des jardins potagers."/>
+  
   <div class="fr-my-2w">Usagers</div>
   <DsfrInputGroup v-for="concerne of concernes" :error-message="utils.showInputError(v$, concerne.attribute)">
     <DsfrCheckbox :label="concerne.name" :name="concerne.attribute" v-model="usage[concerne.attribute]" />
+  </DsfrInputGroup>
+
+  <div class="fr-my-2w">À quelle(s) ressource(s) cet usage est-il associé ?</div>
+  <DsfrInputGroup v-for="ressource of resssources" :error-message="utils.showInputError(v$, ressource.attribute)">
+    <DsfrCheckbox :label="ressource.name" :name="ressource.attribute" v-model="usage[ressource.attribute]" />
   </DsfrInputGroup>
 </template>
