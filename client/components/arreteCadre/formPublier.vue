@@ -14,6 +14,7 @@ const emit = defineEmits<{
 }>();
 const utils = useUtils()
 const ac = ref({...props.arreteCadre});
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const rules = computed(() => {
   return {
@@ -30,6 +31,9 @@ const rules = computed(() => {
     },
     file: {
       required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !ac.value.url)),
+      maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
+        return !value || value?.size < MAX_FILE_SIZE
+      }),
     },
   };
 });
@@ -79,6 +83,7 @@ defineExpose({
         :size="null"
         :download="ac.url"
         title="PDF Arrête cadre"
+        hint="Taille maximale autorisée : 10mo"
       />
     </div>
 
