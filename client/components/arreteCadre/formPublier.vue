@@ -2,6 +2,7 @@
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -27,8 +28,8 @@ const rules = computed(() => {
         return true;
       }),
     },
-    url: {
-      // required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", required),
+    file: {
+      required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !ac.value.url)),
     },
   };
 });
@@ -70,10 +71,23 @@ defineExpose({
         </DsfrInputGroup>
       </div>
     </div>
+    
+    <div class="fr-mt-4w" v-if="ac.url">
+      <DsfrFileDownload
+        format="PDF"
+        :href="ac.url"
+        :size="null"
+        :download="ac.url"
+        title="PDF Arrête cadre"
+      />
+    </div>
 
     <div class="fr-mt-4w">
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'url')">
-        <DsfrFileUpload :required="true" label="Importer le PDF de l'arrêté cadre" :accept="['application/pdf']" />
+      <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
+        <DsfrFileUpload :required="!ac.url"
+                        :label="ac.url ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
+                        :accept="['application/pdf']"
+                        @change="ac.file = $event[0]" />
       </DsfrInputGroup>
     </div>
   </form>

@@ -15,6 +15,9 @@ export class ArreteCadre {
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
   ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
+  
+  // To upload file
+  file: any;
 
   constructor() {
     this.id = null;

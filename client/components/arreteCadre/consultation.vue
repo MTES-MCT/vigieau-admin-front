@@ -43,6 +43,15 @@ watch(() => refDataStore.departements,
     <DsfrHighlight v-for="d of arreteCadre.departements" :text="d.nom" />
     <p>Date de mise en vigueur&nbsp;: {{ arreteCadre.dateDebut }}</p>
     <p>Date de fin&nbsp;: {{ arreteCadre.dateFin }}</p>
+    <DsfrFileDownload
+      v-if="arreteCadre.url"
+      format="PDF"
+      :href="arreteCadre.url"
+      :size="null"
+      :download="arreteCadre.url"
+      title="PDF Arrête cadre"
+    />
+    <div v-if="arreteCadre.url" class="fr-mb-2w"></div>
     
     <template v-for="d of departementsFiletered">
       <h2>Zones d'alerte du {{ d.nom }} ({{ d.zonesAlerte.length }})</h2>

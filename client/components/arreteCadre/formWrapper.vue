@@ -107,31 +107,17 @@ const publishArrete = async (ac: ArreteCadre) => {
     modalPublishOpened.value = false;
   }
   loading.value = false;
+  navigateTo('/arrete-cadre');
 };
 
 // PUBLISH MODAL
 const modalPublishOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('Date de publication');
-const modalActions: Ref<any[]> = ref([
-  {
-    label: 'Publier',
-    onclick: () => {
-      publierFormRef.value?.submitForm();
-    },
-  },
-  {
-    label: 'Annuler',
-    secondary: true,
-    onclick: () => {
-      modalPublishOpened.value = false;
-    },
-  },
-]);
 const publierFormRef = ref(null);
 </script>
 
 <template>
-  <h1>{{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre</h1>
+  <h1>{{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre <MixinsStatutBadge :statut="arreteCadre.statut" /></h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <DsfrAlert
     class="fr-mb-2w"
@@ -172,13 +158,13 @@ const publierFormRef = ref(null);
   </ul>
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1">
-      <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
+      <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
     </DsfrTabContent>
 <!--    <DsfrTabContent :selected="currentStep === 2">-->
 <!--      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />-->
 <!--    </DsfrTabContent>-->
     <DsfrTabContent :selected="currentStep === 2">
-      <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />
+      <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3">
       <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
@@ -195,11 +181,26 @@ const publierFormRef = ref(null);
   <DsfrModal :opened="modalPublishOpened"
              icon="ri-arrow-right-line"
              :title="modalTitle"
-             :actions="modalActions"
              @close="modalPublishOpened = false">
     <ArreteCadreFormPublier ref="publierFormRef"
                             :arrete-cadre="arreteCadre"
                             :loading="loading"
                             @publier="publishArrete($event)" />
+    <template #footer>
+      <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
+      <li v-if="currentStep !== 1">
+        <DsfrButton label="Annuler"
+                    :disabled="loading"
+                    :secondary="true"
+                    @click="modalPublishOpened = false"/>
+      </li>
+      <li>
+        <DsfrButton label="Publier"
+                    :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
+                    :disabled="loading"
+                    @click="publierFormRef.submitForm()"/>
+      </li>
+    </ul>
+    </template>
   </DsfrModal>
 </template>
