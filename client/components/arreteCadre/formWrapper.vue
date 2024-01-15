@@ -62,7 +62,6 @@ const saveArrete = async (publish: boolean = false) => {
   }
   await v$.value.$validate();
   if (v$.value.$error) {
-    console.log(v$.value.$errors);
     alertStore.addAlert({
       title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
       description: v$.value.$errors.map((e: any) => e.$message).join(', '),

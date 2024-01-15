@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
+import type { Ref } from "vue";
+import type { User } from "~/dto/user.dto";
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(null);
+  const user: Ref<User | null> = ref(null);
   const api = useApi();
 
   const isAuthenticated = computed(async () => {

@@ -7,6 +7,7 @@ export class ArreteCadre {
   dateFin: string | null;
   url: string | null;
   departements: any[];
+  departementPilote: any;
   zonesAlerte: any[];
   usagesArreteCadre: any[];
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';

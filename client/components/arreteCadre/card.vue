@@ -3,6 +3,7 @@ import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from "~/stores/auth";
+import { useAlertStore } from "~/stores/alert";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -12,6 +13,7 @@ const emit = defineEmits<{
   delete: any;
 }>();
 
+const alertStore = useAlertStore();
 const authStore = useAuthStore();
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
@@ -52,7 +54,9 @@ const arreteCadreActions: Ref<any> = ref([
   },
   {
     text: 'Supprimer',
-    hide: !authStore.isMte && props.arreteCadre.arretesRestriction.length > 0,
+    hide: !authStore.isMte &&
+      !(props.arreteCadre.arretesRestriction.length < 1
+      && (props.arreteCadre.departements.length === 1 || props.arreteCadre.departementPilote?.code === authStore.user.roleDepartement)),
     onclick: () => {
       askDeleteArreteCadre(props.arreteCadre);
     },
@@ -133,6 +137,13 @@ const deleteArreteCadre = async (id: string) => {
   const { data, error } = await api.arreteCadre.delete(id);
   if (!error.value) {
     emit('delete');
+  } else {
+    alertStore.addAlert({
+      title: 'Impossible de supprimer l\'arrêté cadre',
+      description: error.value.data?.message,
+      type: 'error',
+    })
+    modalOpened.value = false;
   }
 };
 

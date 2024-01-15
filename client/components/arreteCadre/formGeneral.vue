@@ -68,7 +68,10 @@ const deleteDepartement = (departementId: number) => {
 };
 
 const computeDepartementsTags = () => {
-  departementsTags.value = props.arreteCadre.departements.map((d) => {
+  departementsTags.value = props.arreteCadre.departements
+    .filter(d => {
+    return d.code !== authStore.user.roleDepartement
+  }).map((d) => {
     return {
       label: d.nom,
       class: 'fr-tag--dismiss',
@@ -125,13 +128,20 @@ watch(
           :small="false"
         />
         <DsfrAlert
-          v-if="!isAci && !arreteCadre.departements[0]"
+          v-if="!arreteCadre.departements[0]"
           type="warning"
           description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
           small="small"
           class="fr-mb-2w"
         />
-        <DsfrHighlight v-if="!isAci && arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
+        <DsfrHighlight v-if="arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
+        <DsfrAlert
+          v-if="isAci"
+          type="info"
+          title="Arrêté Interdépartemental"
+          description="En choisissant de créer un arrêté cadre interdépartemental, cela induit que votre département est le pilote de cet arrêté. Vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
+          class="fr-mb-2w"
+        />
         
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
@@ -163,6 +173,13 @@ watch(
             <DsfrTags class="fr-mt-2w" :tags="departementsTags" />
           </DsfrInputGroup>
         </div>
+        <DsfrAlert
+          v-if="departementsTags.length > 0"
+          type="info"
+          title="Email d'information"
+          description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
+          class="fr-mb-2w"
+        />
       </div>
     </div>
   </form>
