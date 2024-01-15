@@ -1,7 +1,7 @@
 export interface User {
   email: string;
   firstName: string;
-  LastName: string;
+  lastName: string;
   role: string;
   roleDepartement: string;
 }

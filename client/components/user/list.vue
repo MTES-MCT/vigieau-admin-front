@@ -125,7 +125,7 @@ const closeModal = () => {
 };
 
 const deleteUser = async () => {
-  const { data, error } = await api.deleteUser(userToEdit.value.email);
+  const { data, error } = await api.user.delete(userToEdit.value.email);
   closeModal();
   if (!error.value) {
     users.value = users.value.filter((u: User) => u.email !== userToEdit.value.email);

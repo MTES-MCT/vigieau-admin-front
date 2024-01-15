@@ -30,8 +30,8 @@ const formData = reactive({
   email: props.user ? props.user.email : null,
   firstName: props.user ? props.user.firstName : null,
   lastName: props.user ? props.user.lastName : null,
-  role: props.user ? props.user.role : rolesAvailable.length > 1 ? null : rolesAvailable[0],
-  roleDepartement: props.user ? props.user.roleDepartement : null,
+  role: props.user ? props.user.role : rolesAvailable.length > 1 ? null : rolesAvailable[0].value,
+  roleDepartement: props.user ? props.user.roleDepartement : authStore.user.role === 'departement' ? authStore.user.roleDepartement : null,
   isNewUser: !props.user,
 });
 const errorMessage: Ref<string> = ref('');
@@ -121,7 +121,7 @@ defineExpose({
           label-visible
           type="text"
           name="role"
-          :disabled="loading"
+          :disabled="loading || authStore.user.role === 'departement'"
           required
         />
       </div>
@@ -135,7 +135,7 @@ defineExpose({
           label-visible
           type="text"
           name="roleDepartement"
-          :disabled="loading"
+          :disabled="loading || authStore.user.role === 'departement'"
           :required="true"
         />
       </div>
