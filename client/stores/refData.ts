@@ -4,7 +4,7 @@ import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
 import type { Usage } from '~/dto/usage.dto';
 import type { Thematique } from '~/dto/thematique.dto';
 
-export const useRefDataStore = defineStore('rafDataStore', () => {
+export const useRefDataStore = defineStore('refDataStore', () => {
   const departements: Ref<Departement[]> = ref([]);
   const usages: Ref<Usage[]> = ref([]);
   const zonesAlerte: Ref<ZoneAlerte[]> = ref([]);

@@ -4,6 +4,7 @@ import type { Ref } from 'vue';
 import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
+import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   duplicate?: boolean;
@@ -15,6 +16,7 @@ const fullValidation: Ref<boolean> = ref(false);
 const route = useRoute();
 const api = useApi();
 const refDataStore = useRefDataStore();
+const alertStore = useAlertStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
 const loading = ref(false);
 const componentKey = ref(0);
@@ -29,10 +31,6 @@ const steps = [
   'Les usages',
   'Récapitulatif',
 ];
-
-const titleAlerte: Ref<string> = ref(`Impossible d'enregistrer l'arrêté cadre`);
-const descriptionAlerte: Ref<string> = ref('');
-const isAlerteClosed: Ref<boolean> = ref(true);
 
 const v$ = useVuelidate();
 
@@ -58,16 +56,18 @@ const nextStep = () => {
 const previousStep = () => {
   currentStep.value--;
 };
-const saveArrete = async () => {
+const saveArrete = async (publish: boolean = false) => {
   if (loading.value) {
     return;
   }
-  isAlerteClosed.value = true;
   await v$.value.$validate();
   if (v$.value.$error) {
     console.log(v$.value.$errors);
-    descriptionAlerte.value = v$.value.$errors.map((e: any) => e.$message).join(', ');
-    isAlerteClosed.value = false;
+    alertStore.addAlert({
+      title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
+      description: v$.value.$errors.map((e: any) => e.$message).join(', '),
+      type: 'error',
+    });
     return;
   }
   loading.value = true;
@@ -84,16 +84,21 @@ const saveArrete = async () => {
       return usageArreteCadre;
     });
     componentKey.value++;
+    if (!publish) {
+      alertStore.addAlert({
+        description: 'Enregistrement réussi',
+        type: 'success',
+      });
+    }
   }
   loading.value = false;
 };
 
 const askPublishArrete = async () => {
   fullValidation.value = true;
-  titleAlerte.value = `Impossible de publier l'arrêté cadre`;
-  await saveArrete();
+  await saveArrete(true);
   if (!v$.value.$error) {
-    modalPublishOpened.value = true;    
+    modalPublishOpened.value = true;
   }
 };
 
@@ -102,8 +107,8 @@ const publishArrete = async (ac: ArreteCadre) => {
     return;
   }
   loading.value = true;
-  const { data, error } = await api.arreteCadre.publish(ac.id?.toString(), ac)
-  if(data.value) {
+  const { data, error } = await api.arreteCadre.publish(ac.id?.toString(), ac);
+  if (data.value) {
     modalPublishOpened.value = false;
   }
   loading.value = false;
@@ -117,90 +122,83 @@ const publierFormRef = ref(null);
 </script>
 
 <template>
-  <h1>{{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre <MixinsStatutBadge :statut="arreteCadre.statut" /></h1>
+  <h1>
+    {{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre
+    <MixinsStatutBadge :statut="arreteCadre.statut" />
+  </h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <DsfrAlert
-    class="fr-mb-2w"
-    :title="titleAlerte"
-    :description="descriptionAlerte"
-    type="error"
-    :closeable="true"
-    :closed="isAlerteClosed"
-    @close="isAlerteClosed = true"
-  />
+  <MixinsAlerts class="fr-mb-2w" />
   <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
     <li v-if="currentStep !== 1">
-      <DsfrButton label="Précedent"
-                  :secondary="true"
-                  icon="ri-arrow-left-line"
-                  @click="previousStep()"/>      
+      <DsfrButton label="Précedent" :secondary="true" icon="ri-arrow-left-line" @click="previousStep()" />
     </li>
     <li>
-      <DsfrButton label="Enregistrer en brouillon"
-                  :secondary="true"
-                  :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
-                  :disabled="loading"
-                  @click="saveArrete()"/>      
+      <DsfrButton
+        label="Enregistrer en brouillon"
+        :secondary="true"
+        :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
+        :disabled="loading"
+        @click="saveArrete()"
+      />
     </li>
     <li v-if="currentStep === 4">
-      <DsfrButton label="Publier"
-                  :disabled="loading"
-                  :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
-                  :iconRight="true"
-                  @click="askPublishArrete()"/>
+      <DsfrButton
+        label="Publier"
+        :disabled="loading"
+        :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
+        :iconRight="true"
+        @click="askPublishArrete()"
+      />
     </li>
     <li v-if="currentStep !== 4">
-      <DsfrButton label="Suivant"
-                  :secondary="true"
-                  icon="ri-arrow-right-line"
-                  @click="nextStep()"/>
+      <DsfrButton label="Suivant" :secondary="true" icon="ri-arrow-right-line" @click="nextStep()" />
     </li>
   </ul>
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1">
       <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
     </DsfrTabContent>
-<!--    <DsfrTabContent :selected="currentStep === 2">-->
-<!--      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />-->
-<!--    </DsfrTabContent>-->
+    <!--    <DsfrTabContent :selected="currentStep === 2">-->
+    <!--      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />-->
+    <!--    </DsfrTabContent>-->
     <DsfrTabContent :selected="currentStep === 2">
       <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3">
-      <ArreteCadreFormUsages :arrete-cadre="arreteCadre"
-                             :fullValidation="fullValidation"
-                             :usageSelected="usageSelected"
-                             :key="componentKey" />
+      <ArreteCadreFormUsages
+        :arrete-cadre="arreteCadre"
+        :fullValidation="fullValidation"
+        :usageSelected="usageSelected"
+        :key="componentKey"
+      />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4">
-      <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre"
-                                    :key="componentKey"
-                                    @usageSelected="usageSelected = $event; previousStep()" />
+      <ArreteCadreFormRecapitulatif
+        :arrete-cadre="arreteCadre"
+        :key="componentKey"
+        @usageSelected="
+          usageSelected = $event;
+          previousStep();
+        "
+      />
     </DsfrTabContent>
   </DsfrTabs>
-  <DsfrModal :opened="modalPublishOpened"
-             icon="ri-arrow-right-line"
-             :title="modalTitle"
-             @close="modalPublishOpened = false">
-    <ArreteCadreFormPublier ref="publierFormRef"
-                            :arrete-cadre="arreteCadre"
-                            :loading="loading"
-                            @publier="publishArrete($event)" />
+  <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
+    <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" :loading="loading" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
-      <li v-if="currentStep !== 1">
-        <DsfrButton label="Annuler"
-                    :disabled="loading"
-                    :secondary="true"
-                    @click="modalPublishOpened = false"/>
-      </li>
-      <li>
-        <DsfrButton label="Publier"
-                    :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
-                    :disabled="loading"
-                    @click="publierFormRef.submitForm()"/>
-      </li>
-    </ul>
+        <li v-if="currentStep !== 1">
+          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="modalPublishOpened = false" />
+        </li>
+        <li>
+          <DsfrButton
+            label="Publier"
+            :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
+            :disabled="loading"
+            @click="publierFormRef.submitForm()"
+          />
+        </li>
+      </ul>
     </template>
   </DsfrModal>
 </template>
