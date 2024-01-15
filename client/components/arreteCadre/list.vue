@@ -79,6 +79,9 @@ watch(statusFilter, () => {
   <template v-if="arretesCadrePaginated">
     <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w"
          data-cy="ArreteCadreList">
+      <div class="fr-col-12 text-align-center" v-if="arretesCadrePaginated.data.length < 1">
+        Aucun arrêté cadre n'a été trouvé.
+      </div>
       <div v-for="arreteCadre in arretesCadrePaginated.data" class="fr-col-md-4 fr-col-12">
         <ArreteCadreCard :arrete-cadre="arreteCadre" :key="arreteCadre.id" @delete="paginate()" />
       </div>

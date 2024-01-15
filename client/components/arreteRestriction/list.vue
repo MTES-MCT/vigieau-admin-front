@@ -74,6 +74,9 @@ watch(statusFilter, () => {
   </div>
   <template v-if="arretesRestrictionPaginated">
     <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+      <div class="fr-col-12 text-align-center" v-if="arretesRestrictionPaginated.data.length < 1">
+        Aucun arrêté de restriction n'a été trouvé.
+      </div>
       <div v-for="arreteRestriction in arretesRestrictionPaginated.data" class="fr-col-md-4 fr-col-12">
         <ArreteRestrictionCard :arrete-restriction="arreteRestriction" :key="arreteRestriction.id" @delete="paginate()" />
       </div>

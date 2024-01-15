@@ -11,6 +11,10 @@ body {
   border-bottom: 1px solid var(--grey-925-125);
 }
 
+.text-align-center {
+  text-align: center;
+}
+
 // PAGINATION
 a:not([href]) {
   cursor: pointer;
