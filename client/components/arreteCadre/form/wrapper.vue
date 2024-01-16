@@ -7,10 +7,10 @@ import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
-  duplicate?: boolean;
+  arreteCadre: ArreteCadre;
+  fullValidation: boolean;
 }>();
 
-const arreteCadre: Ref<ArreteCadre> = ref();
 const fullValidation: Ref<boolean> = ref(false);
 
 const route = useRoute();
@@ -34,22 +34,6 @@ const steps = [
 
 const v$ = useVuelidate();
 
-if (isNewArreteCadre) {
-  arreteCadre.value = new ArreteCadre();
-} else {
-  const { data, error } = await api.arreteCadre.get(<string>route.params.id);
-  if (data.value) {
-    arreteCadre.value = <ArreteCadre>data.value;
-    if (props.duplicate) {
-      arreteCadre.value.id = null;
-      arreteCadre.value.usagesArreteCadre.map((u) => {
-        u.id = null;
-        return u;
-      });
-    }
-  }
-}
-
 const nextStep = () => {
   currentStep.value++;
 };
@@ -70,13 +54,13 @@ const saveArrete = async (publish: boolean = false) => {
     return;
   }
   loading.value = true;
-  const { data, error } = arreteCadre.value.id
-    ? await api.arreteCadre.update(arreteCadre.value.id.toString(), arreteCadre.value)
-    : await api.arreteCadre.create({ ...arreteCadre.value });
+  const { data, error } = props.arreteCadre.id
+    ? await api.arreteCadre.update(props.arreteCadre.id.toString(), props.arreteCadre)
+    : await api.arreteCadre.create({ ...props.arreteCadre });
   if (data.value) {
     // Mise à jour des ids des objets nouvellement crées
-    arreteCadre.value.id = data.value.id;
-    arreteCadre.value.usagesArreteCadre.map((usageArreteCadre: UsageArreteCadre) => {
+    props.arreteCadre.id = data.value.id;
+    props.arreteCadre.usagesArreteCadre.map((usageArreteCadre: UsageArreteCadre) => {
       usageArreteCadre.id = (<ArreteCadre>data.value).usagesArreteCadre.find(
         (uac: UsageArreteCadre) => uac.usage.id === usageArreteCadre.usage.id,
       ).id;
@@ -128,8 +112,12 @@ const publierFormRef = ref(null);
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <MixinsAlerts class="fr-mb-2w" />
   <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
-    <li v-if="currentStep !== 1">
-      <DsfrButton label="Précedent" :secondary="true" icon="ri-arrow-left-line" @click="previousStep()" />
+    <li>
+      <DsfrButton label="Précedent"
+                  :secondary="true"
+                  icon="ri-arrow-left-line"
+                  :disabled="currentStep === 1"
+                  @click="previousStep()" />
     </li>
     <li>
       <DsfrButton
@@ -140,6 +128,13 @@ const publierFormRef = ref(null);
         @click="saveArrete()"
       />
     </li>
+    <li>
+      <DsfrButton label="Suivant"
+                  :secondary="true"
+                  icon="ri-arrow-right-line"
+                  :disabled="currentStep === 4"
+                  @click="nextStep()" />
+    </li>
     <li v-if="currentStep === 4">
       <DsfrButton
         label="Publier"
@@ -148,9 +143,6 @@ const publierFormRef = ref(null);
         :iconRight="true"
         @click="askPublishArrete()"
       />
-    </li>
-    <li v-if="currentStep !== 4">
-      <DsfrButton label="Suivant" :secondary="true" icon="ri-arrow-right-line" @click="nextStep()" />
     </li>
   </ul>
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">

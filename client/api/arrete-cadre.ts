@@ -22,4 +22,13 @@ export class ArreteCadreApi extends BaseApiPagination {
       body: payload,
     });
   };
+
+  updateZones = (id: string, codeDep: string, payload: any) => {
+    payload = JSON.parse(JSON.stringify(payload));
+    return useFetch(`/${this.resource}/${id}/zones/${codeDep}`, {
+      method: 'PATCH',
+      baseURL: '/api',
+      body: payload,
+    });
+  };
 }

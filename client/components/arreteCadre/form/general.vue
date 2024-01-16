@@ -22,17 +22,22 @@ const refDataStore = useRefDataStore();
 const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
 
 const assignDepartement = (force = false) => {
-  if ((!props.arreteCadre.id || force) && props.arreteCadre.departements.length < 1) {
-    props.arreteCadre.departements = authStore.user.role === 'departement' ?
-      refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement) : [];
+  if (!props.arreteCadre.id || force) {
+    if (props.arreteCadre.departements.length < 1) {
+      props.arreteCadre.departements =
+        authStore.user.role === 'departement' ? refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement) : [];
+    } else if (props.arreteCadre.departements.length > 1 && !isAci.value) {
+      props.arreteCadre.departements = [props.arreteCadre.departements[0]];
+    }
+    computeDepartementsTags();
   }
-}
+};
 
 onMounted(() => {
   if (refDataStore.departements) {
     assignDepartement();
-  }  
-})
+  }
+});
 
 const rules = computed(() => {
   return {
@@ -53,6 +58,13 @@ const filterDepartements = () => {
     : [];
 };
 
+const departementsOptions = refDataStore.departements.map((d) => {
+  return {
+    value: d.id,
+    text: d.nom,
+  };
+});
+
 const selectDepartement = (departement: Departement) => {
   if (typeof departement === 'string') {
     return;
@@ -69,19 +81,33 @@ const deleteDepartement = (departementId: number) => {
 
 const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements
-    .filter(d => {
-    return d.code !== authStore.user.roleDepartement
-  }).map((d) => {
-    return {
-      label: d.nom,
-      class: 'fr-tag--dismiss',
-      tagName: 'button',
-      onclick: () => {
-        deleteDepartement(d.id);
-      },
-    };
-  });
+    .filter((d, index) => {
+      return (authStore.user.role === 'mte' && index !== 0) || (authStore.user.role !== 'mte' && d.code !== authStore.user.roleDepartement);
+    })
+    .map((d) => {
+      return {
+        label: d.nom,
+        class: 'fr-tag--dismiss',
+        tagName: 'button',
+        onclick: () => {
+          deleteDepartement(d.id);
+        },
+      };
+    });
 };
+
+const departementPiloteChange = (depPiloteId: string) => {
+  const departementPilote = refDataStore.departements.find((d) => d.id === Number(depPiloteId));
+  // Si l'AC a un seul département ou moins, on le remplace
+  if (props.arreteCadre.departements.length < 1) {
+    props.arreteCadre.departements = [departementPilote];
+  } else {
+    // Sinon on remplace le département pilote s'il existe
+    const deps = props.arreteCadre.departements.filter((d, index) => index !== 0 && d.id !== Number(depPiloteId));
+    props.arreteCadre.departements = [...[departementPilote], ...deps];
+  }
+  computeDepartementsTags();
+}
 
 computeDepartementsTags();
 
@@ -105,14 +131,9 @@ watch(
   }, 300),
 );
 
-watch(
-  isAci,
-  () => {
-    if(!isAci.value) {
-      assignDepartement(true);
-    }
-  },
-);
+watch(isAci, () => {
+  assignDepartement(true);
+});
 </script>
 
 <template>
@@ -120,29 +141,6 @@ watch(
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Généralité</h6>
-        <DsfrRadioButtonSet
-          legend="Cet arrêté est :"
-          :options="aciOptions"
-          v-model="isAci"
-          name="isAci"
-          :small="false"
-        />
-        <DsfrAlert
-          v-if="!arreteCadre.departements[0]"
-          type="warning"
-          description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
-          small="small"
-          class="fr-mb-2w"
-        />
-        <DsfrHighlight v-if="arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
-        <DsfrAlert
-          v-if="isAci"
-          type="info"
-          title="Arrêté Interdépartemental"
-          description="En choisissant de créer un arrêté cadre interdépartemental, cela induit que votre département est le pilote de cet arrêté. Vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
-          class="fr-mb-2w"
-        />
-        
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
             id="numero"
@@ -154,6 +152,28 @@ watch(
             :required="true"
           />
         </DsfrInputGroup>
+
+        <DsfrRadioButtonSet legend="Cet arrêté est :" :options="aciOptions" v-model="isAci" name="isAci" :small="false" />
+        <DsfrAlert
+          v-if="!arreteCadre.departements[0]"
+          type="warning"
+          description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
+          small="small"
+          class="fr-mb-2w"
+        />
+        <DsfrHighlight v-if="authStore.user.role !== 'mte' && arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
+        <DsfrSelect v-if="authStore.user.role === 'mte'"
+                    :model-value="arreteCadre.departements[0]?.id"
+                    :label="isAci ? 'Département pilote' : 'Département'"
+                    :options="departementsOptions"
+                    @update:modelValue="departementPiloteChange($event)"/>
+        <DsfrAlert
+          v-if="isAci"
+          type="info"
+          title="Arrêté Interdépartemental"
+          description="En choisissant de créer un arrêté cadre interdépartemental, cela induit que votre département est le pilote de cet arrêté. Vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
+          class="fr-mb-2w"
+        />
 
         <div class="fr-mt-2w" v-if="isAci">
           <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
