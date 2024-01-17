@@ -44,6 +44,10 @@ onMounted(() => {
   window.onscroll = function () {
     isStickyButtons();
   };
+  const ro = new ResizeObserver(() => {
+    isStickyButtons();
+  });
+  ro.observe(document.querySelector('.fr-tabs'));
   let footer = document.getElementsByTagName('footer')[0];
   const sticky = footer.offsetHeight;
 
@@ -63,7 +67,6 @@ onMounted(() => {
       buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
     }
   };
-  isStickyButtons();
 });
 </script>
 
