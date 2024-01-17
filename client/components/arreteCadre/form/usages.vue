@@ -15,6 +15,7 @@ const modalUsageOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
 const usageFormRef = ref(null);
+const usageArreteCadreFormRef = ref(null);
 const loading: Ref<boolean> = ref(false);
 const componentKey = ref(0);
 
@@ -89,6 +90,7 @@ const validateUsageForm = () => {
 const modalActions: Ref<any[]> = ref([
   {
     label: 'Enregistrer le nouvel usage',
+    'data-cy': 'UsageFormSaveBtn',
     onclick: validateUsageForm,
   },
   {
@@ -130,7 +132,10 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
   },
   {
     label: 'Enregistrer',
-    onclick: addEditUsageArreteCadre,
+    'data-cy':'ArreteCadreFormUsagesSaveBtn',
+    onclick: () => {
+      usageArreteCadreFormRef.value?.submitForm();
+    },
   },
 ]);
 
@@ -163,6 +168,8 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
           <MixinsAutoComplete
             class="show-label"
+            data-cy="ArreteCadreFormUsagesAutocomplete"
+            placeholder="Rechercher un usage"
             buttonText="Ajouter"
             display-key="display"
             v-model="query"
@@ -173,8 +180,14 @@ defineExpose({
           />
         </DsfrInputGroup>
         <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
-          <UsageArreteCadreForm :usageArreteCadre="usageArreteCadreToEdit" />
-          <DsfrButtonGroup :buttons="usageArreteCadreFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
+          <UsageArreteCadreForm :usageArreteCadre="usageArreteCadreToEdit"
+                                :loading="loading"
+                                @createEdit="addEditUsageArreteCadre()"
+                                ref="usageArreteCadreFormRef"/>
+          <DsfrButtonGroup :buttons="usageArreteCadreFormButtons"
+                           class="fr-mt-2w"
+                           align="right"
+                           inlineLayoutWhen="always" />
         </div>
       </div>
       <div class="fr-col-12 fr-col-lg-6">

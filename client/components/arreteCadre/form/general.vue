@@ -148,6 +148,7 @@ defineExpose({
           <DsfrInput
             id="numero"
             v-model="arreteCadre.numero"
+            data-cy="ArreteCadreFormNumeroInput"
             label="Numéro de l'arrêté"
             label-visible
             type="text"
@@ -157,13 +158,6 @@ defineExpose({
         </DsfrInputGroup>
 
         <DsfrRadioButtonSet legend="Cet arrêté est :" :options="aciOptions" v-model="isAci" name="isAci" :small="false" />
-        <DsfrAlert
-          v-if="!arreteCadre.departements[0]"
-          type="warning"
-          description="Nous n'arrivons pas à déterminer votre département. Cochez Interdépartemental et sélectionner le département souhaité."
-          small="small"
-          class="fr-mb-2w"
-        />
         <DsfrHighlight v-if="authStore.user.role !== 'mte' && arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
           <DsfrSelect
@@ -186,6 +180,7 @@ defineExpose({
           <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
             <MixinsAutoComplete
               label="Ajouter un/des départements"
+              data-cy="ArreteCadreFormDepartementsAutocomplete"
               class="show-label"
               :labelVisible="true"
               buttonText="Ajouter"

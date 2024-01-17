@@ -55,6 +55,7 @@ defineExpose({
             label-visible
             type="date"
             name="dateDebut"
+            data-cy="RepealFormDateDebutInput"
             :disabled="true"
           />
         </DsfrInputGroup>
@@ -68,6 +69,7 @@ defineExpose({
             label-visible
             type="date"
             name="dateFin"
+            data-cy="RepealFormDateFinInput"
             :required="true"
           />
         </DsfrInputGroup>

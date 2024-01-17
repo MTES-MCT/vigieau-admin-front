@@ -11,6 +11,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   delete: any;
+  repeal: any;
 }>();
 
 const alertStore = useAlertStore();
@@ -205,6 +206,7 @@ const repealModalOpened: Ref<boolean> = ref(false);
 const repealModalActions: Ref<any[]>  = ref([
   {
     label: 'Abroger',
+    'data-cy': 'RepealFormRepealBtn',
     onclick: () => {
       abrogerFormRef.value?.submitForm();
     },
@@ -224,8 +226,9 @@ const repealArrete = async (ac: ArreteCadre) => {
   }
   loading.value = true;
   const { data, error } = await api.arreteCadre.repeal(ac.id?.toString(), ac)
-  if(data.value) {
+  if(!error.value) {
     repealModalOpened.value = false;
+    emit('repeal');
   }
   loading.value = false;
 };

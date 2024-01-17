@@ -27,7 +27,11 @@ Cypress.Commands.add('searchAC', (numero: string, exist: boolean = true) => {
   cy.get('[data-cy=ArreteCadreListSearchBar] input').clear();
   cy.get('[data-cy=ArreteCadreListSearchBar] input').type(numero);
   cy.wait('@acSearch');
-  cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard] .fr-card__title').contains(numero).should(exist ? 'exist' : 'not.exist');
+  if(exist) {
+    cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard] .fr-card__title').contains(numero).should('exist');
+  } else {
+    cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard] .fr-card__title').should('not.exist');
+  }
 });
 
 Cypress.Commands.add('populateDb', async (endpoint) => {

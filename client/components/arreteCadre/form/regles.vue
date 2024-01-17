@@ -77,6 +77,7 @@ defineExpose({
             :options="communeNiveauGraviteMaxOptions"
             v-model="arreteCadre.communeNiveauGraviteMax"
             name="communeNiveauGraviteMax"
+            data-cy="ArreteCadreFormCommuneRadio"
             :small="false"
           />
         </DsfrInputGroup>

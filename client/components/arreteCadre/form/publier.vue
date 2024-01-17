@@ -65,13 +65,20 @@ defineExpose({
             label-visible
             type="date"
             name="dateDebut"
+            data-cy="PublishFormDateDebutInput"
             :required="true"
           />
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
-          <DsfrInput id="dateFin" v-model="ac.dateFin" label="Date de fin de l'arrêté" label-visible type="date" name="dateFin" />
+          <DsfrInput id="dateFin"
+                     v-model="ac.dateFin"
+                     label="Date de fin de l'arrêté"
+                     label-visible
+                     type="date"
+                     name="dateFin"
+                     data-cy="PublishFormDateFinInput" />
         </DsfrInputGroup>
       </div>
     </div>
@@ -92,6 +99,7 @@ defineExpose({
         <DsfrFileUpload :required="!ac.url"
                         :label="ac.url ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
                         :accept="['application/pdf']"
+                        data-cy="PublishFormFileInput"
                         @change="ac.file = $event[0]" />
       </DsfrInputGroup>
     </div>

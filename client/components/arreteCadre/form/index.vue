@@ -15,6 +15,38 @@ const authStore = useAuthStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
 const isAci: Ref<boolean> = ref(false);
 const isPilote: Ref<boolean> = ref(false);
+const mounted = ref(false);
+
+const initSticky = () => {
+  window.onscroll = function () {
+    isStickyButtons();
+  };
+  const ro = new ResizeObserver(() => {
+    isStickyButtons();
+  });
+  if(document.querySelector('.fr-tabs')) {
+    ro.observe(document.querySelector('.fr-tabs'));    
+  }
+  let footer = document.getElementsByTagName('footer')[0];
+  const sticky = footer.offsetHeight;
+
+  const isStickyButtons = () => {
+    const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
+    const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
+    if (!buttons) {
+      return;
+    }
+    if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
+      buttonsShadow.classList.remove('visible');
+      buttons.classList.remove('sticky');
+      buttons.style['padding-left'] = 'initial';
+    } else {
+      buttonsShadow.classList.add('visible');
+      buttons.classList.add('sticky');
+      buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
+    }
+  };
+};
 
 if (isNewArreteCadre) {
   arreteCadre.value = new ArreteCadre();
@@ -37,36 +69,17 @@ if (isNewArreteCadre) {
       arreteCadre.value.departements.splice(depPiloteIndex, 1);
       arreteCadre.value.departements.splice(0, 0, depPilote);
     }
+    if (mounted.value) {
+      initSticky();
+    }
   }
 }
 
 onMounted(() => {
-  window.onscroll = function () {
-    isStickyButtons();
-  };
-  const ro = new ResizeObserver(() => {
-    isStickyButtons();
-  });
-  ro.observe(document.querySelector('.fr-tabs'));
-  let footer = document.getElementsByTagName('footer')[0];
-  const sticky = footer.offsetHeight;
-
-  const isStickyButtons = () => {
-    const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
-    const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
-    if (!buttons) {
-      return;
-    }
-    if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
-      buttonsShadow.classList.remove('visible');
-      buttons.classList.remove('sticky');
-      buttons.style['padding-left'] = 'initial';
-    } else {
-      buttonsShadow.classList.add('visible');
-      buttons.classList.add('sticky');
-      buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
-    }
-  };
+  mounted.value = true;
+  if (arreteCadre.value) {
+    initSticky();
+  }
 });
 </script>
 
@@ -93,7 +106,7 @@ onMounted(() => {
   display: none;
   margin-top: 32px;
   height: 56px;
-  
+
   &.visible {
     display: block;
   }

@@ -117,9 +117,9 @@ const publishArrete = async (ac: ArreteCadre) => {
   const { data, error } = await api.arreteCadre.publish(ac.id?.toString(), ac);
   if (data.value) {
     modalPublishOpened.value = false;
+    navigateTo('/arrete-cadre');
   }
   loading.value = false;
-  navigateTo('/arrete-cadre');
 };
 
 // PUBLISH MODAL
@@ -182,12 +182,14 @@ const usagesFormRef = ref(null);
       <DsfrButton label="Précedent"
                   :secondary="true"
                   icon="ri-arrow-left-line"
+                  data-cy="ArreteCadreFormPreviousStepBtn"
                   :disabled="currentStep === 1"
                   @click="previousStep()" />
     </li>
     <li>
       <DsfrButton
         label="Enregistrer en brouillon"
+        data-cy="ArreteCadreFormSaveBtn"
         :secondary="true"
         :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
         :disabled="loading"
@@ -198,6 +200,7 @@ const usagesFormRef = ref(null);
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
+                  data-cy="ArreteCadreFormNextStepBtn"
                   :disabled="currentStep === 5"
                   @click="nextStep()" />
     </li>
@@ -207,6 +210,7 @@ const usagesFormRef = ref(null);
         :disabled="loading"
         :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
         :iconRight="true"
+        data-cy="ArreteCadreFormPublishBtn"
         @click="askPublishArrete()"
       />
     </li>
@@ -221,6 +225,7 @@ const usagesFormRef = ref(null);
         <li>
           <DsfrButton
             label="Publier"
+            data-cy="PublishFormPublishBtn"
             :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
             :disabled="loading"
             @click="publierFormRef.submitForm()"

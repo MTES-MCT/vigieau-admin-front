@@ -86,7 +86,7 @@ watch(statusFilter, () => {
         Aucun arrêté cadre n'a été trouvé.
       </div>
       <div v-for="arreteCadre in arretesCadrePaginated.data" class="fr-col-md-4 fr-col-12">
-        <ArreteCadreCard :arrete-cadre="arreteCadre" :key="arreteCadre.id" @delete="paginate()" />
+        <ArreteCadreCard :arrete-cadre="arreteCadre" :key="arreteCadre.id" @delete="paginate()" @repeal="paginate()" />
       </div>
     </div>
     <div class="fr-grid-row fr-grid-row--center fr-mt-2w">

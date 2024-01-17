@@ -81,7 +81,7 @@ watch(
     );
     departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.some((ad) => ad.id === d.id) && !departementsPiloteFiletered.value.some((dp) => dp.id === d.id));
     zonesSelected.value = zonesSelected.value.filter((z) =>
-      departementsFiletered.value
+      [...departementsPiloteFiletered.value, ...departementsFiletered.value]
         .map((d: Departement) => d.zonesAlerte.map((za: ZoneAlerte) => za.id))
         .flat()
         .includes(z),
