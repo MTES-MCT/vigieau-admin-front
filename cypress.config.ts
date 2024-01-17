@@ -15,6 +15,9 @@ export default defineConfig({
   },
   env: {
     apiUrl: process.env.API_URL,
+    departementUser: '2A@test.fr',
+    departementAciUser: '2B@test.fr',
+    mteUser: 'mte@test.fr',
     codeCoverage: {
       url: "http://localhost:3001/api/app/__coverage__"
     }

@@ -34,7 +34,8 @@ const generateRows = () => {
         authStore.isMte
           ? {
               component: 'DsfrButton',
-              label: 'Modifier',
+              label: 'Modifier', 
+            'data-cy': 'UserListEditBtn',
               icon: 'ri-ball-pen-line',
               iconOnly: true,
               onclick: () => askEditUser(d),
@@ -43,6 +44,7 @@ const generateRows = () => {
         {
           component: 'DsfrButton',
           label: 'Supprimer',
+          'data-cy': 'UserListDeleteBtn',
           icon: 'ri-delete-bin-5-fill',
           iconOnly: true,
           onclick: () => askDeleteUser(d),
@@ -75,6 +77,7 @@ const askEditUser = (user) => {
     {
       label: 'Enregistrer',
       onclick: validateEditUserForm,
+      'data-cy': 'UserFormEditBtn'
     },
   ];
 };
@@ -94,6 +97,7 @@ const askAddUser = () => {
     {
       label: 'Enregistrer',
       onclick: validateEditUserForm,
+      'data-cy': 'UserFormAddBtn',
     },
   ];
 };
@@ -115,6 +119,7 @@ const askDeleteUser = (user) => {
     },
     {
       label: 'Supprimer',
+      'data-cy': 'UserFormDeleteBtn',
       onclick: deleteUser,
     },
   ];
@@ -160,7 +165,9 @@ const validateEditUserForm = () => {
 <template>
   <div class="user-header fr-grid-row fr-grid-row--middle fr-mb-2w">
     <h1 class="fr-my-0">Les utilisateurs</h1>
-    <DsfrButton label="Ajouter un utilisateur" @click="askAddUser()" />
+    <DsfrButton label="Ajouter un utilisateur"
+                data-cy="UserListAddUserButton"
+                @click="askAddUser()" />
   </div>
   <DsfrTable :title="title" :headers="headers" :rows="rows" :no-caption="noCaption" :pagination="pagination" :key="componentKey" />
   <DsfrModal :opened="modalEditOpened" :title="modalTitle" :icon="modalIcon" :actions="modalActions" @close="closeModal">

@@ -1,5 +1,5 @@
 {
-  "name": "vigieauddt",
+  "name": "regleau_front",
   "version": "0.0.1",
   "scripts": {
     "build": "nuxi generate && purgecss --config ./purgecss.config.js",
@@ -13,7 +13,8 @@
     "lintfix": "prettier --write --list-different . && yarn lint:js --fix",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "purgecss": "purgecss --config ./purgecss.config.js"
+    "purgecss": "purgecss --config ./purgecss.config.js",
+    "cypress": "npx cypress open"
   },
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",

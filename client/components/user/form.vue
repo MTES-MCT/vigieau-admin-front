@@ -79,6 +79,7 @@ defineExpose({
     <DsfrInputGroup :error-message="errorMessage" :valid-message="''">
       <DsfrInput
         id="email"
+        data-cy="UserFormEmailInput"
         v-model="formData.email"
         hint="Format attendu: nom@domaine.fr"
         label="Email"
@@ -92,6 +93,7 @@ defineExpose({
         <DsfrInput
           v-if="!formData.isNewUser"
           id="firstName"
+          data-cy="UserFormFirstNameInput"
           v-model="formData.firstName"
           label="Prénom"
           label-visible
@@ -104,6 +106,7 @@ defineExpose({
         <DsfrInput
           v-if="!formData.isNewUser"
           id="lastName"
+          data-cy="UserFormLastNameInput"
           v-model="formData.lastName"
           label="Nom"
           label-visible
@@ -129,6 +132,7 @@ defineExpose({
         <DsfrInput
           v-if="formData.role === 'departement'"
           id="roleDepartement"
+          data-cy="UserFormRoleDepartementInput"
           v-model="formData.roleDepartement"
           hint="Format attendu: 01, 2A, 976 ..."
           label="Département"
