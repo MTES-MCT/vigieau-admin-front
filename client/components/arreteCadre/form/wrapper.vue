@@ -8,10 +8,7 @@ import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  fullValidation: boolean;
 }>();
-
-const fullValidation: Ref<boolean> = ref(false);
 
 const route = useRoute();
 const api = useApi();
@@ -26,7 +23,7 @@ const usageSelected = ref();
 const currentStep: Ref<number> = ref(1);
 const steps = [
   'Informations générales',
-  // "Règles de gestion des niveaux d'alerte",
+  "Règles de gestion des niveaux d'alerte",
   "Liste des zones d'alertes",
   'Les usages',
   'Récapitulatif',
@@ -34,23 +31,43 @@ const steps = [
 
 const v$ = useVuelidate();
 
-const nextStep = () => {
+const nextStep = async () => {
+  let errors;
+  switch (currentStep.value) {
+    case 1:
+      await generalFormRef.value?.v$.$validate()
+      errors = generalFormRef.value?.v$.$errors;
+      break;
+    case 2:
+      await reglesFormRef.value?.v$.$validate()
+      errors = reglesFormRef.value?.v$.$errors;
+      break;
+    case 3:
+      await zonesFormRef.value?.v$.$validate()
+      errors = zonesFormRef.value?.v$.$errors;
+      break;
+    case 4:
+      await usagesFormRef.value?.v$.$validate()
+      errors = usagesFormRef.value?.v$.$errors;
+      break;
+  }
+  if(errors && errors.length > 0) {
+    return;
+  }
   currentStep.value++;
 };
+
 const previousStep = () => {
   currentStep.value--;
 };
+
 const saveArrete = async (publish: boolean = false) => {
   if (loading.value) {
     return;
   }
-  await v$.value.$validate();
-  if (v$.value.$error) {
-    alertStore.addAlert({
-      title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
-      description: v$.value.$errors.map((e: any) => e.$message).join(', '),
-      type: 'error',
-    });
+  publish ? v$.value.$validate() : generalFormRef.value?.v$.$validate();
+  if (publish ? v$.value.$error : generalFormRef.value?.v$.$error) {
+    showErrors(publish ? v$.value.$errors : generalFormRef.value?.v$.$errors, publish);
     return;
   }
   loading.value = true;
@@ -77,8 +94,15 @@ const saveArrete = async (publish: boolean = false) => {
   loading.value = false;
 };
 
+const showErrors = (errors, publish) => {
+  alertStore.addAlert({
+    title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
+    description: errors.map((e: any) => e.$message).join(', '),
+    type: 'error',
+  });
+}
+
 const askPublishArrete = async () => {
-  fullValidation.value = true;
   await saveArrete(true);
   if (!v$.value.$error) {
     modalPublishOpened.value = true;
@@ -102,6 +126,12 @@ const publishArrete = async (ac: ArreteCadre) => {
 const modalPublishOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('Date de publication');
 const publierFormRef = ref(null);
+
+// Forms
+const generalFormRef = ref(null);
+const reglesFormRef = ref(null);
+const zonesFormRef = ref(null);
+const usagesFormRef = ref(null);
 </script>
 
 <template>
@@ -111,7 +141,43 @@ const publierFormRef = ref(null);
   </h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <MixinsAlerts class="fr-mb-2w" />
-  <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
+  <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
+    <DsfrTabContent :selected="currentStep === 1">
+      <ArreteCadreFormGeneral
+        ref="generalFormRef"
+        :arrete-cadre="arreteCadre" />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="currentStep === 2">
+      <ArreteCadreFormRegles
+        ref="reglesFormRef"
+        :arrete-cadre="arreteCadre" />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="currentStep === 3">
+      <ArreteCadreFormZones
+        ref="zonesFormRef"
+        :arrete-cadre="arreteCadre" />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="currentStep === 4">
+      <ArreteCadreFormUsages
+        ref="usagesFormRef"
+        :arrete-cadre="arreteCadre"
+        :usageSelected="usageSelected"
+        :key="componentKey"
+      />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="currentStep === 5">
+      <ArreteCadreFormRecapitulatif
+        :arrete-cadre="arreteCadre"
+        :key="componentKey"
+        @usageSelected="
+          usageSelected = $event;
+          previousStep();
+        "
+      />
+    </DsfrTabContent>
+  </DsfrTabs>
+  <ul  class="fr-btns-group--shadow-sticky"></ul>
+  <ul class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
     <li>
       <DsfrButton label="Précedent"
                   :secondary="true"
@@ -132,10 +198,10 @@ const publierFormRef = ref(null);
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
-                  :disabled="currentStep === 4"
+                  :disabled="currentStep === 5"
                   @click="nextStep()" />
     </li>
-    <li v-if="currentStep === 4">
+    <li v-if="currentStep === 5">
       <DsfrButton
         label="Publier"
         :disabled="loading"
@@ -145,35 +211,6 @@ const publierFormRef = ref(null);
       />
     </li>
   </ul>
-  <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
-    <DsfrTabContent :selected="currentStep === 1">
-      <ArreteCadreFormGeneral :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
-    </DsfrTabContent>
-    <!--    <DsfrTabContent :selected="currentStep === 2">-->
-    <!--      <ArreteCadreFormRegles :arrete-cadre="arreteCadre" :fullValidation="fullValidation" :viewOnly="viewOnly" />-->
-    <!--    </DsfrTabContent>-->
-    <DsfrTabContent :selected="currentStep === 2">
-      <ArreteCadreFormZones :arrete-cadre="arreteCadre" :fullValidation="fullValidation" />
-    </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3">
-      <ArreteCadreFormUsages
-        :arrete-cadre="arreteCadre"
-        :fullValidation="fullValidation"
-        :usageSelected="usageSelected"
-        :key="componentKey"
-      />
-    </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4">
-      <ArreteCadreFormRecapitulatif
-        :arrete-cadre="arreteCadre"
-        :key="componentKey"
-        @usageSelected="
-          usageSelected = $event;
-          previousStep();
-        "
-      />
-    </DsfrTabContent>
-  </DsfrTabs>
   <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
     <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" :loading="loading" @publier="publishArrete($event)" />
     <template #footer>

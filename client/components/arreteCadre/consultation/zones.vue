@@ -19,12 +19,12 @@ const getZonesByType = (zones: ZoneAlerte[], type: string) => {
 watch(() => refDataStore.departements,
   () => {
     departementsFiletered.value = refDataStore.departements
-      .filter((d) => arreteCadre.value.departements.map(ad => ad.id).includes(d.id))
+      .filter((d) => props.arreteCadre.departements.map(ad => ad.id).includes(d.id))
       .map(d => {
         return {
           id: d.id,
           nom: d.nom,
-          zonesAlerte: d.zonesAlerte.filter(za => arreteCadre.value.zonesAlerte.map(z => z.id).includes(za.id))
+          zonesAlerte: d.zonesAlerte.filter(za => props.arreteCadre.zonesAlerte.map(z => z.id).includes(za.id))
         }
       });
   }, { immediate: true });

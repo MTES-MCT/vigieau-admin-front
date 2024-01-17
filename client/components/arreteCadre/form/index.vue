@@ -31,7 +31,7 @@ if (isNewArreteCadre) {
         return u;
       });
     }
-    if(arreteCadre.value.departements.length > 1 && arreteCadre.value.departementPilote?.code) {
+    if (arreteCadre.value.departements.length > 1 && arreteCadre.value.departementPilote?.code) {
       const depPiloteIndex = arreteCadre.value.departements.findIndex((d) => d.code === arreteCadre.value.departementPilote.code);
       const depPilote = arreteCadre.value.departements[depPiloteIndex];
       arreteCadre.value.departements.splice(depPiloteIndex, 1);
@@ -39,9 +39,60 @@ if (isNewArreteCadre) {
     }
   }
 }
+
+onMounted(() => {
+  window.onscroll = function () {
+    isStickyButtons();
+  };
+  let footer = document.getElementsByTagName('footer')[0];
+  const sticky = footer.offsetHeight;
+
+  const isStickyButtons = () => {
+    const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
+    const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
+    if (!buttons) {
+      return;
+    }
+    if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
+      buttonsShadow.classList.remove('visible');
+      buttons.classList.remove('sticky');
+      buttons.style['padding-left'] = 'initial';
+    } else {
+      buttonsShadow.classList.add('visible');
+      buttons.classList.add('sticky');
+      buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
+    }
+  };
+  isStickyButtons();
+});
 </script>
 
 <template>
   <ArreteCadreFormWrapper v-if="arreteCadre && (!isAci || (isAci && isPilote))" :arreteCadre="arreteCadre" />
   <ArreteCadreFormWrapperNotPilote v-if="arreteCadre && isAci && !isPilote" :arreteCadre="arreteCadre" />
 </template>
+
+<style lang="scss">
+.fr-btns-group--sticky {
+  &.sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 1000;
+    background-color: var(--grey-1000-50);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding-top: 1rem;
+  }
+}
+
+.fr-btns-group--shadow-sticky {
+  display: none;
+  margin-top: 32px;
+  height: 56px;
+  
+  &.visible {
+    display: block;
+  }
+}
+</style>

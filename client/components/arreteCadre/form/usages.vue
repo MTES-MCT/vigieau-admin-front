@@ -6,11 +6,9 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
-import { requiredIf } from '@vuelidate/validators';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  fullValidation: boolean;
   usageSelected?: Usage;
 }>();
 const modalUsageOpened: Ref<boolean> = ref(false);
@@ -30,7 +28,7 @@ const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
 const rules = computed(() => {
   return {
     usagesArreteCadre: {
-      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un usage", requiredIf(props.fullValidation)),
+      required: helpers.withMessage("L'arrêté doit être lié à au moins un usage", required),
     },
   };
 });
@@ -151,6 +149,10 @@ watch(
     }
   },
 );
+
+defineExpose({
+  v$,
+});
 </script>
 
 <template>

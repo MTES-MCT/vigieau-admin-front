@@ -14,8 +14,8 @@ export class ArreteCadre {
   arretesRestriction: ArreteRestriction[];
 
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
-  niveauGraviteSpecifiqueEap: boolean | null;
-  ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
+  // niveauGraviteSpecifiqueEap: boolean | null;
+  // ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
   
   // To upload file
   file: any;
@@ -31,8 +31,8 @@ export class ArreteCadre {
     this.zonesAlerte = [];
     this.usagesArreteCadre = [];
     this.communeNiveauGraviteMax = null;
-    this.niveauGraviteSpecifiqueEap = null;
-    this.ressourceEapCommunique = null;
+    // this.niveauGraviteSpecifiqueEap = null;
+    // this.ressourceEapCommunique = null;
     this.arretesRestriction = [];
   }
 }

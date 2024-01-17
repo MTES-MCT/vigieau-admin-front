@@ -12,10 +12,12 @@ const statusOptions = ref([
   {
     label: 'En vigueur',
     value: 'publie',
+    'data-cy': 'ArreteCadreListFilterPublie',
   },
   {
     label: 'Abrogé',
     value: 'abroge',
+    'data-cy': 'ArreteCadreListFilterAbroge',
   },
 ]);
 
@@ -64,7 +66,7 @@ watch(statusFilter, () => {
       <VIcon v-if="loading" name="ri-loader-4-line" animation="spin" :width="40" :height="40" />
     </h1>
     <NuxtLink to="/arrete-cadre/nouveau/edition">
-      <DsfrButton label="Créer un nouvel arrêté" />
+      <DsfrButton label="Créer un nouvel arrêté" data-cy="ArreteCadreListAddBtn" />
     </NuxtLink>
     <div class="fr-col-12 fr-grid-row fr-mt-2w">
       <div class="fr-col-12 fr-col-md-8">

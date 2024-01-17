@@ -10,7 +10,6 @@ import { requiredIf } from '@vuelidate/validators';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  fullValidation: boolean;
 }>();
 
 const query: Ref<string> = ref('');
@@ -45,7 +44,7 @@ const rules = computed(() => {
       required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
     },
     departements: {
-      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins un département", requiredIf(props.fullValidation)),
+      required: helpers.withMessage("L'arrêté doit être lié à au moins un département", required),
     },
   };
 });
@@ -107,7 +106,7 @@ const departementPiloteChange = (depPiloteId: string) => {
     props.arreteCadre.departements = [...[departementPilote], ...deps];
   }
   computeDepartementsTags();
-}
+};
 
 computeDepartementsTags();
 
@@ -133,6 +132,10 @@ watch(
 
 watch(isAci, () => {
   assignDepartement(true);
+});
+
+defineExpose({
+  v$,
 });
 </script>
 
@@ -162,11 +165,15 @@ watch(isAci, () => {
           class="fr-mb-2w"
         />
         <DsfrHighlight v-if="authStore.user.role !== 'mte' && arreteCadre.departements[0]" :text="arreteCadre.departements[0].nom" />
-        <DsfrSelect v-if="authStore.user.role === 'mte'"
-                    :model-value="arreteCadre.departements[0]?.id"
-                    :label="isAci ? 'Département pilote' : 'Département'"
-                    :options="departementsOptions"
-                    @update:modelValue="departementPiloteChange($event)"/>
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
+          <DsfrSelect
+            v-if="authStore.user.role === 'mte'"
+            :model-value="arreteCadre.departements[0]?.id"
+            :label="isAci ? 'Département pilote' : 'Département'"
+            :options="departementsOptions"
+            @update:modelValue="departementPiloteChange($event)"
+          />
+        </DsfrInputGroup>
         <DsfrAlert
           v-if="isAci"
           type="info"

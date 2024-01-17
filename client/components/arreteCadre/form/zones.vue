@@ -6,32 +6,24 @@ import { useRefDataStore } from '~/stores/refData';
 import type { Departement } from '~/dto/departement.dto';
 import type { Ref } from 'vue';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
-import { requiredIf } from '@vuelidate/validators';
 import { useAuthStore } from "~/stores/auth";
+import { required } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  fullValidation: boolean;
 }>();
 
 const refDataStore = useRefDataStore();
 const authStore = useAuthStore();
 const utils = useUtils();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map((z) => z.id));
-const departementsPiloteFiletered: Ref<any[]> = ref(
-  refDataStore.departements.filter((d) => props.arreteCadre.departements.length < 2 || authStore.user.role === 'mte' ? 
-    props.arreteCadre.departements.some((ad) => ad.id === d.id) :
-    props.arreteCadre.departements.some((ad) => ad.id === d.id) && d.code === authStore.user.roleDepartement
-  ),
-);
-const departementsFiletered: Ref<any[]> = ref(
-  refDataStore.departements.filter((d) => props.arreteCadre.departements.some((ad) => ad.id === d.id) && !departementsPiloteFiletered.value.some((dp) => dp.id === d.id)),
-);
+const departementsPiloteFiletered: Ref<any[]> = ref([]);
+const departementsFiletered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
   return {
     zonesAlerte: {
-      requiredIf: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", requiredIf(props.fullValidation)),
+      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", required),
     },
   };
 });
@@ -83,7 +75,11 @@ watch(zonesSelected, () => {
 watch(
   () => props.arreteCadre.departements,
   () => {
-    departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.map((ad) => ad.id).includes(d.id));
+    departementsPiloteFiletered.value = refDataStore.departements.filter((d) => (props.arreteCadre.departements.length < 2 || authStore.user.role === 'mte') ?
+      props.arreteCadre.departements.some((ad) => ad.id === d.id) :
+      props.arreteCadre.departements.some((ad) => ad.id === d.id) && d.code === authStore.user.roleDepartement
+    );
+    departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.some((ad) => ad.id === d.id) && !departementsPiloteFiletered.value.some((dp) => dp.id === d.id));
     zonesSelected.value = zonesSelected.value.filter((z) =>
       departementsFiletered.value
         .map((d: Departement) => d.zonesAlerte.map((za: ZoneAlerte) => za.id))
@@ -92,9 +88,14 @@ watch(
     );
     computeDepSelected();
   },
+  { immediate: true }
 );
 
 computeDepSelected();
+
+defineExpose({
+  v$,
+});
 </script>
 
 <template>

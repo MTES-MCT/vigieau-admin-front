@@ -27,7 +27,7 @@ const arreteCadreActions: Ref<any> = ref([
   // },
   {
     text: 'Modifier',
-    hide: props.arreteCadre.statut === 'abroge',
+    show: authStore.isMte || props.arreteCadre.statut !== 'abroge',
     onclick: () => {
       askEditArreteCadre(props.arreteCadre);
     },
@@ -44,18 +44,20 @@ const arreteCadreActions: Ref<any> = ref([
     onclick: () => {
       navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
     },
+    show: true,
   },
   {
     text: 'Abroger',
-    hide: ['a_valider', 'abroge'].includes(props.arreteCadre.statut),
+    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && (authStore.isMte ||
+      (props.arreteCadre.departements.length === 1 || props.arreteCadre.departementPilote?.code === authStore.user.roleDepartement)),
     onclick: () => {
       repealModalOpened.value = true;
     },
   },
   {
     text: 'Supprimer',
-    hide: !authStore.isMte &&
-      !(props.arreteCadre.arretesRestriction.length < 1
+    show: authStore.isMte ||
+      (props.arreteCadre.arretesRestriction.length < 1
       && (props.arreteCadre.departements.length === 1 || props.arreteCadre.departementPilote?.code === authStore.user.roleDepartement)),
     onclick: () => {
       askDeleteArreteCadre(props.arreteCadre);
@@ -253,12 +255,17 @@ const repealArrete = async (ac: ArreteCadre) => {
             <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
           </p>
           <div :id="'action_' + arreteCadre.id" class="fr-card__actions">
-            <DsfrButton label="Actions" icon-only secondary icon="ri-more-2-fill" @click="actionsOpened = !actionsOpened" />
+            <DsfrButton label="Actions"
+                        data-cy="ArreteCadreCardActionsBtn"
+                        icon-only
+                        secondary
+                        icon="ri-more-2-fill"
+                        @click="actionsOpened = !actionsOpened" />
             <div v-if="actionsOpened" class="fr-card__actions__menu">
               <div class="fr-menu">
                 <ul class="fr-menu__list">
                   <template v-for="action of arreteCadreActions">
-                    <li v-if="!action.hide">
+                    <li v-if="action.show">
                       <a
                         class="fr-nav__link"
                         @click="
