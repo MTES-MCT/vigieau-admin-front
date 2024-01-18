@@ -25,6 +25,7 @@
     "@vuelidate/validators": "^2.0.4",
     "focus-trap": "^7.5.2",
     "focus-trap-vue": "^4.0.2",
+    "lodash.deburr": "^4.1.0",
     "maplibre-gl": "^3.6.2"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
+import * as deburr from "lodash.deburr";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -40,7 +41,7 @@ const filterUsages = () => {
   let tmp: any[] = [];
   if (query.value) {
     tmp = refDataStore.usages.filter((u) => {
-      return u.nom.toLowerCase().includes(query.value.toLowerCase());
+      return deburr(u.nom).replace(/[\s\-\_]/g, '').toLowerCase().includes(deburr(query.value).replace(/[\s\-\_]/g, '').toLowerCase());
     });
     tmp.map((u) => {
       u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex((uac) => uac.usage.id === u.id) > -1;

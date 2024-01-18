@@ -6,7 +6,7 @@ import type { Ref } from "vue";
 import type { Departement } from "~/dto/departement.dto";
 import { useAuthStore } from "~/stores/auth";
 import { useRefDataStore } from "~/stores/refData";
-import { requiredIf } from "@vuelidate/validators";
+import * as deburr from "lodash.deburr"; 
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -52,7 +52,8 @@ const rules = computed(() => {
 const filterDepartements = () => {
   departementsFiltered.value = query.value
     ? refDataStore.departements.filter((d) => {
-      return !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id) && d.nom.toLowerCase().includes(query.value.toLowerCase());
+      return !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id) 
+        && (deburr(d.nom).replace(/[\s\-\_]/g, '').toLowerCase().includes(deburr(query.value).replace(/[\s\-\_]/g, '').toLowerCase()) || d.code.toLowerCase().includes(query.value.toLowerCase()));
     })
     : [];
 };
@@ -192,6 +193,7 @@ defineExpose({
               v-model="query"
               :options="departementsFiltered"
               :required="true"
+              placeholder="Rechercher un département"
               @update:modelValue="selectDepartement($event)"
               @search="selectDepartement($event)"
             />

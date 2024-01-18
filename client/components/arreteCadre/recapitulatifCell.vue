@@ -53,7 +53,11 @@ if(props.html?.length > lengthTruncated) {
 
 <template>
   <div class="arrete-cadre-recapitulatif-cell">
-    <div v-html="htmlTruncated">
+    <div v-if="htmlTruncated" v-html="htmlTruncated">
+    </div>
+    <div v-else class="text-align-center">
+      <VIcon name="ri-alert-fill" /><br/>
+      Champ vide
     </div>
     <div class="arrete-cadre-recapitulatif-cell__hover">
       <DsfrButtonGroup 
@@ -92,6 +96,10 @@ if(props.html?.length > lengthTruncated) {
     align-items: flex-end;
     justify-content: flex-end;
     visibility: hidden;
+  }
+  
+  .ov-icon {
+    color: var(--blue-france-sun-113-625);
   }
 }
 </style>

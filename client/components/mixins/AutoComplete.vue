@@ -119,8 +119,6 @@ function checkKeyboardNav($event) {
   } else if ($event.key === 'search') {
     if (!!props.options.length) {
       selectOption(props.options[activeOption.value > 0 ? activeOption.value : 0]);
-    } else if (optionSelected.value) {
-      emit('update:modelValue', optionSelected.value);
     }
     hasFocus.value = false;
   }

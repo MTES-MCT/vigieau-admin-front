@@ -169,6 +169,7 @@ const usagesFormRef = ref(null);
       <ArreteCadreFormRecapitulatif
         :arrete-cadre="arreteCadre"
         :key="componentKey"
+        :view-only="false"
         @usageSelected="
           usageSelected = $event;
           previousStep();
