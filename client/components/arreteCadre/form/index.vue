@@ -11,7 +11,6 @@ const arreteCadre: Ref<ArreteCadre> = ref();
 
 const route = useRoute();
 const api = useApi();
-const authStore = useAuthStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
 const mounted = ref(false);
 
