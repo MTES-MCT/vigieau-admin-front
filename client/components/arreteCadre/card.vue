@@ -16,6 +16,7 @@ const emit = defineEmits<{
 
 const alertStore = useAlertStore();
 const authStore = useAuthStore();
+const isAcOnDepartementUser: boolean = authStore.isMte || props.arreteCadre.departements.some(d => d.code === authStore.user.roleDepartement);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
@@ -28,7 +29,8 @@ const arreteCadreActions: Ref<any> = ref([
   // },
   {
     text: 'Modifier',
-    show: authStore.isMte || props.arreteCadre.statut !== 'abroge',
+    show: authStore.isMte
+      || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser),
     onclick: () => {
       askEditArreteCadre(props.arreteCadre);
     },
@@ -49,8 +51,7 @@ const arreteCadreActions: Ref<any> = ref([
   },
   {
     text: 'Abroger',
-    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && (authStore.isMte ||
-      (props.arreteCadre.departements.length === 1 || props.arreteCadre.departementPilote?.code === authStore.user.roleDepartement)),
+    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
     onclick: () => {
       repealModalOpened.value = true;
     },
@@ -58,8 +59,7 @@ const arreteCadreActions: Ref<any> = ref([
   {
     text: 'Supprimer',
     show: authStore.isMte ||
-      (props.arreteCadre.arretesRestriction.length < 1
-      && (props.arreteCadre.departements.length === 1 || props.arreteCadre.departementPilote?.code === authStore.user.roleDepartement)),
+      (props.arreteCadre.arretesRestriction.length < 1 && isAcOnDepartementUser),
     onclick: () => {
       askDeleteArreteCadre(props.arreteCadre);
     },

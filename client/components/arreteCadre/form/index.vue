@@ -13,8 +13,6 @@ const route = useRoute();
 const api = useApi();
 const authStore = useAuthStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
-const isAci: Ref<boolean> = ref(false);
-const isPilote: Ref<boolean> = ref(false);
 const mounted = ref(false);
 
 const initSticky = () => {
@@ -54,8 +52,6 @@ if (isNewArreteCadre) {
   const { data, error } = await api.arreteCadre.get(<string>route.params.id);
   if (data.value) {
     arreteCadre.value = <ArreteCadre>data.value;
-    isAci.value = arreteCadre.value.departements?.length > 1;
-    isPilote.value = authStore.user.role === 'mte' || arreteCadre.value.departementPilote?.code === authStore.user.roleDepartement;
     if (props.duplicate) {
       arreteCadre.value.id = null;
       arreteCadre.value.usagesArreteCadre.map((u) => {
@@ -80,12 +76,11 @@ onMounted(() => {
   if (arreteCadre.value) {
     initSticky();
   }
-});
+})
 </script>
 
 <template>
-  <ArreteCadreFormWrapper v-if="arreteCadre && (!isAci || (isAci && isPilote))" :arreteCadre="arreteCadre" />
-  <ArreteCadreFormWrapperNotPilote v-if="arreteCadre && isAci && !isPilote" :arreteCadre="arreteCadre" />
+  <ArreteCadreFormWrapper v-if="arreteCadre" :arreteCadre="arreteCadre" />
 </template>
 
 <style lang="scss">

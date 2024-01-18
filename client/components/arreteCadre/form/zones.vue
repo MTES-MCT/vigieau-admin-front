@@ -17,7 +17,6 @@ const refDataStore = useRefDataStore();
 const authStore = useAuthStore();
 const utils = useUtils();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map((z) => z.id));
-const departementsPiloteFiletered: Ref<any[]> = ref([]);
 const departementsFiletered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
@@ -55,9 +54,6 @@ const selectAll = (d: any) => {
 };
 
 const computeDepSelected = () => {
-  departementsPiloteFiletered.value.forEach((d) => {
-    d.nbZonesSelected = zonesSelected.value.filter((z) => d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
-  });
   departementsFiletered.value.forEach((d) => {
     d.nbZonesSelected = zonesSelected.value.filter((z) => d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
   });
@@ -75,13 +71,9 @@ watch(zonesSelected, () => {
 watch(
   () => props.arreteCadre.departements,
   () => {
-    departementsPiloteFiletered.value = refDataStore.departements.filter((d) => (props.arreteCadre.departements.length < 2 || authStore.user.role === 'mte') ?
-      props.arreteCadre.departements.some((ad) => ad.id === d.id) :
-      props.arreteCadre.departements.some((ad) => ad.id === d.id) && d.code === authStore.user.roleDepartement
-    );
-    departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.some((ad) => ad.id === d.id) && !departementsPiloteFiletered.value.some((dp) => dp.id === d.id));
+    departementsFiletered.value = refDataStore.departements.filter((d) => props.arreteCadre.departements.some((ad) => ad.id === d.id));
     zonesSelected.value = zonesSelected.value.filter((z) =>
-      [...departementsPiloteFiletered.value, ...departementsFiletered.value]
+      departementsFiletered.value
         .map((d: Departement) => d.zonesAlerte.map((za: ZoneAlerte) => za.id))
         .flat()
         .includes(z),
@@ -103,7 +95,7 @@ defineExpose({
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
-          <div v-for="d of departementsPiloteFiletered">
+          <div v-for="d of departementsFiletered">
             <div class="zone-alerte__title">
               <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>
               <div>
@@ -160,22 +152,6 @@ defineExpose({
             </div>
           </div>
         </DsfrInputGroup>
-        <template v-if="departementsFiletered && departementsFiletered.length > 0">
-          <h6>Zones d'alertes à compléter par les autres départements</h6>
-          <div v-for="d of departementsFiletered" class="fr-grid-row zone-alerte__a-completer">
-            <div>
-              {{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})
-            </div>
-            <div v-if="d.nbZonesSelected > 0">
-              <VIcon name="ri-check-fill" />
-              Fait
-            </div>
-            <div v-else>
-              <VIcon name="ri-time-fill" />
-              En attente
-            </div>
-          </div>
-        </template>
       </div>
     </div>
   </form>
