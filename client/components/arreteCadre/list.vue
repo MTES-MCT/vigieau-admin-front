@@ -2,7 +2,11 @@
 import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { PaginatedResult } from '~/dto/paginated_result.dto';
+import { useRefDataStore } from '~/stores/refData';
+import { useAuthStore } from '~/stores/auth';
 
+const refDataStore = useRefDataStore();
+const authStore = useAuthStore();
 const arretesCadrePaginated: Ref<PaginatedResult<ArreteCadre> | null> = ref(null);
 const currentPage: Ref<number> = ref(0);
 const query: Ref<string> = ref('');
@@ -20,14 +24,26 @@ const statusOptions = ref([
     'data-cy': 'ArreteCadreListFilterAbroge',
   },
 ]);
+const departementsOptions: Ref<any[] | undefined> = ref();
+const departementFilter: Ref<number | null | undefined> = ref();
 
 const api = useApi();
 
 const paginate = async () => {
-  const filter = {
-    attribute: 'statut',
-    filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider,a_venir' : 'abroge'}`,
-  };
+  const filter = [
+    {
+      attribute: 'statut',
+      filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider,a_venir' : 'abroge'}`,
+    },
+  ];
+  if(departementFilter.value) {
+    filter.push(
+      {
+        attribute: 'departements.id',
+        filter: `$eq:${departementFilter.value}`,
+      }
+    );
+  }
   loading.value = true;
   const { data, error } = await api.arreteCadre.paginate(currentPage.value + 1, query.value, filter);
   loading.value = false;
@@ -42,8 +58,6 @@ const paginate = async () => {
   }
 };
 
-paginate();
-
 watch(
   query,
   useUtils().debounce(async () => {
@@ -54,11 +68,31 @@ watch(
 watch(statusFilter, () => {
   paginate();
 });
+
+watch(departementFilter, () => {
+  paginate();
+});
+
+watch(
+  () => refDataStore.departements,
+  () => {
+    if (refDataStore.departements && refDataStore.departements.length > 0) {
+      departementsOptions.value = refDataStore.departements.map((d) => {
+        return {
+          value: d.id,
+          text: d.nom,
+        };
+      });
+      departementFilter.value =
+        authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w"
-       data-cy="ArreteCadreListHeader">
+  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w" data-cy="ArreteCadreListHeader">
     <MixinsAlerts class="fr-mb-2w" />
     <h1 class="fr-my-0">
       Les arrêtés cadre
@@ -68,23 +102,21 @@ watch(statusFilter, () => {
     <NuxtLink to="/arrete-cadre/nouveau/edition">
       <DsfrButton label="Créer un nouvel arrêté" data-cy="ArreteCadreListAddBtn" />
     </NuxtLink>
-    <div class="fr-col-12 fr-grid-row fr-mt-2w">
-      <div class="fr-col-12 fr-col-md-8">
-        <DsfrSegmentedSet v-model="statusFilter"
-                          :inline="true"
-                          :options="statusOptions" />
+    <div class="fr-col-12 fr-grid-row fr-grid-row--bottom fr-grid-row--gutters fr-mt-2w">
+      <div class="fr-col-12 fr-col-md-6 fr-mb-2w">
+        <DsfrSegmentedSet v-model="statusFilter" :inline="true" :options="statusOptions" />
       </div>
-      <div class="fr-col-12 fr-col-md-4 fr-mb-2w">
-        <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar"/>
-      </div>      
+      <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
+        <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar" />
+      </div>
+      <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
+        <DsfrSelect v-model="departementFilter" label="Filtrer par Département" :options="departementsOptions" />
+      </div>
     </div>
   </div>
   <template v-if="arretesCadrePaginated">
-    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w"
-         data-cy="ArreteCadreList">
-      <div class="fr-col-12 text-align-center" v-if="arretesCadrePaginated.data.length < 1">
-        Aucun arrêté cadre n'a été trouvé.
-      </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w" data-cy="ArreteCadreList">
+      <div class="fr-col-12 text-align-center" v-if="arretesCadrePaginated.data.length < 1">Aucun arrêté cadre n'a été trouvé.</div>
       <div v-for="arreteCadre in arretesCadrePaginated.data" class="fr-col-md-4 fr-col-12">
         <ArreteCadreCard :arrete-cadre="arreteCadre" :key="arreteCadre.id" @delete="paginate()" @repeal="paginate()" />
       </div>

@@ -239,7 +239,7 @@ const repealArrete = async (ac: ArreteCadre) => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' ? '/edition' : ''}`" v-html="numeroToDisplay"></NuxtLink>
+          <NuxtLink :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser ? '/edition' : ''}`" v-html="numeroToDisplay"></NuxtLink>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:

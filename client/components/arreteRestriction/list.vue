@@ -23,10 +23,10 @@ const statusOptions = ref([
 const api = useApi();
 
 const paginate = async () => {
-  const filter = {
+  const filter = [{
     attribute: 'statut',
     filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider' : 'abroge'}`,
-  };
+  }];
   loading.value = true;
   const { data, error } = await api.arreteRestriction.paginate(currentPage.value + 1, query.value, filter);
   loading.value = false;

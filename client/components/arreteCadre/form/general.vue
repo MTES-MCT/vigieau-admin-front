@@ -32,12 +32,6 @@ const assignDepartement = (force = false) => {
   }
 };
 
-onMounted(() => {
-  if (refDataStore.departements) {
-    assignDepartement();
-  }
-});
-
 const rules = computed(() => {
   return {
     numero: {
@@ -138,6 +132,16 @@ watch(
 watch(isAci, () => {
   assignDepartement(true);
 });
+
+watch(
+  () => refDataStore.departements,
+  () => {
+    if (refDataStore.departements && refDataStore.departements.length > 0) {
+      assignDepartement();
+    }
+  },
+  { immediate: true }
+);
 
 defineExpose({
   v$
