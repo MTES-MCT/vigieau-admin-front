@@ -4,6 +4,7 @@ import { maxLength, required } from '@vuelidate/validators/dist';
 import { Usage } from '~/dto/usage.dto';
 import { useRefDataStore } from '~/stores/refData';
 import { helpers, or } from '@vuelidate/validators';
+import { ThematiqueExamples } from '~/dto/thematique.dto';
 
 const props = defineProps<{
   usage: Usage;
@@ -77,8 +78,13 @@ const rules = computed(() => {
       }),
     },
     concerne: {
-      shouldBeChecked: helpers.withMessage('Au moins un type d\'usager doit être renseigné.', () => {
-        return props.usage.concerneParticulier || props.usage.concerneEntreprise || props.usage.concerneCollectivite || props.usage.concerneExploitation;
+      shouldBeChecked: helpers.withMessage("Au moins un type d'usager doit être renseigné.", () => {
+        return (
+          props.usage.concerneParticulier ||
+          props.usage.concerneEntreprise ||
+          props.usage.concerneCollectivite ||
+          props.usage.concerneExploitation
+        );
       }),
     },
   };
@@ -97,6 +103,11 @@ const thematiqueSelected = ($event: number) => {
   props.usage.thematique = refDataStore.thematiques.findLast((t) => t.id == $event);
 };
 
+const thematiqueDescription = computed(() => {
+  return `Pour éviter les incompréhensions des usagers de VigiEau, vérifiez que la thématique choisie est bien cohérente avec l’usage. Par exemple ${props
+    .usage.thematique?.nom} peut être associé avec&nbsp;: ${ThematiqueExamples[props.usage.thematique?.nom]}.`;
+});
+
 defineExpose({
   submitForm,
 });
@@ -106,13 +117,16 @@ defineExpose({
   <div class="divider fr-mb-2w" />
   <h6>Informations</h6>
   <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
-    <DsfrInput id="nom"
-               v-model="usage.nom"
-               label="Nom de l'usage"
-               label-visible type="text"
-               data-cy="UsageFormNameInput"
-               name="nom"
-               :required="true" />
+    <DsfrInput
+      id="nom"
+      v-model="usage.nom"
+      label="Nom de l'usage"
+      label-visible
+      type="text"
+      data-cy="UsageFormNameInput"
+      name="nom"
+      :required="true"
+    />
     <span class="fr-input-group__sub-hint">{{ usage.nom ? usage.nom.length : 0 }}/150</span>
   </DsfrInputGroup>
   <DsfrInputGroup :error-message="utils.showInputError(v$, 'thematique')">
@@ -125,30 +139,31 @@ defineExpose({
       @update:modelValue="thematiqueSelected"
     />
   </DsfrInputGroup>
-  <DsfrAlert
-    type="warning"
-    title="Vérifier la thématique"
-    class="fr-mb-2w"
-    description="Pour éviter les incompréhensions des usagers de VigiEau, vérifiez que la thématique choisie est bien cohérente avec l’usage. Par exemple Arrosage peut être associé avec&nbsp;: arrosage des pelouses fleuris, arrosage des jardins potagers."
-  />
+  <DsfrAlert v-if="usage.thematique" type="warning" title="Vérifier la thématique" class="fr-mb-2w">
+    <div v-html="thematiqueDescription" />
+  </DsfrAlert>
 
   <div class="fr-my-2w">Usagers</div>
   <DsfrInputGroup :error-message="utils.showInputError(v$, 'concerne')">
     <DsfrInputGroup v-for="concerne of concernes" :error-message="utils.showInputError(v$, concerne.attribute)">
-      <DsfrCheckbox :label="concerne.name"
-                    :name="concerne.attribute"
-                    :data-cy="'UsageForm' + concerne.attribute + 'Checkbox'"
-                    v-model="usage[concerne.attribute]" />
+      <DsfrCheckbox
+        :label="concerne.name"
+        :name="concerne.attribute"
+        :data-cy="'UsageForm' + concerne.attribute + 'Checkbox'"
+        v-model="usage[concerne.attribute]"
+      />
     </DsfrInputGroup>
   </DsfrInputGroup>
 
   <div class="fr-my-2w">À quelle(s) ressource(s) cet usage est-il associé ?</div>
   <DsfrInputGroup :error-message="utils.showInputError(v$, 'ressource')">
     <DsfrInputGroup v-for="ressource of resssources" :error-message="utils.showInputError(v$, ressource.attribute)">
-      <DsfrCheckbox :label="ressource.name"
-                    :name="ressource.attribute"
-                    :data-cy="'UsageForm' + ressource.attribute + 'Checkbox'"
-                    v-model="usage[ressource.attribute]" />
+      <DsfrCheckbox
+        :label="ressource.name"
+        :name="ressource.attribute"
+        :data-cy="'UsageForm' + ressource.attribute + 'Checkbox'"
+        v-model="usage[ressource.attribute]"
+      />
     </DsfrInputGroup>
   </DsfrInputGroup>
 </template>
