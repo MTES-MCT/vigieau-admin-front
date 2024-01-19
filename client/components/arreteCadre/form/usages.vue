@@ -6,7 +6,7 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
-import * as deburr from "lodash.deburr";
+import deburr from "lodash.deburr";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
