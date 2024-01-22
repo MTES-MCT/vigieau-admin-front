@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
-import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
-import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
-import { type ArreteRestriction, ArreteRestrictionStatutFr } from '~/dto/arrete_restriction.dto';
+import type { Ref } from "vue";
+import { type ArreteRestriction, ArreteRestrictionStatutFr } from "~/dto/arrete_restriction.dto";
+import { useAuthStore } from "~/stores/auth";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -10,44 +9,53 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   delete: any;
+  repeal: any;
 }>();
 
+const authStore = useAuthStore();
+const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.arretesCadre.some(ac => ac.departements.some(d => d.code === authStore.user.roleDepartement));
+const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteRestrictionActions: Ref<any> = ref([
   {
-    text: 'Créer un arrêté de restriction associé',
+    text: "Modifier",
+    show: authStore.isMte
+      || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser),
     onclick: () => {
-      console.log('click');
-    },
+      askEditArreteRestriction(props.arreteRestriction);
+    }
   },
+  // {
+  //   text: 'Exporter',
+  //   onclick: () => {
+  //     console.log('click');
+  //   },
+  // },
   {
-    text: 'Modifier',
-    onclick: () => {
-      navigateTo(`/arrete-restriction/${props.arreteRestriction.id}/edition`);
-    },
-  },
-  {
-    text: 'Exporter',
-    onclick: () => {
-      console.log('click');
-    },
-  },
-  {
-    text: 'Dupliquer',
+    text: "Dupliquer",
     onclick: () => {
       navigateTo(`/arrete-restriction/${props.arreteRestriction.id}/duplication`);
     },
+    show: true
   },
   {
-    text: 'Supprimer',
+    text: "Abroger",
+    show: ["a_venir", "publie"].includes(props.arreteRestriction.statut) && isArOnDepartementUser,
     onclick: () => {
-      deleteArreteCadre(props.arreteRestriction.id);
-    },
+      repealModalOpened.value = true;
+    }
   },
+  {
+    text: "Supprimer",
+    show: authStore.isMte || isArOnDepartementUser,
+    onclick: () => {
+      askDeleteArreteRestriction(props.arreteRestriction);
+    }
+  }
 ]);
 
 const onKeyDown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
+  if (e.key === "Escape") {
     actionsOpened.value = false;
   }
 };
@@ -70,28 +78,117 @@ const handleElementClick = (el: HTMLElement) => {
 };
 
 onMounted(() => {
-  document.addEventListener('click', onDocumentClick);
-  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener("click", onDocumentClick);
+  document.addEventListener("keydown", onKeyDown);
 });
 onUnmounted(() => {
-  document.removeEventListener('click', onDocumentClick);
-  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener("click", onDocumentClick);
+  document.removeEventListener("keydown", onKeyDown);
 });
 
 const api = useApi();
+const askDeleteArreteRestriction = async (arreteRestriction: ArreteRestriction) => {
+  modalActions.value = [
+    {
+      label: "Confirmer",
+      onclick: () => {
+        deleteArreteRestriction(arreteRestriction.id);
+      }
+    },
+    {
+      label: "Annuler",
+      secondary: true,
+      onclick: () => {
+        modalOpened.value = false;
+      }
+    }
+  ];
+  modalTitle.value = `Suppression d’un arrêté de restriction`;
+  modalDescription.value = `Vous confirmez que la suppression de cet arrêté de restriction est justifiée par une erreur de saisie.`;
+  modalOpened.value = true;
+};
 const deleteArreteRestriction = async (id: string) => {
   const { data, error } = await api.arreteRestriction.delete(id);
   if (!error.value) {
-    emit('delete');
+    emit("delete");
   }
+  modalOpened.value = false;
 };
 
 // Permet de faire un retour à la ligne sur les underscores
 const numeroToDisplay = computed(() => {
   let num = props.arreteRestriction.numero;
-  num = num.replace(/_/g, '_<wbr/>');
+  num = num.replace(/_/g, "_<wbr/>");
   return num;
 });
+
+const askEditArreteRestriction = async (arreteRestriction: ArreteRestriction) => {
+  modalActions.value = [
+    {
+      label: "Confirmer",
+      "data-cy": "ConfirmEditFormBtn",
+      onclick: () => {
+        editArreteRestriction(arreteRestriction.id);
+      }
+    },
+    {
+      label: "Annuler",
+      secondary: true,
+      onclick: () => {
+        modalOpened.value = false;
+      }
+    }
+  ];
+  if (arreteRestriction.statut === "a_valider") {
+    editArreteRestriction(arreteRestriction.id);
+  } else {
+    modalTitle.value = `Modification d’un arrêté de restriction en vigueur`;
+    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté de restriction.`;
+    modalOpened.value = true;
+  }
+};
+
+const editArreteRestriction = (id: string) => {
+  navigateTo(`/arrete-restriction/${id}/edition`);
+};
+
+const modalOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref("");
+const modalDescription: Ref<string> = ref("");
+const modalActions: Ref<any[]> = ref([]);
+
+const abrogerFormRef = ref(null);
+const loading = ref(false);
+const repealModalOpened: Ref<boolean> = ref(false);
+const repealModalActions: Ref<any[]> = ref([
+  {
+    label: "Abroger",
+    "data-cy": "RepealFormRepealBtn",
+    onclick: () => {
+      abrogerFormRef.value?.submitForm();
+    }
+  },
+  {
+    label: "Annuler",
+    secondary: true,
+    onclick: () => {
+      repealModalOpened.value = false;
+    }
+  }
+]);
+
+const repealArrete = async (ar: ArreteRestriction) => {
+  if (loading.value) {
+    return;
+  }
+  loading.value = true;
+  const { data, error } = await api.arreteRestriction.repeal(ar.id?.toString(), ar);
+  if (!error.value) {
+    repealModalOpened.value = false;
+    emit("repeal");
+  }
+  loading.value = false;
+};
 </script>
 
 <template>
@@ -122,29 +219,37 @@ const numeroToDisplay = computed(() => {
               <span v-if="arreteRestriction.dateFin"> &nbsp;au {{ arreteRestriction.dateFin }} </span>
               <div class="fr-col-12" v-if="arreteRestriction.dateSignature">
                 signé le {{ arreteRestriction.dateSignature }}
-              </div>              
+              </div>
             </div>
           </p>
-          <!--          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions">-->
-          <!--            <DsfrButton label="Actions" icon-only secondary icon="ri-more-2-fill" @click="actionsOpened = !actionsOpened" />-->
-          <!--            <div v-if="actionsOpened" class="fr-card__actions__menu">-->
-          <!--              <div class="fr-menu">-->
-          <!--                <ul class="fr-menu__list">-->
-          <!--                  <li v-for="action of arreteRestrictionActions">-->
-          <!--                    <a-->
-          <!--                      class="fr-nav__link"-->
-          <!--                      @click="-->
-          <!--                        action.onclick();-->
-          <!--                        actionsOpened = false;-->
-          <!--                      "-->
-          <!--                    >-->
-          <!--                      {{ action.text }}-->
-          <!--                    </a>-->
-          <!--                  </li>-->
-          <!--                </ul>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
+          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions">
+            <DsfrButton 
+              label="Actions"
+              data-cy="ArreteRestrictionCardActionsBtn"
+              icon-only
+              secondary 
+              icon="ri-more-2-fill" 
+              @click="actionsOpened = !actionsOpened" />
+            <div v-if="actionsOpened" class="fr-card__actions__menu">
+              <div class="fr-menu">
+                <ul class="fr-menu__list">
+                  <template v-for="action of arreteRestrictionActions">
+                    <li v-if="action.show">
+                      <a
+                        class="fr-nav__link"
+                        @click="
+                          action.onclick();
+                          actionsOpened = false;
+                        "
+                      >
+                        {{ action.text }}
+                      </a>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <!--      <div class="fr-card__footer">-->
@@ -156,6 +261,18 @@ const numeroToDisplay = computed(() => {
       <!--      </div>-->
     </div>
   </div>
+  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
+    <div v-html="modalDescription"></div>
+  </DsfrModal>
+  <DsfrModal
+    :opened="repealModalOpened"
+    icon="ri-arrow-right-line"
+    :title="`Abroger l'arrêté ${arreteRestriction.numero}`"
+    :actions="repealModalActions"
+    @close="repealModalOpened = false"
+  >
+    <ArreteRestrictionFormAbroger ref="abrogeFormRef" :arreteRestriction="arreteRestriction" @abroger="repealArrete($event)" />
+  </DsfrModal>
 </template>
 
 <style lang="scss" scoped>

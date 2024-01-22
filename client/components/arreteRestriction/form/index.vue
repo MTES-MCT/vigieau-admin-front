@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
-import { useAuthStore } from '~/stores/auth';
+import { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
   duplicate?: boolean;
 }>();
 
-const arreteCadre: Ref<ArreteCadre> = ref();
+const arreteRestriction: Ref<ArreteRestriction> = ref();
 
 const route = useRoute();
 const api = useApi();
-const isNewArreteCadre = route.params.id === 'nouveau';
+const isNewArreteRestriction = route.params.id === 'nouveau';
 const mounted = ref(false);
 
 const initSticky = () => {
@@ -22,7 +21,7 @@ const initSticky = () => {
     isStickyButtons();
   });
   if(document.querySelector('.fr-tabs')) {
-    ro.observe(document.querySelector('.fr-tabs'));    
+    ro.observe(document.querySelector('.fr-tabs'));
   }
   let footer = document.getElementsByTagName('footer')[0];
   const sticky = footer.offsetHeight;
@@ -45,24 +44,14 @@ const initSticky = () => {
   };
 };
 
-if (isNewArreteCadre) {
-  arreteCadre.value = new ArreteCadre();
+if (isNewArreteRestriction) {
+  arreteRestriction.value = new ArreteRestriction();
 } else {
-  const { data, error } = await api.arreteCadre.get(<string>route.params.id);
+  const { data, error } = await api.arreteRestriction.get(<string>route.params.id);
   if (data.value) {
-    arreteCadre.value = <ArreteCadre>data.value;
+    arreteRestriction.value = <ArreteRestriction>data.value;
     if (props.duplicate) {
-      arreteCadre.value.id = null;
-      arreteCadre.value.usagesArreteCadre.map((u) => {
-        u.id = null;
-        return u;
-      });
-    }
-    if (arreteCadre.value.departements.length > 1 && arreteCadre.value.departementPilote?.code) {
-      const depPiloteIndex = arreteCadre.value.departements.findIndex((d) => d.code === arreteCadre.value.departementPilote.code);
-      const depPilote = arreteCadre.value.departements[depPiloteIndex];
-      arreteCadre.value.departements.splice(depPiloteIndex, 1);
-      arreteCadre.value.departements.splice(0, 0, depPilote);
+      arreteRestriction.value.id = null;
     }
   }
 }
@@ -72,14 +61,14 @@ if (mounted.value) {
 
 onMounted(() => {
   mounted.value = true;
-  if (arreteCadre.value) {
+  if (arreteRestriction.value) {
     initSticky();
   }
 })
 </script>
 
 <template>
-  <ArreteCadreFormWrapper v-if="arreteCadre" :arreteCadre="arreteCadre" />
+  <ArreteRestrictionFormWrapper v-if="arreteRestriction" :arreteRestriction="arreteRestriction" />
 </template>
 
 <style lang="scss">

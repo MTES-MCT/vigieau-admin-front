@@ -2,8 +2,7 @@
 import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
-import { useAuthStore } from "~/stores/auth";
-import { useAlertStore } from "~/stores/alert";
+import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -14,9 +13,9 @@ const emit = defineEmits<{
   repeal: any;
 }>();
 
-const alertStore = useAlertStore();
 const authStore = useAuthStore();
-const isAcOnDepartementUser: boolean = authStore.isMte || props.arreteCadre.departements.some(d => d.code === authStore.user.roleDepartement);
+const isAcOnDepartementUser: boolean =
+  authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
@@ -29,15 +28,13 @@ const arreteCadreActions: Ref<any> = ref([
   // },
   {
     text: 'Modifier',
-    show: authStore.isMte
-      || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser),
+    show: authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser),
     onclick: () => {
       askEditArreteCadre(props.arreteCadre);
     },
   },
   // {
   //   text: 'Exporter',
-  //   disabled: true,
   //   onclick: () => {
   //     console.log('click');
   //   },
@@ -58,8 +55,7 @@ const arreteCadreActions: Ref<any> = ref([
   },
   {
     text: 'Supprimer',
-    show: authStore.isMte ||
-      (props.arreteCadre.arretesRestriction.length < 1 && isAcOnDepartementUser),
+    show: authStore.isMte || (props.arreteCadre.arretesRestriction.length < 1 && isAcOnDepartementUser),
     onclick: () => {
       askDeleteArreteCadre(props.arreteCadre);
     },
@@ -109,13 +105,13 @@ onUnmounted(() => {
 });
 
 const api = useApi();
-const askDeleteArreteCadre = async(arreteCadre: ArreteCadre) => {
+const askDeleteArreteCadre = async (arreteCadre: ArreteCadre) => {
   modalActions.value = [
     {
       label: 'Confirmer',
       onclick: () => {
         deleteArreteCadre(arreteCadre.id);
-      }
+      },
     },
     {
       label: 'Annuler',
@@ -127,7 +123,7 @@ const askDeleteArreteCadre = async(arreteCadre: ArreteCadre) => {
   ];
   modalTitle.value = `Suppression d’un arrêté cadre`;
   modalDescription.value = `Vous confirmez que la suppression de cet arrêté cadre est justifiée par une erreur de saisie.`;
-  if(arreteCadre.arretesRestriction.length > 0) {
+  if (arreteCadre.arretesRestriction.length > 0) {
     modalDescription.value += `<br/><br/>Les arrêtés de restriction suivant seront supprimés&nbsp;:`;
     arreteCadre.arretesRestriction.forEach((ar) => {
       modalDescription.value += `<br/>${ar.numero} - ${arreteCadreStatutFr[ar.statut]}`;
@@ -158,7 +154,7 @@ const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
       'data-cy': 'ConfirmEditFormBtn',
       onclick: () => {
         editArreteCadre(arreteCadre.id);
-      }
+      },
     },
     {
       label: 'Annuler',
@@ -168,13 +164,13 @@ const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
       },
     },
   ];
-  if(arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
+  if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
     modalTitle.value = `Modification d’un arrêté cadre avec au moins un arrêté de restriction associé`;
     modalDescription.value = `Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
     modalOpened.value = true;
   } else if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length < 1) {
     editArreteCadre(arreteCadre.id);
-  } else if(arreteCadre.arretesRestriction.length < 1) {
+  } else if (arreteCadre.arretesRestriction.length < 1) {
     modalTitle.value = `Modification d’un arrêté cadre en vigueur`;
     modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.`;
     modalOpened.value = true;
@@ -184,11 +180,11 @@ const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
 Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
     modalOpened.value = true;
   }
-}
+};
 
 const editArreteCadre = (id: string) => {
-  navigateTo(`/arrete-cadre/${id}/edition`);  
-}
+  navigateTo(`/arrete-cadre/${id}/edition`);
+};
 
 const modalOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('');
@@ -198,7 +194,7 @@ const modalActions: Ref<any[]> = ref([]);
 const abrogerFormRef = ref(null);
 const loading = ref(false);
 const repealModalOpened: Ref<boolean> = ref(false);
-const repealModalActions: Ref<any[]>  = ref([
+const repealModalActions: Ref<any[]> = ref([
   {
     label: 'Abroger',
     'data-cy': 'RepealFormRepealBtn',
@@ -220,8 +216,8 @@ const repealArrete = async (ac: ArreteCadre) => {
     return;
   }
   loading.value = true;
-  const { data, error } = await api.arreteCadre.repeal(ac.id?.toString(), ac)
-  if(!error.value) {
+  const { data, error } = await api.arreteCadre.repeal(ac.id?.toString(), ac);
+  if (!error.value) {
     repealModalOpened.value = false;
     emit('repeal');
   }
@@ -234,7 +230,10 @@ const repealArrete = async (ac: ArreteCadre) => {
     <div class="fr-card__body">
       <div class="fr-card__content">
         <h3 class="fr-card__title">
-          <NuxtLink :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser ? '/edition' : ''}`" v-html="numeroToDisplay"></NuxtLink>
+          <NuxtLink
+            :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser ? '/edition' : ''}`"
+            v-html="numeroToDisplay"
+          ></NuxtLink>
         </h3>
         <p class="fr-card__desc">
           Dep&nbsp;:
@@ -253,12 +252,14 @@ const repealArrete = async (ac: ArreteCadre) => {
             <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
           </p>
           <div :id="'action_' + arreteCadre.id" class="fr-card__actions">
-            <DsfrButton label="Actions"
-                        data-cy="ArreteCadreCardActionsBtn"
-                        icon-only
-                        secondary
-                        icon="ri-more-2-fill"
-                        @click="actionsOpened = !actionsOpened" />
+            <DsfrButton
+              label="Actions"
+              data-cy="ArreteCadreCardActionsBtn"
+              icon-only
+              secondary
+              icon="ri-more-2-fill"
+              @click="actionsOpened = !actionsOpened"
+            />
             <div v-if="actionsOpened" class="fr-card__actions__menu">
               <div class="fr-menu">
                 <ul class="fr-menu__list">
@@ -267,13 +268,13 @@ const repealArrete = async (ac: ArreteCadre) => {
                       <a
                         class="fr-nav__link"
                         @click="
-                        action.onclick();
-                        actionsOpened = false;
-                      "
+                          action.onclick();
+                          actionsOpened = false;
+                        "
                       >
                         {{ action.text }}
                       </a>
-                    </li>                    
+                    </li>
                   </template>
                 </ul>
               </div>
@@ -282,40 +283,41 @@ const repealArrete = async (ac: ArreteCadre) => {
         </div>
       </div>
       <div class="fr-card__footer fr-grid-row" v-if="arreteCadre.arretesRestriction.length > 0">
-        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
-                  v-if="arEnVigueur.length > 0"
-                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+        <NuxtLink
+          :to="'/arrete-restriction?query=' + arreteCadre.numero"
+          v-if="arEnVigueur.length > 0"
+          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        >
           {{ arEnVigueur.length }} arrêté(s) de restriction en vigueur
         </NuxtLink>
-        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
-                  v-if="arBrouillon.length > 0"
-                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+        <NuxtLink
+          :to="'/arrete-restriction?query=' + arreteCadre.numero"
+          v-if="arBrouillon.length > 0"
+          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        >
           {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)
         </NuxtLink>
-        <NuxtLink :to="'/arrete-restriction?query=' + arreteCadre.numero"
-                  v-if="arAbroges.length > 0"
-                  class="fr-link fr-icon-arrow-right-line fr-link--icon-right">
+        <NuxtLink
+          :to="'/arrete-restriction?query=' + arreteCadre.numero"
+          v-if="arAbroges.length > 0"
+          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        >
           {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)
         </NuxtLink>
       </div>
     </div>
   </div>
-  <DsfrModal :opened="modalOpened"
-             icon="ri-arrow-right-line"
-             :title="modalTitle"
-             :actions="modalActions"
-             @close="modalOpened = false">
+  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
     <div v-html="modalDescription"></div>
   </DsfrModal>
-  <DsfrModal :opened="repealModalOpened"
-             icon="ri-arrow-right-line"
-             :title="`Abroger l'arrêté ${arreteCadre.numero}`"
-             :actions="repealModalActions"
-             @close="repealModalOpened = false">
-    <ArreteCadreFormAbroger ref="abrogerFormRef"
-                            :arrete-cadre="arreteCadre"
-                            :loading="loading"
-                            @abroger="repealArrete($event)" />
+  <DsfrModal
+    :opened="repealModalOpened"
+    icon="ri-arrow-right-line"
+    :title="`Abroger l'arrêté ${arreteCadre.numero}`"
+    :actions="repealModalActions"
+    @close="repealModalOpened = false"
+  >
+    <ArreteCadreFormAbroger ref="abrogerFormRef" :arrete-cadre="arreteCadre" @abroger="repealArrete($event)" />
   </DsfrModal>
 </template>
 

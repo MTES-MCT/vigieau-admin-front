@@ -1,3 +1,5 @@
+import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+
 export class ArreteRestriction {
   id: number | null;
   numero: string;
@@ -5,6 +7,8 @@ export class ArreteRestriction {
   dateFin: string | null;
   dateSignature: string | null;
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
+  arretesCadre: ArreteCadre[];
+  zonesAlerte: any[];
 
   constructor() {
     this.id = null;
@@ -13,6 +17,8 @@ export class ArreteRestriction {
     this.dateFin = null;
     this.dateSignature = null;
     this.statut = 'a_valider';
+    this.arretesCadre = [];
+    this.zonesAlerte = [];
   }
 }
 

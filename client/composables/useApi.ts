@@ -3,11 +3,12 @@ import { UserApi } from '~/api/user';
 import { ZoneAlerteApi } from '~/api/zone-alerte';
 import { BaseApi } from '~/api/base-api';
 import { ArreteCadreApi } from "~/api/arrete-cadre";
+import { ArreteRestrictionApi } from "~/api/arrete-restriction";
 
 export const useApi = () => {
   return {
     arreteCadre: new ArreteCadreApi('arrete-cadre'),
-    arreteRestriction: new BaseApiPagination('arrete-restriction'),
+    arreteRestriction: new ArreteRestrictionApi('arrete-restriction'),
     zoneAlerte: new ZoneAlerteApi('zone-alerte'),
     user: new UserApi('user'),
     departement: new UserApi('departement'),

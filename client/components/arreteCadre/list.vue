@@ -36,13 +36,11 @@ const paginate = async () => {
       filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider,a_venir' : 'abroge'}`,
     },
   ];
-  if(departementFilter.value) {
-    filter.push(
-      {
-        attribute: 'departements.id',
-        filter: `$eq:${departementFilter.value}`,
-      }
-    );
+  if (departementFilter.value) {
+    filter.push({
+      attribute: 'departements.id',
+      filter: `$eq:${departementFilter.value}`,
+    });
   }
   loading.value = true;
   const { data, error } = await api.arreteCadre.paginate(currentPage.value + 1, query.value, filter);
@@ -87,7 +85,7 @@ watch(
         authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 
@@ -110,7 +108,12 @@ watch(
         <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar" />
       </div>
       <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
-        <DsfrSelect v-model="departementFilter" data-cy="ArreteCadreListDepartementSelect" label="Filtrer par Département" :options="departementsOptions" />
+        <DsfrSelect
+          v-model="departementFilter"
+          data-cy="ArreteCadreListDepartementSelect"
+          label="Filtrer par Département"
+          :options="departementsOptions"
+        />
       </div>
     </div>
   </div>

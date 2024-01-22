@@ -36,13 +36,13 @@ watch(() => refDataStore.departements,
     <template v-if="getZonesByType(d.zonesAlerte, 'SUP').length > 0">
       <p>Eaux superficielles</p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SUP')" class="fr-ml-2w fr-my-2w">
-        {{ za.code }}
+        {{ za.code }} {{ za.nom }}
       </p>
     </template>
     <template v-if="getZonesByType(d.zonesAlerte, 'SOU').length > 0">
       <p>Eaux souterraines</p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SOU')" class="fr-ml-2w fr-my-2w">
-        {{ za.code }}
+        {{ za.code }} {{ za.nom }}
       </p>
     </template>
   </template>

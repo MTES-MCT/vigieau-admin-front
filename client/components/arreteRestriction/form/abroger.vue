@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
-  arreteCadre: ArreteCadre;
+  arreteRestriction: ArreteRestriction;
 }>();
 
 const emit = defineEmits<{
   abroger: any;
 }>();
 const utils = useUtils()
-const ac = ref({...props.arreteCadre});
+const ar = ref({...props.arreteRestriction});
 
 const rules = computed(() => {
   return {
     dateFin: {
       required: helpers.withMessage("La date de fin de l'arrêté est obligatoire.", required),
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
-        if (ac.value.dateDebut && val) {
-          return new Date(val) > new Date(ac.value.dateDebut);
+        if (ar.value.dateDebut && val) {
+          return new Date(val) > new Date(ar.value.dateDebut);
         }
         return true;
       }),
@@ -27,12 +27,12 @@ const rules = computed(() => {
   };
 });
 
-const v$ = useVuelidate(rules, ac);
+const v$ = useVuelidate(rules, ar);
 
 const submitForm = async () => {
   await v$.value.$validate();
   if (!v$.value.$error) {
-    emit('abroger', ac.value);
+    emit('abroger', ar.value);
   }
 };
 
@@ -49,7 +49,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
           <DsfrInput
             id="dateDebut"
-            :model-value="ac.dateDebut"
+            :model-value="ar.dateDebut"
             label="Date de début de l'arrêté"
             label-visible
             type="date"
@@ -63,7 +63,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput
             id="dateFin"
-            v-model="ac.dateFin"
+            v-model="ar.dateFin"
             label="Date de fin de l'arrêté"
             label-visible
             type="date"
@@ -74,11 +74,5 @@ defineExpose({
         </DsfrInputGroup>
       </div>
     </div>
-    <p v-if="arreteCadre.arretesRestriction.length > 0" class="fr-mt-4w">
-      Les arrêtés de restriction suivant seront abrogés :
-      <template v-for="ar of arreteCadre.arretesRestriction">
-        <br/>- {{ ar.numero }} - {{ ar.statut }}
-      </template>
-    </p>
   </form>
 </template>

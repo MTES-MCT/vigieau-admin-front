@@ -9,5 +9,5 @@ useHead({
 </script>
 
 <template>
-<!--  <ArreteCadreFormWrapper :duplicate="true" />-->
+  <ArreteRestrictionForm :duplicate="true" />
 </template>
