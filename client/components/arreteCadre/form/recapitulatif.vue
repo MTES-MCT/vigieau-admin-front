@@ -35,7 +35,7 @@ const generateRows = () => {
         {
           component: arreteCadreRecapitulatifCell,
           viewOnly: props.viewOnly,
-          html: `<b>${u.usage.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.usage.thematique.nom}</b>`,
+          html: `<b>${u.usage.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.usage.thematique?.nom}</b>`,
           onClickEdit: () => editUsage(u)
         },
         {

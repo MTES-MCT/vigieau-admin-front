@@ -1,14 +1,15 @@
 import { BaseApi } from '~/api/base-api';
+import { useCustomFetch } from "~/composables/useCustomFetch";
 
 export class UserApi extends BaseApi {
   me = () => {
-    return useFetch(`/${this.resource}/me`, {
+    return useCustomFetch(`/${this.resource}/me`, {
       method: 'GET',
       baseURL: '/api',
     });
   };
   listDev = () => {
-    return useFetch(`/${this.resource}/dev`, {
+    return useCustomFetch(`/${this.resource}/dev`, {
       method: 'GET',
       baseURL: '/api',
     });

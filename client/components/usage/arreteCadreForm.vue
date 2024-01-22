@@ -135,7 +135,7 @@ defineExpose({
 <template>
   <h6>{{ usageArreteCadre.usage.nom }}</h6>
   <div>
-    Thématique affichée sur VigiEau&nbsp;: <b>{{ usageArreteCadre.usage.thematique.nom }}</b>
+    Thématique affichée sur VigiEau&nbsp;: <b>{{ usageArreteCadre.usage.thematique?.nom }}</b>
   </div>
   <div>
     <div class="fr-my-2w">Usagers</div>

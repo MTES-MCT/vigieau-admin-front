@@ -140,14 +140,8 @@ const deleteArreteCadre = async (id: string) => {
   const { data, error } = await api.arreteCadre.delete(id);
   if (!error.value) {
     emit('delete');
-  } else {
-    alertStore.addAlert({
-      title: 'Impossible de supprimer l\'arrêté cadre',
-      description: error.value.data?.message,
-      type: 'error',
-    })
-    modalOpened.value = false;
   }
+  modalOpened.value = false;
 };
 
 // Permet de faire un retour à la ligne sur les underscores

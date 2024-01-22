@@ -1,4 +1,5 @@
 import { BaseApiPagination } from '~/api/base-api-pagination';
+import { useCustomFetch } from "~/composables/useCustomFetch";
 
 export class ArreteCadreApi extends BaseApiPagination {
   publish = (id: string, payload: any) => {
@@ -9,7 +10,7 @@ export class ArreteCadreApi extends BaseApiPagination {
       formData.append('dateFin', payload.dateFin);
     }
 
-    return useFetch(`/${this.resource}/${id}/publier`, {
+    return useCustomFetch(`/${this.resource}/${id}/publier`, {
       method: 'POST',
       baseURL: '/api',
       body: formData,
@@ -18,7 +19,7 @@ export class ArreteCadreApi extends BaseApiPagination {
 
   repeal = (id: string, payload: any) => {
     payload = JSON.parse(JSON.stringify(payload));
-    return useFetch(`/${this.resource}/${id}/abroger`, {
+    return useCustomFetch(`/${this.resource}/${id}/abroger`, {
       method: 'POST',
       baseURL: '/api',
       body: payload,

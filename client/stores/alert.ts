@@ -8,8 +8,8 @@ export const useAlertStore = defineStore('alertStore', () => {
     alerts.value.push(alert);
   }
   
-  function clearAlert(title: string): void {
-    const index = alerts.value.findIndex((alert) => alert.title === title); // find alert
+  function clearAlert(description: string): void {
+    const index = alerts.value.findIndex((alert) => alert.description === description); // find alert
     alerts.value.splice(index, 1); // remove alert from array
   }
   

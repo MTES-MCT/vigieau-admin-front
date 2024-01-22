@@ -1,3 +1,5 @@
+import { useCustomFetch } from "~/composables/useCustomFetch";
+
 export class BaseApi {
   resource: string;
   constructor(resource: string) {
@@ -5,7 +7,7 @@ export class BaseApi {
   }
 
   list() {
-    return useFetch(`/${this.resource}`, {
+    return useCustomFetch(`/${this.resource}`, {
       method: 'GET',
       baseURL: '/api',
     });
@@ -13,7 +15,7 @@ export class BaseApi {
 
   create(payload: any) {
     payload = JSON.parse(JSON.stringify(payload));
-    return useFetch(`/${this.resource}`, {
+    return useCustomFetch(`/${this.resource}`, {
       method: 'POST',
       baseURL: '/api',
       body: payload,
@@ -21,7 +23,7 @@ export class BaseApi {
   }
 
   get(id: string) {
-    return useFetch(`/${this.resource}/${id}`, {
+    return useCustomFetch(`/${this.resource}/${id}`, {
       method: 'GET',
       baseURL: '/api',
     });
@@ -29,7 +31,7 @@ export class BaseApi {
 
   update(id: string, payload: any) {
     payload = JSON.parse(JSON.stringify(payload));
-    return useFetch(`/${this.resource}/${id}`, {
+    return useCustomFetch(`/${this.resource}/${id}`, {
       method: 'PATCH',
       baseURL: '/api',
       body: payload,
@@ -37,7 +39,7 @@ export class BaseApi {
   }
 
   delete(id: string) {
-    return useFetch(`/${this.resource}/${id}`, {
+    return useCustomFetch(`/${this.resource}/${id}`, {
       method: 'DELETE',
       baseURL: '/api',
     });
