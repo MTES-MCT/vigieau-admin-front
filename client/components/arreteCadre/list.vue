@@ -110,7 +110,7 @@ watch(
         <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar" />
       </div>
       <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
-        <DsfrSelect v-model="departementFilter" label="Filtrer par Département" :options="departementsOptions" />
+        <DsfrSelect v-model="departementFilter" data-cy="ArreteCadreListDepartementSelect" label="Filtrer par Département" :options="departementsOptions" />
       </div>
     </div>
   </div>

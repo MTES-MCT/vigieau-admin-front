@@ -1,4 +1,5 @@
 import { defineNuxtConfig } from 'nuxt/config';
+import istanbulPlugin from "vite-plugin-istanbul";
 
 const appName = "Règl'Eau";
 
@@ -59,14 +60,13 @@ export default defineNuxtConfig({
     build: {
       target: 'es2019',
     },
-    // plugins: [
-    //   istanbul({
-    //     include: 'client/*',
-    //     exclude: ['node_modules', 'test/'],
-    //     extension: ['.js', '.ts', '.vue'],
-    //     requireEnv: false,
-    //   }),
-    // ],
+    plugins: [
+      istanbulPlugin({
+        exclude: ['node_modules', 'test/', 'coverage/'],
+        extension: [ '.js', '.ts', '.vue' ],
+        cypress: true
+      }),
+    ]
   },
   nitro: {
     devProxy: {

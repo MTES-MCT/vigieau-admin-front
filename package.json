@@ -14,7 +14,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "purgecss": "purgecss --config ./purgecss.config.js",
-    "cypress": "npx cypress open"
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
@@ -62,9 +63,11 @@
     "jsdom": "^22.1.0",
     "npm-run-all": "^4.1.5",
     "nuxt": "^3.7.3",
+    "nyc": "^15.1.0",
     "prettier": "^3.1.1",
     "sass": "^1.69.5",
     "start-server-and-test": "^2.0.0",
-    "typescript": "*"
+    "typescript": "*",
+    "vite-plugin-istanbul": "^5.0.0"
   }
 }

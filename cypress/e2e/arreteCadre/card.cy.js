@@ -60,6 +60,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Modifier').should('not.exist');
+      
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007', true, 'Haute-Corse');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Modifier').should('not.exist');
     });
 
     it(`Je doit pouvoir dupliquer n'importe quel AC`, () => {
@@ -97,6 +103,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Dupliquer').should('exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007', true, 'Haute-Corse');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Dupliquer').should('exist');
     });
 
     it(`Je doit pouvoir supprimer des AC brouillon ou bien des ACs qui n'ont aucun AR associé`, () => {
@@ -125,7 +137,7 @@ describe('Carte des arrêtés cadres', () => {
       // ACI pas pilote
       cy.searchAC('CYTEST_005');
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
-      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('not.exist');
+      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('exist');
 
       // AC abrogé
       cy.searchAC('CYTEST_006', false);
@@ -133,7 +145,13 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreListFilterAbroge]').first().click();
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
-      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('exist');      
+      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007', true, 'Haute-Corse');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('not.exist');
     });
 
     it(`Je doit pouvoir abroger des AC a venir ou publiés`, () => {
@@ -162,13 +180,19 @@ describe('Carte des arrêtés cadres', () => {
       // ACI pas pilote
       cy.searchAC('CYTEST_005');
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
-      cy.get('.fr-card__actions__menu li').contains('Abroger').should('not.exist');
+      cy.get('.fr-card__actions__menu li').contains('Abroger').should('exist');
 
       // AC abrogé
       cy.searchAC('CYTEST_006', false);
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 0);
       cy.get('[data-cy=ArreteCadreListFilterAbroge]').first().click();
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Abroger').should('not.exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007', true, 'Haute-Corse');
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Abroger').should('not.exist');
     });
@@ -211,6 +235,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Modifier').should('exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Modifier').should('exist');
     });
 
     it(`Je doit pouvoir dupliquer n'importe quel AC`, () => {
@@ -246,6 +276,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 0);
       cy.get('[data-cy=ArreteCadreListFilterAbroge]').first().click();
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Dupliquer').should('exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007');
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Dupliquer').should('exist');
     });
@@ -285,6 +321,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Supprimer').should('exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Supprimer').should('exist');
     });
 
     it(`Je doit pouvoir abroger des AC a venir ou publiés`, () => {
@@ -322,6 +364,12 @@ describe('Carte des arrêtés cadres', () => {
       cy.get('[data-cy=ArreteCadreList] [data-cy=ArreteCadreListCard]').should('have.length', 1);
       cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
       cy.get('.fr-card__actions__menu li').contains('Abroger').should('not.exist');
+
+      // AC autre département
+      cy.get('[data-cy=ArreteCadreListFilterPublie]').first().click();
+      cy.searchAC('CYTEST_007');
+      cy.get('[data-cy=ArreteCadreCardActionsBtn]').click();
+      cy.get('.fr-card__actions__menu li').contains('Abroger').should('exist');
     });
 
   });

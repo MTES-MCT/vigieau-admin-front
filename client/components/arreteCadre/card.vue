@@ -161,6 +161,7 @@ const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
   modalActions.value = [
     {
       label: 'Confirmer',
+      'data-cy': 'ConfirmEditFormBtn',
       onclick: () => {
         editArreteCadre(arreteCadre.id);
       }

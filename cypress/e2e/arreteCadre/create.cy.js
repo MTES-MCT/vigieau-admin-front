@@ -96,7 +96,7 @@ describe('Création d\'un arrêtés cadres', () => {
       cy.get('.fr-modal .fr-input-group--error').should('exist');
       cy.get('[data-cy=UsageFormNameInput]').type('Arrosage des espaces verts très spécifique');
       cy.get('.fr-modal .fr-input-group--error').should('exist');
-      cy.get('.fr-select').select('Arrosage');
+      cy.get('.fr-select').select('Arroser');
       cy.get('.fr-modal .fr-input-group--error').should('exist');
       cy.get('[data-cy=UsageFormconcerneParticulierCheckbox] [type="checkbox"]').check({force: true});
       cy.get('.fr-modal .fr-input-group--error').should('exist');

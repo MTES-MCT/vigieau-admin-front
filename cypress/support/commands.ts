@@ -19,12 +19,20 @@ Cypress.Commands.add('devLogin', (email) => {
   cy.url().should('match', /arrete-cadre/);
 });
 
-Cypress.Commands.add('searchAC', (numero: string, exist: boolean = true) => {
+Cypress.Commands.add('searchAC', (numero: string, exist: boolean = true, selectDepartement?: string) => {
+  if(selectDepartement) {
+    cy.intercept({
+      method: 'GET',
+      url: '/api/arrete-cadre/search*',
+    }).as('acSearchSelect');
+    cy.get('.fr-select').select(selectDepartement);
+    cy.wait('@acSearchSelect');
+  }
+  cy.get('[data-cy=ArreteCadreListSearchBar] input').clear();
   cy.intercept({
     method: 'GET',
     url: '/api/arrete-cadre/search*',
   }).as('acSearch');
-  cy.get('[data-cy=ArreteCadreListSearchBar] input').clear();
   cy.get('[data-cy=ArreteCadreListSearchBar] input').type(numero);
   cy.wait('@acSearch');
   if(exist) {

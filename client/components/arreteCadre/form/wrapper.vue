@@ -84,6 +84,9 @@ const saveArrete = async (publish: boolean = false) => {
       return usageArreteCadre;
     });
     componentKey.value++;
+    if(props.arreteCadre.statut !== 'a_valider') {
+      await publishArrete(props.arreteCadre);
+    }
     if (!publish) {
       alertStore.addAlert({
         description: 'Enregistrement réussi',
@@ -189,7 +192,7 @@ const usagesFormRef = ref(null);
     </li>
     <li>
       <DsfrButton
-        label="Enregistrer en brouillon"
+        :label="arreteCadre.statut === 'a_valider' ? 'Enregistrer en brouillon' : 'Enregistrer'"
         data-cy="ArreteCadreFormSaveBtn"
         :secondary="true"
         :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
@@ -205,7 +208,7 @@ const usagesFormRef = ref(null);
                   :disabled="currentStep === 5"
                   @click="nextStep()" />
     </li>
-    <li v-if="currentStep === 5">
+    <li v-if="currentStep === 5 && arreteCadre.statut === 'a_valider'">
       <DsfrButton
         label="Publier"
         :disabled="loading"
@@ -217,7 +220,7 @@ const usagesFormRef = ref(null);
     </li>
   </ul>
   <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
-    <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" :loading="loading" @publier="publishArrete($event)" />
+    <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">

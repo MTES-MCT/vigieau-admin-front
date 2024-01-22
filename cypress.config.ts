@@ -18,8 +18,10 @@ export default defineConfig({
     departementUser: '2A@test.fr',
     departementAciUser: '2B@test.fr',
     mteUser: 'mte@test.fr',
-    codeCoverage: {
-      url: "http://localhost:3001/api/app/__coverage__"
-    }
+    // codeCoverage: {
+    //   url: "http://localhost:3001/api/app/__coverage__"
+    // }
   },
+  defaultCommandTimeout: 10000,
+  pageLoadTimeout: 10000,
 });

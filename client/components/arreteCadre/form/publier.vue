@@ -6,14 +6,12 @@ import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  loading: boolean;
 }>();
 
 const emit = defineEmits<{
   publier: any;
 }>();
 const utils = useUtils()
-const ac = ref({...props.arreteCadre});
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const rules = computed(() => {
@@ -23,14 +21,14 @@ const rules = computed(() => {
     },
     dateFin: {
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
-        if (ac.value.dateDebut && val) {
-          return new Date(val) > new Date(ac.value.dateDebut);
+        if (props.arreteCadre.dateDebut && val) {
+          return new Date(val) > new Date(props.arreteCadre.dateDebut);
         }
         return true;
       }),
     },
     file: {
-      required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !ac.value.url)),
+      required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !props.arreteCadre.url)),
       maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
         return !value || value?.size < MAX_FILE_SIZE
       }),
@@ -38,12 +36,12 @@ const rules = computed(() => {
   };
 });
 
-const v$ = useVuelidate(rules, ac);
+const v$ = useVuelidate(rules, props.arreteCadre);
 
 const submitForm = async () => {
   await v$.value.$validate();
   if (!v$.value.$error) {
-    emit('publier', ac.value);
+    emit('publier', props.arreteCadre);
   }
 };
 
@@ -60,7 +58,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
           <DsfrInput
             id="dateDebut"
-            v-model="ac.dateDebut"
+            v-model="arreteCadre.dateDebut"
             label="Date de début de l'arrêté"
             label-visible
             type="date"
@@ -73,7 +71,7 @@ defineExpose({
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput id="dateFin"
-                     v-model="ac.dateFin"
+                     v-model="arreteCadre.dateFin"
                      label="Date de fin de l'arrêté"
                      label-visible
                      type="date"
@@ -83,12 +81,12 @@ defineExpose({
       </div>
     </div>
     
-    <div class="fr-mt-4w" v-if="ac.url">
+    <div class="fr-mt-4w" v-if="arreteCadre.url">
       <DsfrFileDownload
         format="PDF"
-        :href="ac.url"
+        :href="arreteCadre.url"
         :size="null"
-        :download="ac.url"
+        :download="arreteCadre.url"
         title="PDF Arrête cadre"
         hint="Taille maximale autorisée : 10mo"
       />
@@ -96,11 +94,11 @@ defineExpose({
 
     <div class="fr-mt-4w">
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
-        <DsfrFileUpload :required="!ac.url"
-                        :label="ac.url ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
-                        :accept="['application/pdf']"
+        <DsfrFileUpload :required="!arreteCadre.url"
+                        :label="arreteCadre.url ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
+                        :arreteCadrecept="['application/pdf']"
                         data-cy="PublishFormFileInput"
-                        @change="ac.file = $event[0]" />
+                        @change="arreteCadre.file = $event[0]" />
       </DsfrInputGroup>
     </div>
   </form>
