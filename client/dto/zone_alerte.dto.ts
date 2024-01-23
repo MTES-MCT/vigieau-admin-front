@@ -8,4 +8,6 @@ export interface ZoneAlerte {
   nom: string;
   departement: Departement;
   arretesCadre: ArreteCadre[];
+  
+  geom?: any;
 }

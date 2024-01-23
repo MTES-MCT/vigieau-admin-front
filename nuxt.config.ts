@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     '@gouvfr/dsfr/dist/scheme/scheme.min.css',
     '@gouvfr/dsfr/dist/utility/utility.main.min.css',
     '@gouvminint/vue-dsfr/styles',
+    'maplibre-gl/dist/maplibre-gl.css',
 
     'assets/main.scss',
   ],

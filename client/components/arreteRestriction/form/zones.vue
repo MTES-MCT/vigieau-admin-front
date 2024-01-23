@@ -101,7 +101,6 @@ defineExpose({
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
-
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
           <div v-for="d of departementsFiletered">
             <div class="zone-alerte__title">
@@ -160,6 +159,9 @@ defineExpose({
             </div>
           </div>
         </DsfrInputGroup>
+      </div>
+      <div class="fr-col-12 fr-col-lg-6">
+        <ArreteRestrictionFormZonesMap :arreteRestriction="arreteRestriction" />
       </div>
     </div>
   </form>
