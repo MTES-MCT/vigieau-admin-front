@@ -75,6 +75,7 @@ const niveauxRestriction = [
     attribute: 'descriptionCrise',
     name: 'Crise',
     badgeType: 'error',
+    required: true,
   },
 ];
 
@@ -184,6 +185,7 @@ defineExpose({
           type="text"
           :data-cy="'UsageArreteCadreForm' + niveau.attribute + 'Input'"
           :name="niveau.attribute"
+          :required="niveau.required"
         />
         <span class="fr-input-group__sub-hint"
           >{{ usageArreteCadre[niveau.attribute] ? usageArreteCadre[niveau.attribute].length : 0 }}/1000</span

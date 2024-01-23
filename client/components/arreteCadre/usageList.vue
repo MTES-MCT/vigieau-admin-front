@@ -49,7 +49,15 @@ generateRows();
 
 <template>
   <h6>Récapitulatif des usages</h6>
-  <DsfrTable :headers="headers" :rows="rows" :no-caption="false" :pagination="false" :key="componentKey" />
+  <DsfrTable v-if="usagesArreteCadre.length > 0" 
+             :headers="headers"
+             :rows="rows"
+             :no-caption="false"
+             :pagination="false"
+             :key="componentKey" />
+  <div v-else>
+    Aucun usage lié à l'arrêté cadre
+  </div>
 </template>
 
 <style lang="scss">

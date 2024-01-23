@@ -6,6 +6,9 @@ export const useAlertStore = defineStore('alertStore', () => {
 
   function addAlert(alert: AlertDto) {
     alerts.value.push(alert);
+    setTimeout(() => {
+      clearAlert(alert.description);
+    }, 10000);
   }
   
   function clearAlert(description: string): void {

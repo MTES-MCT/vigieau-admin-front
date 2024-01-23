@@ -100,6 +100,10 @@ const generateRessources = (u: UsageArreteCadre) => {
 generateRows();
 
 const v$ = useVuelidate(rules, props.arreteCadre);
+
+watch(() => props.arreteCadre.usagesArreteCadre, () => {
+  generateRows();
+});
 </script>
 
 <template>

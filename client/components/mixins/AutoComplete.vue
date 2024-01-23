@@ -38,6 +38,10 @@ const props = defineProps({
     type: String,
     default: 'Rechercher',
   },
+  icon: {
+    type: String,
+    default: 'ri-search-line',
+  },
 });
 
 const emit = defineEmits(['update:modelValue', 'search']);
@@ -139,22 +143,34 @@ function displayOption(option: any) {
 
 <template>
   <div ref="container" class="relative search-autocomplete">
-    <DsfrSearchBar
-      :model-value="modelValue"
-      :placeholder="placeholder"
-      :label="label"
-      v-bind="$attrs"
-      :required="true"
-      :large="!light"
-      :disabled="disabled"
-      :buttonText="buttonText"
-      @update:model-value="$emit('update:modelValue', $event)"
-      ref="input"
-      @focus="hasFocus = true"
-      @blur="looseFocus()"
-      @keydown="checkKeyboardNav($event)"
-      @search="checkKeyboardNav({ key: 'search' })"
-    />
+    <div
+      class="fr-search-bar"
+      :class="{ 'fr-search-bar--lg': !light }"
+      role="search"
+    >
+      <DsfrInput
+        :model-value="modelValue"
+        :placeholder="placeholder"
+        :label="label"
+        v-bind="$attrs"
+        :required="true"
+        :disabled="disabled"
+        @update:model-value="$emit('update:modelValue', $event)"
+        ref="input"
+        @focus="hasFocus = true"
+        @blur="looseFocus()"
+        @keydown="checkKeyboardNav($event)"
+        @search="checkKeyboardNav({ key: 'search' })"
+      />
+      <DsfrButton
+        title="Rechercher"
+        :disabled="disabled"
+        @click="checkKeyboardNav({ key: 'search' })"
+      >
+        <VIcon :name="icon" class="fr-mr-1w" />
+        {{ buttonText }}
+      </DsfrButton>
+    </div>
     <ul
       v-show="displayOptions"
       ref="optionsList"
@@ -217,6 +233,10 @@ function displayOption(option: any) {
     li {
       cursor: pointer;
     }
+  }
+
+  .fr-search-bar .fr-btn:before {
+    display: none;
   }
 }
 </style>

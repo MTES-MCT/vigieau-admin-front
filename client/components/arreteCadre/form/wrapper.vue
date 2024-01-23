@@ -17,6 +17,7 @@ const alertStore = useAlertStore();
 const isNewArreteCadre = route.params.id === 'nouveau';
 const loading = ref(false);
 const componentKey = ref(0);
+const asc = ref(true);
 
 const usageSelected = ref();
 
@@ -32,6 +33,7 @@ const steps = [
 const v$ = useVuelidate();
 
 const nextStep = async () => {
+  asc.value = true;
   let errors;
   switch (currentStep.value) {
     case 1:
@@ -58,6 +60,7 @@ const nextStep = async () => {
 };
 
 const previousStep = () => {
+  asc.value = false;
   currentStep.value--;
 };
 
@@ -143,24 +146,23 @@ const usagesFormRef = ref(null);
     <MixinsStatutBadge :statut="arreteCadre.statut" />
   </h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <MixinsAlerts class="fr-mb-2w" />
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
-    <DsfrTabContent :selected="currentStep === 1">
+    <DsfrTabContent :selected="currentStep === 1" :asc="asc">
       <ArreteCadreFormGeneral
         ref="generalFormRef"
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 2">
+    <DsfrTabContent :selected="currentStep === 2" :asc="asc">
       <ArreteCadreFormRegles
         ref="reglesFormRef"
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3">
+    <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteCadreFormZones
         ref="zonesFormRef"
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4">
+    <DsfrTabContent :selected="currentStep === 4" :asc="asc">
       <ArreteCadreFormUsages
         ref="usagesFormRef"
         :arrete-cadre="arreteCadre"
@@ -168,7 +170,7 @@ const usagesFormRef = ref(null);
         :key="componentKey"
       />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 5">
+    <DsfrTabContent :selected="currentStep === 5" :asc="asc">
       <ArreteCadreFormRecapitulatif
         :arrete-cadre="arreteCadre"
         :key="componentKey"

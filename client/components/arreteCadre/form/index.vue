@@ -79,6 +79,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <MixinsAlerts class="fr-mb-2w" />
   <ArreteCadreFormWrapper v-if="arreteCadre" :arreteCadre="arreteCadre" />
 </template>
 

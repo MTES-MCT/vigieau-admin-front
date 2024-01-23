@@ -30,11 +30,6 @@ const quickLinks = (await authStore.isAuthenticated)
         icon: 'ri-article-line',
       },
       {
-        label: 'ZA',
-        to: '/zone-alerte',
-        icon: 'gi-france',
-      },
-      {
         label: 'Utilisateurs',
         to: '/utilisateurs',
         icon: 'ri-group-line',
@@ -129,7 +124,7 @@ onMounted(() => {
     :service-title="serviceTitle"
     :logo-text="logoText"
     :quick-links="quickLinks"
-    :show-beta="runTimeConfig.domainName !== 'vigieau.gouv.fr'"
+    :show-beta="runTimeConfig.domainName !== 'regleau.beta.gouv.fr'"
     home-to="/arrete-cadre"
   />
   <main>

@@ -44,7 +44,7 @@ const arreteCadreActions: Ref<any> = ref([
     onclick: () => {
       navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
     },
-    show: true,
+    show: authStore.isMte || isAcOnDepartementUser,
   },
   {
     text: 'Abroger',

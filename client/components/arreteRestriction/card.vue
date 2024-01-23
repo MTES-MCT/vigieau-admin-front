@@ -36,7 +36,7 @@ const arreteRestrictionActions: Ref<any> = ref([
     onclick: () => {
       navigateTo(`/arrete-restriction/${props.arreteRestriction.id}/duplication`);
     },
-    show: true
+    show: authStore.isMte || isArOnDepartementUser,
   },
   {
     text: "Abroger",

@@ -49,7 +49,7 @@ const filterUsages = () => {
     });
     tmp.push({
       id: null,
-      display: 'Vous ne trouvez pas l’usage que vous cherchez ? Créez un nouvel usage',
+      display: '<span class="select-option-usage"><b>Vous ne trouvez pas l’usage que vous cherchez ?</b> Créez un nouvel usage</span>',
     });
   }
   usagesFiltered.value = tmp;
@@ -173,6 +173,7 @@ defineExpose({
             placeholder="Rechercher un usage"
             buttonText="Ajouter"
             display-key="display"
+            icon="ri-add-fill"
             v-model="query"
             :options="usagesFiltered"
             :required="true"
@@ -208,12 +209,22 @@ defineExpose({
   </DsfrModal>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .usage-form-wrapper {
   border: 1px solid var(--grey-925-125);
 }
 
 .arrete-cadre-usage-list {
   background: var(--grey-975-75);
+}
+
+.select-option-usage {
+  color: var(--blue-france-sun-113-625);
+}
+
+.list-item:hover {
+  .select-option-usage {
+    color: white;
+  }
 }
 </style>
