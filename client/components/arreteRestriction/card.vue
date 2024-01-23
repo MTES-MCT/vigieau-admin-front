@@ -149,6 +149,7 @@ const askEditArreteRestriction = async (arreteRestriction: ArreteRestriction) =>
 };
 
 const editArreteRestriction = (id: string) => {
+  modalOpened.value = false;
   navigateTo(`/arrete-restriction/${id}/edition`);
 };
 

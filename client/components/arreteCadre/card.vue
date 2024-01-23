@@ -183,6 +183,7 @@ Vous confirmez prendre en compte que les modifications faites à cet arrêté vo
 };
 
 const editArreteCadre = (id: string) => {
+  modalOpened.value = false;
   navigateTo(`/arrete-cadre/${id}/edition`);
 };
 
@@ -251,7 +252,8 @@ const repealArrete = async (ac: ArreteCadre) => {
             {{ arreteCadre.dateDebut }}
             <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
           </p>
-          <div :id="'action_' + arreteCadre.id" class="fr-card__actions">
+          <div :id="'action_' + arreteCadre.id" class="fr-card__actions"
+               v-if="arreteCadreActions.some((a: any) => a.show)">
             <DsfrButton
               label="Actions"
               data-cy="ArreteCadreCardActionsBtn"

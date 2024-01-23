@@ -22,7 +22,7 @@ import {
   RiEyeFill,
   RiInformationFill,
   RiTimeFill,
-  RiCheckFill, RiAlertFill, RiAddFill, RiSearchLine
+  RiCheckFill, RiAlertFill, RiAddFill, RiSearchLine, RiAccountCircleFill
 } from "oh-vue-icons/icons";
 
 const icons = [
@@ -51,6 +51,7 @@ const icons = [
   RiAlertFill,
   RiAddFill,
   RiSearchLine,
+  RiAccountCircleFill,
 ];
 
 export default defineNuxtPlugin((nuxtApp) => {

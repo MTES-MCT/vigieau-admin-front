@@ -10,6 +10,7 @@ const logoText = ['Ministère', 'de la transition', 'écologique', 'et de la coh
 const modalSchemeOpened = ref(false);
 const schemeFormRef = ref(null);
 const { theme, scheme, setScheme } = <any>useScheme();
+const accountOpened = ref(false);
 
 const logout = function () {
   authStore.logout();
@@ -20,36 +21,44 @@ const a11yCompliance: string = 'Non conforme';
 const quickLinks = (await authStore.isAuthenticated)
   ? [
       {
-        label: 'AC',
+        label: 'Gestion des arrêtés cadre',
         to: '/arrete-cadre',
-        icon: 'ri-article-line',
       },
       {
-        label: 'AR',
+        label: 'Gestion des arrêtés de restriction',
         to: '/arrete-restriction',
-        icon: 'ri-article-line',
       },
       {
-        label: 'Utilisateurs',
-        to: '/utilisateurs',
-        icon: 'ri-group-line',
-      },
-      {
-        label: 'Déconnexion',
-        onclick: logout,
-        button: true,
-        icon: 'ri-logout-box-r-line',
-      },
-      {
-        label: "Paramètres d'affichage",
+        label: 'Mon compte',
+        icon: 'ri-account-circle-fill',
+        to: '#',
         onclick: () => {
-          modalSchemeOpened.value = true;
+          accountOpened.value = !accountOpened.value;
         },
-        button: true,
-        icon: 'ri-sun-fill',
       },
     ]
   : [];
+const accountOptions = [
+  {
+    text: 'Utilisateurs',
+    onclick: () => {
+      navigateTo('/utilisateurs');
+    },
+    icon: 'ri-group-line',
+  },
+  {
+    text: "Paramètres d'affichage",
+    onclick: () => {
+      modalSchemeOpened.value = true;
+    },
+    icon: 'ri-sun-fill',
+  },
+  {
+    text: 'Déconnexion',
+    onclick: logout,
+    icon: 'ri-logout-box-r-line',
+  },
+];
 const mandatoryLinks: any[] = [
   {
     label: `Accessibilité : ${a11yCompliance}`,
@@ -117,16 +126,68 @@ onMounted(() => {
 
   watchEffect(() => setScheme(preferences.scheme));
 });
+
+const onKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    accountOpened.value = false;
+  }
+};
+
+const onDocumentClick = (e: MouseEvent) => {
+  handleElementClick(e.target as HTMLElement);
+};
+
+const handleElementClick = (el: HTMLElement) => {
+  if (el === document.getElementById('account-menu-list')) {
+    return;
+  }
+
+  if (!el?.parentNode) {
+    accountOpened.value = false;
+    return;
+  }
+
+  handleElementClick(el.parentNode as HTMLElement);
+};
+
+onMounted(() => {
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('keydown', onKeyDown);
+});
+onUnmounted(() => {
+  document.removeEventListener('click', onDocumentClick);
+  document.removeEventListener('keydown', onKeyDown);
+});
 </script>
 
 <template>
   <DsfrHeader
     :service-title="serviceTitle"
     :logo-text="logoText"
-    :quick-links="quickLinks"
+    :quickLinks="quickLinks"
     :show-beta="runTimeConfig.domainName !== 'regleau.beta.gouv.fr'"
     home-to="/arrete-cadre"
   />
+  <div v-if="accountOpened" id="account-menu-list" class="fr-header__menu-list-link">
+    <div class="fr-menu">
+      <ul class="fr-menu__list">
+        <template v-for="action of accountOptions">
+          <li>
+            <a
+              class="fr-nav__link"
+              @click="
+                          action.onclick();
+                          accountOpened = false;
+                        "
+            >
+              <VIcon :name="action.icon" class="fr-mr-1w"/>
+              {{ action.text }}
+            </a>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </div>
   <main>
     <div class="fr-container fr-my-4w">
       <slot />
@@ -137,3 +198,29 @@ onMounted(() => {
     <SchemeForm ref="schemeFormRef" />
   </DsfrModal>
 </template>
+
+<style lang="scss" scoped>
+.fr-header__menu-list-link {
+  z-index: 1000;
+  position: absolute;
+  top: 100px;
+  right: 350px;
+
+  ul {
+    list-style-type: none;
+
+    li {
+      padding: 0;
+    }
+  }
+
+  a:not([href]) {
+    color: inherit;
+
+    &:hover {
+      background-color: var(--hover-tint);
+      --underline-hover-width: var(--underline-max-width);
+    }
+  }
+}
+</style>
