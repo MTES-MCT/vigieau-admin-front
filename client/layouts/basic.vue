@@ -18,6 +18,27 @@ const logout = function () {
 };
 
 const a11yCompliance: string = 'Non conforme';
+const accountOptions = (icon: boolean) => [
+  {
+    text: 'Utilisateurs',
+    onclick: () => {
+      navigateTo('/utilisateurs');
+    },
+    icon: icon ? 'ri-group-line' : null,
+  },
+  {
+    text: "Paramètres d'affichage",
+    onclick: () => {
+      modalSchemeOpened.value = true;
+    },
+    icon: icon ? 'ri-sun-fill' : null,
+  },
+  {
+    text: 'Déconnexion',
+    onclick: logout,
+    icon: icon ? 'ri-logout-box-r-line' : null,
+  },
+];
 const quickLinks = (await authStore.isAuthenticated)
   ? [
       {
@@ -32,33 +53,38 @@ const quickLinks = (await authStore.isAuthenticated)
         label: 'Mon compte',
         icon: 'ri-account-circle-fill',
         to: '#',
-        onclick: () => {
+        onclick: ($event) => {
+          $event?.preventDefault();
           accountOpened.value = !accountOpened.value;
+          setTimeout(() => {
+            const buttons = document.querySelector('.fr-header .fr-btns-group');
+            const menu = document.querySelector('.fr-header__menu-list-link');
+            const menuWidth = menu?.getElementsByClassName('fr-menu__list')[0].getBoundingClientRect().width;
+            if(!buttons || !menu || !menuWidth) {
+              return;
+            }
+            menu.style['right'] = (document.body.clientWidth - buttons.getBoundingClientRect().right + menuWidth) + 'px';            
+          });
         },
       },
     ]
   : [];
-const accountOptions = [
-  {
-    text: 'Utilisateurs',
-    onclick: () => {
-      navigateTo('/utilisateurs');
+const navItems = (await authStore.isAuthenticated)
+  ? [
+    {
+      text: 'Gestion des arrêtés cadre',
+      to: '/arrete-cadre',
     },
-    icon: 'ri-group-line',
-  },
-  {
-    text: "Paramètres d'affichage",
-    onclick: () => {
-      modalSchemeOpened.value = true;
+    {
+      text: 'Gestion des arrêtés de restriction',
+      to: '/arrete-restriction',
     },
-    icon: 'ri-sun-fill',
-  },
-  {
-    text: 'Déconnexion',
-    onclick: logout,
-    icon: 'ri-logout-box-r-line',
-  },
-];
+    {
+      title: 'Mon compte',
+      links: accountOptions(false),
+    },
+  ]
+  : [];
 const mandatoryLinks: any[] = [
   {
     label: `Accessibilité : ${a11yCompliance}`,
@@ -167,11 +193,17 @@ onUnmounted(() => {
     :quickLinks="quickLinks"
     :show-beta="runTimeConfig.domainName !== 'regleau.beta.gouv.fr'"
     home-to="/arrete-cadre"
-  />
-  <div v-if="accountOpened" id="account-menu-list" class="fr-header__menu-list-link">
+  >
+    <template #mainnav>
+      <DsfrNavigation
+        :nav-items="navItems"
+      />
+    </template>
+  </DsfrHeader>
+  <div v-show="accountOpened" id="account-menu-list" class="fr-header__menu-list-link">
     <div class="fr-menu">
       <ul class="fr-menu__list">
-        <template v-for="action of accountOptions">
+        <template v-for="action of accountOptions(true)">
           <li>
             <a
               class="fr-nav__link"
@@ -199,12 +231,12 @@ onUnmounted(() => {
   </DsfrModal>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .fr-header__menu-list-link {
   z-index: 1000;
   position: absolute;
   top: 100px;
-  right: 350px;
+  right: -1000px;
 
   ul {
     list-style-type: none;
@@ -220,6 +252,21 @@ onUnmounted(() => {
     &:hover {
       background-color: var(--hover-tint);
       --underline-hover-width: var(--underline-max-width);
+    }
+  }
+}
+
+@media (min-width: 62em) {
+  .fr-header {
+    .fr-nav {
+      display: none;
+    }
+  }  
+}
+@media (max-width: 62em) {
+  .fr-header {
+    .fr-header__menu-links {
+      display: none;
     }
   }
 }
