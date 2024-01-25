@@ -223,7 +223,8 @@ const repealArrete = async (ar: ArreteRestriction) => {
               </div>
             </div>
           </p>
-          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions">
+          <div :id="'action_' + arreteRestriction.id" class="fr-card__actions"
+               v-if="arreteRestrictionActions.some((a: any) => a.show)">
             <DsfrButton 
               label="Actions"
               data-cy="ArreteRestrictionCardActionsBtn"
@@ -253,13 +254,6 @@ const repealArrete = async (ar: ArreteRestriction) => {
           </div>
         </div>
       </div>
-      <!--      <div class="fr-card__footer">-->
-      <!--        <ul class="fr-links-group">-->
-      <!--          <li>-->
-      <!--            <a class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right" href="#"> Arrêté de restriction 1 </a>-->
-      <!--          </li>-->
-      <!--        </ul>-->
-      <!--      </div>-->
     </div>
   </div>
   <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">

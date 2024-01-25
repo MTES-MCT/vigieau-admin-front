@@ -73,9 +73,9 @@ watch(
       return;
     }
     // On récupère le tableau de départements des arrêtés cadres
-    const allDeps = props.arreteRestriction.arretesCadre.map((ac) => ac.zonesAlerte.map((za) => za.departement)).flat();
+    const departement = props.arreteRestriction.departement;
     const allZones = props.arreteRestriction.arretesCadre.map((ac) => ac.zonesAlerte).flat();
-    let depsUnique = [...new Map(allDeps.map((v) => [v.id, v])).values()];
+    let depsUnique = [departement];
     depsUnique = depsUnique.map((d: any) => {
       return {
         ...d,

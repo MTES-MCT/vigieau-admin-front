@@ -13,7 +13,7 @@ const props = defineProps<{
 }>();
 
 const query: Ref<string> = ref("");
-const departementsTags = ref([]);
+const departementsTags: Ref<any> = ref([]);
 const departementsFiltered = ref([]);
 const utils = useUtils();
 const authStore = useAuthStore();

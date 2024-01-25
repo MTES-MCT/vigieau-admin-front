@@ -1,4 +1,5 @@
 import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import type { Departement } from "~/dto/departement.dto";
 
 export class ArreteRestriction {
   id: number | null;
@@ -9,8 +10,17 @@ export class ArreteRestriction {
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
   arretesCadre: ArreteCadre[];
   zonesAlerte: any[];
+  arreteRestrictionAbroge: ArreteRestriction | null;
+  departement: Departement | null;
+  
+  niveauGraviteSpecifiqueEap: boolean | null;
+  ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
+
+  // To upload file
+  file: any;
 
   constructor() {
+    this.departement = null;
     this.id = null;
     this.numero = '';
     this.dateDebut = null;
@@ -19,6 +29,9 @@ export class ArreteRestriction {
     this.statut = 'a_valider';
     this.arretesCadre = [];
     this.zonesAlerte = [];
+    this.niveauGraviteSpecifiqueEap = null;
+    this.ressourceEapCommunique = null;
+    this.arreteRestrictionAbroge = null;
   }
 }
 

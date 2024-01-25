@@ -16,6 +16,7 @@ const alertStore = useAlertStore();
 const isNewArreteRestriction = route.params.id === 'nouveau';
 const loading = ref(false);
 const componentKey = ref(0);
+const asc = ref(true);
 
 const currentStep: Ref<number> = ref(1);
 const steps = [
@@ -29,25 +30,26 @@ const steps = [
 const v$ = useVuelidate();
 
 const nextStep = async () => {
+  asc.value = true;
   let errors;
-  // switch (currentStep.value) {
-  //   case 1:
-  //     await generalFormRef.value?.v$.$validate()
-  //     errors = generalFormRef.value?.v$.$errors;
-  //     break;
-  //   case 2:
-  //     await reglesFormRef.value?.v$.$validate()
-  //     errors = reglesFormRef.value?.v$.$errors;
-  //     break;
-  //   case 3:
-  //     await zonesFormRef.value?.v$.$validate()
-  //     errors = zonesFormRef.value?.v$.$errors;
-  //     break;
-  //   case 4:
-  //     await usagesFormRef.value?.v$.$validate()
-  //     errors = usagesFormRef.value?.v$.$errors;
-  //     break;
-  // }
+  switch (currentStep.value) {
+    case 1:
+      await generalFormRef.value?.v$.$validate()
+      errors = generalFormRef.value?.v$.$errors;
+      break;
+    case 2:
+      await reglesFormRef.value?.v$.$validate()
+      errors = reglesFormRef.value?.v$.$errors;
+      break;
+    // case 3:
+    //   await zonesFormRef.value?.v$.$validate()
+    //   errors = zonesFormRef.value?.v$.$errors;
+    //   break;
+    // case 4:
+    //   await usagesFormRef.value?.v$.$validate()
+    //   errors = usagesFormRef.value?.v$.$errors;
+    //   break;
+  }
   if(errors && errors.length > 0) {
     return;
   }
@@ -55,6 +57,7 @@ const nextStep = async () => {
 };
 
 const previousStep = () => {
+  asc.value = false;
   currentStep.value--;
 };
 
@@ -136,22 +139,22 @@ const usagesFormRef = ref(null);
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <MixinsAlerts class="fr-mb-2w" />
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
-    <DsfrTabContent :selected="currentStep === 1">
-<!--      <ArreteCadreFormGeneral-->
-<!--        ref="generalFormRef"-->
-<!--        :arrete-cadre="arreteCadre" />-->
+    <DsfrTabContent :selected="currentStep === 1" :asc="asc">
+      <ArreteRestrictionFormGeneral
+        ref="generalFormRef"
+        :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 2">
-<!--      <ArreteCadreFormRegles-->
-<!--        ref="reglesFormRef"-->
-<!--        :arrete-cadre="arreteCadre" />-->
+    <DsfrTabContent :selected="currentStep === 2" :asc="asc">
+      <ArreteRestrictionFormRegles
+        ref="reglesFormRef"
+        :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3">
+    <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteRestrictionFormZones
         ref="zonesFormRef"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4">
+    <DsfrTabContent :selected="currentStep === 4" :asc="asc">
 <!--      <ArreteCadreFormUsages-->
 <!--        ref="usagesFormRef"-->
 <!--        :arrete-cadre="arreteCadre"-->
@@ -159,7 +162,7 @@ const usagesFormRef = ref(null);
 <!--        :key="componentKey"-->
 <!--      />-->
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 5">
+    <DsfrTabContent :selected="currentStep === 5" :asc="asc">
 <!--      <ArreteCadreFormRecapitulatif-->
 <!--        :arrete-cadre="arreteCadre"-->
 <!--        :key="componentKey"-->

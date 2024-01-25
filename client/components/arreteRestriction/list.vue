@@ -57,8 +57,6 @@ const paginate = async () => {
   }
 };
 
-paginate();
-
 watch(
   query,
   useUtils().debounce(async () => {
@@ -86,6 +84,7 @@ watch(
       });
       departementFilter.value =
         authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
+      paginate();
     }
   },
   { immediate: true },
@@ -99,7 +98,7 @@ watch(
 
       <VIcon v-if="loading" name="ri-loader-4-line" animation="spin" :width="40" :height="40" />
     </h1>
-    <NuxtLink to="/arrete-restriction/nouveau">
+    <NuxtLink to="/arrete-restriction/nouveau/edition">
       <DsfrButton label="Créer un nouvel arrêté" />
     </NuxtLink>
     <div class="fr-col-12 fr-grid-row fr-grid-row--bottom fr-grid-row--gutters fr-mt-2w">

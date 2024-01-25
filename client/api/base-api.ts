@@ -6,8 +6,8 @@ export class BaseApi {
     this.resource = resource;
   }
 
-  list() {
-    return useCustomFetch(`/${this.resource}`, {
+  list(queryParams?: string) {
+    return useCustomFetch(`/${this.resource}${queryParams ? '?' + queryParams : ''}`, {
       method: 'GET',
       baseURL: '/api',
     });
