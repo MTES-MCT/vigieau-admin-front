@@ -87,6 +87,7 @@ const saveArrete = async (publish: boolean = false) => {
       return usageArreteCadre;
     });
     componentKey.value++;
+    loading.value = false;
     if(props.arreteCadre.statut !== 'a_valider') {
       await publishArrete(props.arreteCadre);
     }
@@ -199,7 +200,7 @@ const usagesFormRef = ref(null);
         :secondary="true"
         :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
         :disabled="loading"
-        @click="saveArrete()"
+        @click="saveArrete(arreteCadre.statut !== 'a_valider')"
       />
     </li>
     <li>
