@@ -32,6 +32,9 @@ const rules = computed(() => {
       maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
         return !value || value?.size < MAX_FILE_SIZE
       }),
+      maxLength: helpers.withMessage("Le nom du fichier ne doit pas dépasser 50 caractères", (value: any) => {
+        return !value || value?.name.length <= 50
+      }),
     },
   };
 });

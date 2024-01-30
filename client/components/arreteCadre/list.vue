@@ -4,6 +4,7 @@ import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { PaginatedResult } from '~/dto/paginated_result.dto';
 import { useRefDataStore } from '~/stores/refData';
 import { useAuthStore } from '~/stores/auth';
+import { useContextStore } from "~/stores/context";
 
 const refDataStore = useRefDataStore();
 const authStore = useAuthStore();
@@ -14,7 +15,7 @@ const loading = ref(false);
 const statusFilter = ref('publie');
 const statusOptions = ref([
   {
-    label: 'En vigueur',
+    label: 'En cours',
     value: 'publie',
     'data-cy': 'ArreteCadreListFilterPublie',
   },
@@ -25,7 +26,8 @@ const statusOptions = ref([
   },
 ]);
 const departementsOptions: Ref<any[] | undefined> = ref();
-const departementFilter: Ref<number | null | undefined> = ref();
+const contextStore = useContextStore();
+const departementFilter = ref(contextStore.departementFilter);
 
 const api = useApi();
 
@@ -36,7 +38,7 @@ const paginate = async () => {
       filter: `$in:${statusFilter.value === 'publie' ? 'publie,a_valider,a_venir' : 'abroge'}`,
     },
   ];
-  if (departementFilter.value) {
+  if (departementFilter.value && Number(departementFilter.value) !== 0) {
     filter.push({
       attribute: 'departements.id',
       filter: `$eq:${departementFilter.value}`,
@@ -68,6 +70,7 @@ watch(statusFilter, () => {
 });
 
 watch(departementFilter, () => {
+  contextStore.setDepartementFilter(Number(departementFilter.value));
   paginate();
 });
 
@@ -81,8 +84,16 @@ watch(
           text: d.nom,
         };
       });
-      departementFilter.value =
-        authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
+      departementsOptions.value?.unshift({
+          value: 0,
+          text: 'Tous les départements',
+        });
+      if(!departementFilter.value) {
+        departementFilter.value =
+          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : 0;        
+      } else {
+        paginate();
+      }
     }
   },
   { immediate: true },

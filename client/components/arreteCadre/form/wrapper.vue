@@ -14,7 +14,6 @@ const route = useRoute();
 const api = useApi();
 const refDataStore = useRefDataStore();
 const alertStore = useAlertStore();
-const isNewArreteCadre = route.params.id === 'nouveau';
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
@@ -142,10 +141,6 @@ const usagesFormRef = ref(null);
 </script>
 
 <template>
-  <h1>
-    {{ isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre
-    <MixinsStatutBadge :statut="arreteCadre.statut" />
-  </h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1" :asc="asc">

@@ -191,6 +191,7 @@ defineExpose({
               label="Ajouter un/des départements"
               data-cy="ArreteCadreFormDepartementsAutocomplete"
               class="show-label"
+              icon="ri-add-fill"
               :labelVisible="true"
               buttonText="Ajouter"
               display-key="nom"

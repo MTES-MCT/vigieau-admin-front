@@ -53,6 +53,10 @@ if (isNewArreteCadre) {
     arreteCadre.value = <ArreteCadre>data.value;
     if (props.duplicate) {
       arreteCadre.value.id = null;
+      arreteCadre.value.statut = 'a_valider';
+      arreteCadre.value.dateDebut = null;
+      arreteCadre.value.dateFin = null;
+      arreteCadre.value.url = null;
       arreteCadre.value.usagesArreteCadre.map((u) => {
         u.id = null;
         return u;
@@ -80,6 +84,10 @@ onMounted(() => {
 
 <template>
   <MixinsAlerts class="fr-mb-2w" />
+  <h1>
+    {{ duplicate ? 'Duplication' : isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre
+    <MixinsStatutBadge :statut="arreteCadre.statut" />
+  </h1>
   <ArreteCadreFormWrapper v-if="arreteCadre" :arreteCadre="arreteCadre" />
 </template>
 

@@ -2,9 +2,11 @@
 import { useScheme } from '@gouvminint/vue-dsfr';
 import { useAuthStore } from '~/stores/auth';
 import type { Ref } from 'vue';
+import { useContextStore } from "~/stores/context";
 
 const runTimeConfig = useRuntimeConfig().public;
 const authStore = useAuthStore();
+const contextStore = useContextStore();
 const serviceTitle = <string>runTimeConfig.appName;
 const logoText = ['Ministère', 'de la transition', 'écologique', 'et de la cohésion', 'des territoires'];
 const modalSchemeOpened = ref(false);
@@ -14,6 +16,7 @@ const accountOpened = ref(false);
 
 const logout = function () {
   authStore.logout();
+  contextStore.resetContext();
   navigateTo('/api/auth/logout', { external: true });
 };
 

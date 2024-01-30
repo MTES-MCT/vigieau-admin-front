@@ -224,6 +224,10 @@ const repealArrete = async (ac: ArreteCadre) => {
   }
   loading.value = false;
 };
+
+const depString = computed(() => {
+  return props.arreteCadre.departements.map((d) => d.nom).join('&nbsp;; ');
+});
 </script>
 
 <template>
@@ -236,10 +240,7 @@ const repealArrete = async (ac: ArreteCadre) => {
             v-html="numeroToDisplay"
           ></NuxtLink>
         </h3>
-        <p class="fr-card__desc">
-          Dep&nbsp;:
-          <template v-for="dep in arreteCadre.departements"> {{ dep.nom }}&nbsp;;</template>
-        </p>
+        <p class="fr-card__desc">Dep&nbsp;: <span v-html="depString" /></p>
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li>
@@ -252,8 +253,7 @@ const repealArrete = async (ac: ArreteCadre) => {
             {{ arreteCadre.dateDebut }}
             <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
           </p>
-          <div :id="'action_' + arreteCadre.id" class="fr-card__actions"
-               v-if="arreteCadreActions.some((a: any) => a.show)">
+          <div :id="'action_' + arreteCadre.id" class="fr-card__actions" v-if="arreteCadreActions.some((a: any) => a.show)">
             <DsfrButton
               label="Actions"
               data-cy="ArreteCadreCardActionsBtn"
@@ -292,20 +292,20 @@ const repealArrete = async (ac: ArreteCadre) => {
         >
           {{ arEnVigueur.length }} arrêté(s) de restriction en vigueur
         </NuxtLink>
-        <NuxtLink
-          :to="'/arrete-restriction?query=' + arreteCadre.numero"
-          v-if="arBrouillon.length > 0"
-          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        >
-          {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)
-        </NuxtLink>
-        <NuxtLink
-          :to="'/arrete-restriction?query=' + arreteCadre.numero"
-          v-if="arAbroges.length > 0"
-          class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-        >
-          {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)
-        </NuxtLink>
+<!--        <NuxtLink-->
+<!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
+<!--          v-if="arBrouillon.length > 0"-->
+<!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
+<!--        >-->
+<!--          {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)-->
+<!--        </NuxtLink>-->
+<!--        <NuxtLink-->
+<!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
+<!--          v-if="arAbroges.length > 0"-->
+<!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
+<!--        >-->
+<!--          {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)-->
+<!--        </NuxtLink>-->
       </div>
     </div>
   </div>

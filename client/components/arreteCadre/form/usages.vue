@@ -106,6 +106,7 @@ const createEditUsage = async (usage: Usage) => {
   const { data, error } = await api.usage.create(usage);
   loading.value = false;
   closeModal();
+  usageToEdit.value = new Usage();
   if (data.value) {
     refDataStore.setUsages([...refDataStore.usages, data.value]);
     selectUsage(data.value);
