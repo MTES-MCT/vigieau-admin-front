@@ -18,7 +18,7 @@ onUnmounted(() => {
         :description="alert.description"
         :small="!alert.title"
         :closeable="true"
-        @close="alertStore.clearAlert(alert.description)"
+        @close="alertStore.clearAlert(alert.id)"
       />
     </template>    
   </div>

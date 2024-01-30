@@ -22,7 +22,7 @@ const rules = computed(() => {
     dateFin: {
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
         if (props.arreteCadre.dateDebut && val) {
-          return new Date(val) > new Date(props.arreteCadre.dateDebut);
+          return new Date(val) >= new Date(props.arreteCadre.dateDebut);
         }
         return true;
       }),

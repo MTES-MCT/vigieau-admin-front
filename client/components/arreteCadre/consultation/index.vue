@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import { useAuthStore } from "~/stores/auth";
 
 const route = useRoute();
 const api = useApi();
 const router = useRouter();
+const utils = useUtils();
+const authStore = useAuthStore();
 
 const arreteCadre: Ref<ArreteCadre> = ref();
 const { data, error } = await api.arreteCadre.get(<string>route.params.id);
 if (data.value) {
   arreteCadre.value = <ArreteCadre>data.value;
 }
+const isAcOnDepartementUser: boolean =
+  authStore.isMte || arreteCadre.value.departements.some((d) => d.code === authStore.user.roleDepartement);
 
 const consultationButtons: Ref<any[]> = ref([
   {
@@ -21,15 +26,28 @@ const consultationButtons: Ref<any[]> = ref([
       router.go(-1)
     },
   },
-  {
-    label: 'Modifier',
-    icon: 'ri-edit-2-fill',
-    secondary: true,
-    onclick: () => {
-      console.log('poulet');
-    },
-  },
 ]);
+
+if(authStore.isMte || (arreteCadre.value.statut !== 'abroge' && isAcOnDepartementUser)) {
+  consultationButtons.value.push({
+      label: 'Modifier',
+      icon: 'ri-edit-2-fill',
+      secondary: true,
+      onclick: () => {
+        utils.askEditArreteCadre(arreteCadre.value, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);
+      },
+    })
+}
+
+const editArreteCadre = (id: string) => {
+  modalOpened.value = false;
+  navigateTo(`/arrete-cadre/${id}/edition`);
+};
+
+const modalOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref('');
+const modalDescription: Ref<string> = ref('');
+const modalActions: Ref<any[]> = ref([]);
 </script>
 
 <template>
@@ -47,5 +65,9 @@ const consultationButtons: Ref<any[]> = ref([
                      class="fr-mt-2w"
                      align="right"
                      inlineLayoutWhen="always" />
+    
+    <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
+      <div v-html="modalDescription"></div>
+    </DsfrModal>
   </template>
 </template>

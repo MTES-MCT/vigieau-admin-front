@@ -1,3 +1,5 @@
+import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+
 export const useUtils = () => {
   return {
     debounce(fn: Function, delay: number) {
@@ -49,5 +51,45 @@ export const useUtils = () => {
       b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
       return c;
     },
+
+    askEditArreteCadre(arreteCadre: ArreteCadre,
+                       modalTitle: Ref<string>,
+                       modalDescription: Ref<string>,
+                       modalActions:Ref<any>,
+                       modalOpened: Ref<boolean>,
+                       callBackFunction: any) {
+      modalActions.value = [
+        {
+          label: 'Confirmer',
+          'data-cy': 'ConfirmEditFormBtn',
+          onclick: () => {
+            callBackFunction(arreteCadre.id);
+          },
+        },
+        {
+          label: 'Annuler',
+          secondary: true,
+          onclick: () => {
+            modalOpened.value = false;
+          },
+        },
+      ];
+      if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
+        modalTitle.value = `Modification d’un arrêté cadre avec au moins un arrêté de restriction associé`;
+        modalDescription.value = `Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
+        modalOpened.value = true;
+      } else if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length < 1) {
+        callBackFunction(arreteCadre.id);
+      } else if (arreteCadre.arretesRestriction.length < 1) {
+        modalTitle.value = `Modification d’un arrêté cadre ${arreteCadre.statut === 'a_venir' ? 'à venir' : 'en vigueur'}`;
+        modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.`;
+        modalOpened.value = true;
+      } else {
+        modalTitle.value = `Modification d’un arrêté cadre en vigueur avec au moins un arrêté de restriction associé`;
+        modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.<br/><br/>
+Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
+        modalOpened.value = true;
+      }
+    }
   };
 };

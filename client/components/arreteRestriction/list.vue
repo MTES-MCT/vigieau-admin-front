@@ -89,7 +89,7 @@ watch(
           value: 0,
           text: 'Tous les départements',
         });
-      if(!departementFilter.value) {
+      if(!departementFilter.value && departementFilter.value !== 0) {
         departementFilter.value =
           authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
       } else {

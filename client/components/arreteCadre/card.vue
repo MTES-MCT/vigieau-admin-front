@@ -14,6 +14,7 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const utils = useUtils();
 const isAcOnDepartementUser: boolean =
   authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
@@ -30,7 +31,7 @@ const arreteCadreActions: Ref<any> = ref([
     text: 'Modifier',
     show: authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser),
     onclick: () => {
-      askEditArreteCadre(props.arreteCadre);
+      utils.askEditArreteCadre(props.arreteCadre, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);
     },
   },
   // {
@@ -146,41 +147,6 @@ const numeroToDisplay = computed(() => {
   num = num?.replace(/_/g, '_<wbr/>');
   return num;
 });
-
-const askEditArreteCadre = async (arreteCadre: ArreteCadre) => {
-  modalActions.value = [
-    {
-      label: 'Confirmer',
-      'data-cy': 'ConfirmEditFormBtn',
-      onclick: () => {
-        editArreteCadre(arreteCadre.id);
-      },
-    },
-    {
-      label: 'Annuler',
-      secondary: true,
-      onclick: () => {
-        modalOpened.value = false;
-      },
-    },
-  ];
-  if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length > 0) {
-    modalTitle.value = `Modification d’un arrêté cadre avec au moins un arrêté de restriction associé`;
-    modalDescription.value = `Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
-    modalOpened.value = true;
-  } else if (arreteCadre.statut === 'a_valider' && arreteCadre.arretesRestriction.length < 1) {
-    editArreteCadre(arreteCadre.id);
-  } else if (arreteCadre.arretesRestriction.length < 1) {
-    modalTitle.value = `Modification d’un arrêté cadre en vigueur`;
-    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.`;
-    modalOpened.value = true;
-  } else {
-    modalTitle.value = `Modification d’un arrêté cadre en vigueur avec au moins un arrêté de restriction associé`;
-    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.<br/><br/>
-Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
-    modalOpened.value = true;
-  }
-};
 
 const editArreteCadre = (id: string) => {
   modalOpened.value = false;

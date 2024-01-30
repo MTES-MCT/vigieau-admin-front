@@ -5,14 +5,15 @@ export const useAlertStore = defineStore('alertStore', () => {
   const alerts: Ref<AlertDto[]> = ref([]);
 
   function addAlert(alert: AlertDto) {
+    alert.id = Math.floor(Math.random() * 1000000);
     alerts.value.push(alert);
     setTimeout(() => {
-      clearAlert(alert.description);
+      clearAlert(alert.id);
     }, 10000);
   }
   
-  function clearAlert(description: string): void {
-    const index = alerts.value.findIndex((alert) => alert.description === description); // find alert
+  function clearAlert(id: number | undefined): void {
+    const index = alerts.value.findIndex((alert) => alert.id === id); // find alert
     alerts.value.splice(index, 1); // remove alert from array
   }
   
