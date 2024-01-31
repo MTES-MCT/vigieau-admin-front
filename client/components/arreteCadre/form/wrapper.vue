@@ -103,7 +103,12 @@ const saveArrete = async (publish: boolean = false) => {
 const showErrors = (errors, publish) => {
   alertStore.addAlert({
     title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
-    description: errors.map((e: any) => e.$message).join(', '),
+    description: errors.filter((e: any) => e.$message).map((e: any) => {
+      if(Array.isArray(e.$message)) {
+        return e.$message.flat().filter((m: any) => m).join(', ');
+      }
+      return e.$message;
+    }).join(', '),
     type: 'error',
   });
 }

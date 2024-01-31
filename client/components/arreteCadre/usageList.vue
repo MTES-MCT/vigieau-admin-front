@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
+import { helpers, required } from "@vuelidate/validators/dist";
+import useVuelidate from "@vuelidate/core";
 
 const props = defineProps<{
   usagesArreteCadre: any[];
@@ -11,11 +13,27 @@ const headers = ['Usages', 'Actions'];
 const rows: Ref<any[]> = ref([]);
 const componentKey = ref(0);
 
+const rules = computed(() => {
+  return {
+    $each: helpers.forEach({
+      descriptionCrise: {
+        required: helpers.withMessage("Tout les usages doivent avoir une description de crise", required),
+      },
+    })
+  };
+});
+
+const v$ = useVuelidate(rules, props.usagesArreteCadre);
+
 const generateRows = () => {
   rows.value = [
     ...props.usagesArreteCadre.map((u: any) => {
       return [
-        u.usage.nom,
+        {
+          component: 'span',
+          text: u.usage.nom,
+          class: u.descriptionCrise ? '' : 'usage-error'
+        },
         {
           component: 'DsfrButtonGroup',
           inlineLayoutWhen: 'always',
@@ -33,7 +51,24 @@ const generateRows = () => {
               iconOnly: true,
               label: 'Supprimer',
               onClick: () => {
-                emit('usageRemoved', u);
+                modalActions.value = [
+                  {
+                    label: 'Valider',
+                    onClick: () => {
+                      modalOpened.value = false;
+                      emit('usageRemoved', u);
+                    },
+                  },
+                  {
+                    label: 'Annuler',
+                    secondary: true,
+                    onClick: () => {
+                      modalOpened.value = false;
+                    },
+                  },
+                ]
+                modalDescription.value = `Voulez vous vraiment supprimer l'usage <b>${u.usage.nom}</b> ?`;
+                modalOpened.value = true;
               },
             },
           ],
@@ -44,7 +79,16 @@ const generateRows = () => {
   componentKey.value += 1;
 };
 
+const modalOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref(`Suppression d'un usage`);
+const modalDescription: Ref<string> = ref('');
+const modalActions: Ref<any[]> = ref([]);
+
 generateRows();
+
+defineExpose({
+  v$,
+});
 </script>
 
 <template>
@@ -58,12 +102,23 @@ generateRows();
   <div v-else>
     Aucun usage lié à l'arrêté cadre
   </div>
+  
+  <DsfrModal :opened="modalOpened"
+             :title="modalTitle"
+             :actions="modalActions"
+             @close="modalOpened = false">
+    <div v-html="modalDescription" />
+  </DsfrModal>
 </template>
 
 <style lang="scss">
 .fr-table {
   .fr-btns-group {
     flex-wrap: nowrap;
+  }
+  
+  .usage-error {
+    color: var(--red-marianne-425-625);
   }
 }
 </style>

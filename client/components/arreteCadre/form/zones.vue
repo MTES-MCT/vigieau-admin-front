@@ -7,16 +7,18 @@ import type { Departement } from '~/dto/departement.dto';
 import type { Ref } from 'vue';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
 import { required } from "@vuelidate/validators";
+import { useAuthStore } from "~/stores/auth";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
 }>();
 
 const refDataStore = useRefDataStore();
+const authStore = useAuthStore();
 const utils = useUtils();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map((z) => z.id));
 const departementsFiletered: Ref<any[]> = ref([]);
-const expandedIndex: Ref<string | null> = ref(null);
+const expandedDepCode: Ref<string | null> = ref(authStore.user?.roleDepartement || null);
 
 const rules = computed(() => {
   return {
@@ -62,8 +64,8 @@ const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
   zonesSelected.value = checked ? [...zonesSelected.value, name] : zonesSelected.value.filter((val) => val !== name);
 };
 
-const onAccordionClick = (index: string) => {
-  expandedIndex.value = index !== expandedIndex.value ? index : null;
+const onAccordionClick = (depCode: string) => {
+  expandedDepCode.value = depCode !== expandedDepCode.value ? depCode : null;
 }
 
 watch(zonesSelected, () => {
@@ -100,9 +102,9 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
           <DsfrAccordionsGroup>
             <li v-for="(d, index) in departementsFiletered">
-              <DsfrAccordion :expanded-id="expandedIndex"
-                             @expand="onAccordionClick(index.toString())"
-                             :id="index.toString()">
+              <DsfrAccordion :expanded-id="expandedDepCode"
+                             @expand="onAccordionClick(d.code)"
+                             :id="d.code">
                 <template v-slot:title>
                   <div class="zone-alerte__title">
                     <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>

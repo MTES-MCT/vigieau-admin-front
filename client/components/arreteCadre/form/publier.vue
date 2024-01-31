@@ -32,8 +32,8 @@ const rules = computed(() => {
       maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
         return !value || value?.size < MAX_FILE_SIZE
       }),
-      maxLength: helpers.withMessage("Le nom du fichier ne doit pas dépasser 50 caractères", (value: any) => {
-        return !value || value?.name.length <= 50
+      maxLength: helpers.withMessage("Le nom du fichier ne doit pas dépasser 50 caractères. Évitez les espaces et caractères spéciaux.", (value: any) => {
+        return !value || encodeURIComponent(value?.name).length <= 50
       }),
     },
   };
@@ -99,6 +99,7 @@ defineExpose({
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
         <DsfrFileUpload :required="!arreteCadre.url"
                         :label="arreteCadre.url ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
+                        hint="Taille maximale autorisée : 10Mo. Le nom du fichier ne doit pas dépasser 50 caractères, évitez les espaces et caractères spéciaux."
                         :arreteCadrecept="['application/pdf']"
                         data-cy="PublishFormFileInput"
                         @change="arreteCadre.file = $event[0]" />
