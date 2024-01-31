@@ -4,7 +4,7 @@ import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { PaginatedResult } from '~/dto/paginated_result.dto';
 import { useRefDataStore } from '~/stores/refData';
 import { useAuthStore } from '~/stores/auth';
-import { useContextStore } from "~/stores/context";
+import { useContextStore } from '~/stores/context';
 
 const refDataStore = useRefDataStore();
 const authStore = useAuthStore();
@@ -28,6 +28,7 @@ const statusOptions = ref([
 const departementsOptions: Ref<any[] | undefined> = ref();
 const contextStore = useContextStore();
 const departementFilter = ref(contextStore.departementFilter);
+const showZaAlert = ref(false);
 
 const api = useApi();
 
@@ -55,6 +56,7 @@ const paginate = async () => {
       };
     });
     arretesCadrePaginated.value = data.value;
+    showZaAlert.value = statusFilter.value === 'publie' && arretesCadrePaginated.value?.data.some((ac) => ac.zonesAlerte.some((za) => za.disabled));
   }
 };
 
@@ -85,12 +87,12 @@ watch(
         };
       });
       departementsOptions.value?.unshift({
-          value: 0,
-          text: 'Tous les départements',
-        });
-      if(!departementFilter.value && departementFilter.value !== 0) {
+        value: 0,
+        text: 'Tous les départements',
+      });
+      if (!departementFilter.value && departementFilter.value !== 0) {
         departementFilter.value =
-          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : 0;        
+          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : 0;
       } else {
         paginate();
       }
@@ -102,6 +104,15 @@ watch(
 
 <template>
   <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w" data-cy="ArreteCadreListHeader">
+    <DsfrAlert
+      v-if="showZaAlert"
+      class="fr-mb-2w"
+      type="warning"
+      title="Zones d'alerte modifiées"
+      description="Des modifications importantes ont été apportées sur une ou plusieurs zones d’alerte, vous ne pourrez plus créer d’arrêté de restrictions associés sur les arrêtés cadres concernés. L’arrêté sera automatiquement abrogé lorsque tous les arrêtés de restrictions associés seront abrogés. Pour effectuer de nouvelles actions, vous devrez dupliquer l’arrêter cadre concerné."
+      :closeable="true"
+      @close="showZaAlert = false"
+    />
     <MixinsAlerts class="fr-mb-2w" />
     <h1 class="fr-my-0">
       Les arrêtés cadre
@@ -113,9 +124,7 @@ watch(
     </NuxtLink>
     <div class="fr-col-12 fr-grid-row fr-grid-row--bottom fr-grid-row--gutters fr-mt-2w">
       <div class="fr-col-12 fr-col-md-6 fr-mb-2w">
-        <DsfrSegmentedSet v-model="statusFilter"
-                          :inline="true"
-                          :options="statusOptions" />
+        <DsfrSegmentedSet v-model="statusFilter" :inline="true" :options="statusOptions" />
       </div>
       <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
         <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar" />

@@ -17,6 +17,7 @@ const authStore = useAuthStore();
 const utils = useUtils();
 const isAcOnDepartementUser: boolean =
   authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
+const isZaOutdated: boolean = props.arreteCadre.statut !== 'abroge' && props.arreteCadre.zonesAlerte.some((za) => za.disabled);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
@@ -29,7 +30,7 @@ const arreteCadreActions: Ref<any> = ref([
   // },
   {
     text: 'Modifier',
-    show: authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser),
+    show: authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser && !isZaOutdated),
     onclick: () => {
       utils.askEditArreteCadre(props.arreteCadre, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);
     },
@@ -209,6 +210,9 @@ const depString = computed(() => {
         <p class="fr-card__desc">Dep&nbsp;: <span v-html="depString" /></p>
         <div class="fr-card__start">
           <ul class="fr-badges-group">
+            <li v-if="isZaOutdated">
+              <DsfrBadge label="Zones d’alerte modifiées" type="warning" />
+            </li>
             <li>
               <MixinsStatutBadge :statut="arreteCadre.statut" />
             </li>
