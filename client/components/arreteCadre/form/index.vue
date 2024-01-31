@@ -61,6 +61,7 @@ if (isNewArreteCadre) {
         u.id = null;
         return u;
       });
+      arreteCadre.value.zonesAlerte = arreteCadre.value.zonesAlerte.filter(za => !za.disabled);
     }
     if (arreteCadre.value.departements.length > 1 && arreteCadre.value.departementPilote?.code) {
       const depPiloteIndex = arreteCadre.value.departements.findIndex((d) => d.code === arreteCadre.value.departementPilote.code);

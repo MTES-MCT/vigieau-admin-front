@@ -24,7 +24,7 @@ watch(() => refDataStore.departements,
         return {
           id: d.id,
           nom: d.nom,
-          zonesAlerte: d.zonesAlerte.filter(za => props.arreteCadre.zonesAlerte.map(z => z.id).includes(za.id))
+          zonesAlerte: props.arreteCadre.zonesAlerte.filter(za => za.departement.id === d.id),
         }
       });
   }, { immediate: true });

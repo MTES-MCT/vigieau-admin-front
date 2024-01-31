@@ -203,7 +203,7 @@ const depString = computed(() => {
       <div class="fr-card__content">
         <h3 class="fr-card__title">
           <NuxtLink
-            :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser ? '/edition' : ''}`"
+            :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser && !isZaOutdated ? '/edition' : ''}`"
             v-html="numeroToDisplay"
           ></NuxtLink>
         </h3>
