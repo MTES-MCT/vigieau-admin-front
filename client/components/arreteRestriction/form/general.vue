@@ -243,6 +243,8 @@ watch(
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6"></div>
+      
+      <ArreteRestrictionFormPublier v-if="arreteRestriction.statut !== 'a_valider'" :arreteRestriction="arreteRestriction" />
     </div>
   </form>
 </template>

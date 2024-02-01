@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { requiredIf } from "@vuelidate/validators";
+import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
-  arreteCadre: ArreteCadre;
+  arreteRestriction: ArreteRestriction;
 }>();
 
 const emit = defineEmits<{
@@ -21,14 +21,14 @@ const rules = computed(() => {
     },
     dateFin: {
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
-        if (props.arreteCadre.dateDebut && val) {
-          return new Date(val) >= new Date(props.arreteCadre.dateDebut);
+        if (props.arreteRestriction.dateDebut && val) {
+          return new Date(val) >= new Date(props.arreteRestriction.dateDebut);
         }
         return true;
       }),
     },
     file: {
-      required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !props.arreteCadre.fichier)),
+      required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !props.arreteRestriction.fichier)),
       maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
         return !value || value?.size < MAX_FILE_SIZE
       }),
@@ -39,12 +39,12 @@ const rules = computed(() => {
   };
 });
 
-const v$ = useVuelidate(rules, props.arreteCadre);
+const v$ = useVuelidate(rules, props.arreteRestriction);
 
 const submitForm = async () => {
   await v$.value.$validate();
   if (!v$.value.$error) {
-    emit('publier', props.arreteCadre);
+    emit('publier', props.arreteRestriction);
   }
 };
 
@@ -61,7 +61,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
           <DsfrInput
             id="dateDebut"
-            v-model="arreteCadre.dateDebut"
+            v-model="arreteRestriction.dateDebut"
             label="Date de début de l'arrêté"
             label-visible
             type="date"
@@ -74,7 +74,7 @@ defineExpose({
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput id="dateFin"
-                     v-model="arreteCadre.dateFin"
+                     v-model="arreteRestriction.dateFin"
                      label="Date de fin de l'arrêté"
                      label-visible
                      type="date"
@@ -84,24 +84,24 @@ defineExpose({
       </div>
     </div>
     
-    <div class="fr-mt-4w" v-if="arreteCadre.fichier">
+    <div class="fr-mt-4w" v-if="arreteRestriction.fichier">
       <DsfrFileDownload
         format="PDF"
-        :href="arreteCadre.fichier.url"
-        :size="utils.fileSizeString(arreteCadre.fichier.size)"
-        :download="arreteCadre.fichier.url"
-        :title="arreteCadre.fichier.nom"
+        :href="arreteRestriction.fichier.url"
+        :size="utils.fileSizeString(arreteRestriction.fichier.size)"
+        :download="arreteRestriction.fichier.url"
+        :title="arreteRestriction.fichier.nom"
       />
     </div>
 
     <div class="fr-mt-4w">
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
-        <DsfrFileUpload :required="!arreteCadre.fichier"
-                        :label="arreteCadre.fichier ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
+        <DsfrFileUpload :required="!arreteRestriction.fichier"
+                        :label="arreteRestriction.fichier ? 'Modifier le PDF de l\'arrêté de restriction' : 'Importer le PDF de l\'arrêté de restriction'"
                         hint="Taille maximale autorisée : 10Mo. Le nom du fichier ne doit pas dépasser 50 caractères, évitez les espaces et caractères spéciaux."
                         :arreteCadrecept="['application/pdf']"
                         data-cy="PublishFormFileInput"
-                        @change="arreteCadre.file = $event[0]" />
+                        @change="arreteRestriction.file = $event[0]" />
       </DsfrInputGroup>
     </div>
   </form>

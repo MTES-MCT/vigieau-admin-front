@@ -4,6 +4,8 @@ import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
 const props = defineProps<{
   arreteCadre: ArreteCadre;
 }>();
+
+const utils = useUtils();
 </script>
 
 <template>
@@ -15,12 +17,12 @@ const props = defineProps<{
   <p>Date de mise en vigueur&nbsp;: {{ arreteCadre.dateDebut }}</p>
   <p>Date de fin&nbsp;: {{ arreteCadre.dateFin }}</p>
   <DsfrFileDownload
-    v-if="arreteCadre.url"
+    v-if="arreteCadre.fichier"
     format="PDF"
-    :href="arreteCadre.url"
-    :size="null"
-    :download="arreteCadre.url"
-    title="PDF Arrête cadre"
+    :href="arreteCadre.fichier.url"
+    :size="utils.fileSizeString(arreteCadre.fichier.size)"
+    :download="arreteCadre.fichier.url"
+    :title="arreteCadre.fichier.nom"
   />
-  <div v-if="arreteCadre.url" class="fr-mb-2w"></div>
+  <div v-if="arreteCadre.fichier" class="fr-mb-2w"></div>
 </template>

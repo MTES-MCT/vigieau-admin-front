@@ -18,6 +18,7 @@ const utils = useUtils();
 const isAcOnDepartementUser: boolean =
   authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
 const isZaOutdated: boolean = props.arreteCadre.statut !== 'abroge' && props.arreteCadre.zonesAlerte.some((za) => za.disabled);
+const canUpdate = authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser && !isZaOutdated);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
@@ -30,7 +31,7 @@ const arreteCadreActions: Ref<any> = ref([
   // },
   {
     text: 'Modifier',
-    show: authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser && !isZaOutdated),
+    show: canUpdate,
     onclick: () => {
       utils.askEditArreteCadre(props.arreteCadre, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);
     },
@@ -203,7 +204,7 @@ const depString = computed(() => {
       <div class="fr-card__content">
         <h3 class="fr-card__title">
           <NuxtLink
-            :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && isAcOnDepartementUser && !isZaOutdated ? '/edition' : ''}`"
+            :to="`/arrete-cadre/${arreteCadre.id}${arreteCadre.statut === 'a_valider' && canUpdate ? '/edition' : ''}`"
             v-html="numeroToDisplay"
           ></NuxtLink>
         </h3>

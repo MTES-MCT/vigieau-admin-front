@@ -41,7 +41,7 @@ const paginate = async () => {
   ];
   if (departementFilter.value && Number(departementFilter.value) !== 0) {
     filter.push({
-      attribute: 'arretesCadre.departements.id',
+      attribute: 'departement.id',
       filter: `$eq:${departementFilter.value}`,
     });
   }

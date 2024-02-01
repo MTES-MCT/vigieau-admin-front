@@ -6,7 +6,7 @@ export class ArreteCadre {
   numero: string;
   dateDebut: string | null;
   dateFin: string | null;
-  url: string | null;
+  fichier: any;
   departements: any[];
   departementPilote: any;
   zonesAlerte: ZoneAlerte[];
@@ -26,7 +26,7 @@ export class ArreteCadre {
     this.numero = '';
     this.dateDebut = null;
     this.dateFin = null;
-    this.url = null;
+    this.fichier = null;
     this.statut = 'a_valider';
     this.departements = [];
     this.zonesAlerte = [];

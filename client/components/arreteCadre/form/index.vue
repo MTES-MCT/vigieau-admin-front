@@ -56,7 +56,7 @@ if (isNewArreteCadre) {
       arreteCadre.value.statut = 'a_valider';
       arreteCadre.value.dateDebut = null;
       arreteCadre.value.dateFin = null;
-      arreteCadre.value.url = null;
+      arreteCadre.value.fichier = null;
       arreteCadre.value.usagesArreteCadre.map((u) => {
         u.id = null;
         return u;

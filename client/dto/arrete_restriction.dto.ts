@@ -8,6 +8,7 @@ export class ArreteRestriction {
   dateFin: string | null;
   dateSignature: string | null;
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
+  fichier: any;
   arretesCadre: ArreteCadre[];
   zonesAlerte: any[];
   arreteRestrictionAbroge: ArreteRestriction | null;
@@ -27,6 +28,7 @@ export class ArreteRestriction {
     this.dateFin = null;
     this.dateSignature = null;
     this.statut = 'a_valider';
+    this.fichier = null;
     this.arretesCadre = [];
     this.zonesAlerte = [];
     this.niveauGraviteSpecifiqueEap = null;

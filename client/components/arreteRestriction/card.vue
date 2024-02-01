@@ -14,13 +14,14 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.arretesCadre.some(ac => ac.departements.some(d => d.code === authStore.user.roleDepartement));
+const canUpdate = authStore.isMte
+  || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser);
 const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteRestrictionActions: Ref<any> = ref([
   {
     text: "Modifier",
-    show: authStore.isMte
-      || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser),
+    show: canUpdate,
     onclick: () => {
       askEditArreteRestriction(props.arreteRestriction);
     }
@@ -198,7 +199,7 @@ const repealArrete = async (ar: ArreteRestriction) => {
       <div class="fr-card__content">
         <h3 class="fr-card__title">
           <NuxtLink
-            :to="`/arrete-restriction/${arreteRestriction.id}${arreteRestriction.statut === 'a_valider' ? '/edition' : ''}`"
+            :to="`/arrete-restriction/${arreteRestriction.id}${arreteRestriction.statut === 'a_valider' && canUpdate ? '/edition' : ''}`"
             v-html="numeroToDisplay"
           ></NuxtLink>
         </h3>

@@ -51,6 +51,11 @@ export const useUtils = () => {
       b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
       return c;
     },
+    
+    fileSizeString(size: number) {
+      const i = Math.floor(Math.log(size) / Math.log(1024));
+      return `${(size / Math.pow(1024, i)).toFixed(2)} ${["o", "Ko", "Mo", "Go", "To"][i]}`;
+    },
 
     askEditArreteCadre(arreteCadre: ArreteCadre,
                        modalTitle: Ref<string>,
