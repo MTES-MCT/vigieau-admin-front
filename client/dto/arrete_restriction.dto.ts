@@ -1,5 +1,6 @@
 import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
 import type { Departement } from "~/dto/departement.dto";
+import type { Restriction } from "~/dto/restriction.dto";
 
 export class ArreteRestriction {
   id: number | null;
@@ -10,7 +11,7 @@ export class ArreteRestriction {
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
   fichier: any;
   arretesCadre: ArreteCadre[];
-  zonesAlerte: any[];
+  restrictions: Restriction[];
   arreteRestrictionAbroge: ArreteRestriction | null;
   departement: Departement | null;
   
@@ -30,7 +31,7 @@ export class ArreteRestriction {
     this.statut = 'a_valider';
     this.fichier = null;
     this.arretesCadre = [];
-    this.zonesAlerte = [];
+    this.restrictions = [];
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;
     this.arreteRestrictionAbroge = null;

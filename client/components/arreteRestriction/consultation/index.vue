@@ -17,5 +17,7 @@ if (data.value) {
     <h1>Arrêté de restriction&nbsp;: {{ arreteRestriction.numero }}</h1>
 
     <ArreteRestrictionConsultationGeneral :arreteRestriction="arreteRestriction" />
+
+    <ArreteRestrictionConsultationZones :arreteRestriction="arreteRestriction" />
   </template>
 </template>
