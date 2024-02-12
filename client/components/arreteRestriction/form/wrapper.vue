@@ -155,12 +155,10 @@ const usagesFormRef = ref(null);
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4" :asc="asc">
-<!--      <ArreteCadreFormUsages-->
-<!--        ref="usagesFormRef"-->
-<!--        :arrete-cadre="arreteCadre"-->
-<!--        :usageSelected="usageSelected"-->
-<!--        :key="componentKey"-->
-<!--      />-->
+      <ArreteRestrictionFormGravite
+        ref="usagesFormRef"
+        :arreteRestriction="arreteRestriction"
+      />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5" :asc="asc">
 <!--      <ArreteCadreFormRecapitulatif-->

@@ -14,12 +14,12 @@ const props = defineProps<{
 
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.zonesAlerte.map((z) => z.id));
+const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.map((r) => r.zoneAlerte.id));
 const departementsFiletered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
   return {
-    zonesAlerte: {
+    restrictions: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", required),
     },
   };
@@ -62,7 +62,15 @@ const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
 };
 
 watch(zonesSelected, () => {
-  props.arreteRestriction.zonesAlerte = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
+  const zones = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(r => zonesSelected.value.includes(r.zoneAlerte.id));
+  const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id));
+  newZones.forEach((z) => {
+    props.arreteRestriction.restrictions.push({
+      zoneAlerte: z,
+      niveauGravite: null,
+    });
+  });
   computeDepSelected();
 });
 
@@ -101,7 +109,7 @@ defineExpose({
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'restrictions')">
           <div v-for="d of departementsFiletered">
             <div class="zone-alerte__title">
               <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>

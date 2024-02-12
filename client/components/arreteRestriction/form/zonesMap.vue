@@ -104,7 +104,7 @@ const populateSources = () => {
     data: {
       type: 'FeatureCollection',
       features: zonesSup
-        .filter((z) => !props.arreteRestriction.zonesAlerte.some((za) => za.id === z.id))
+        .filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id))
         .map((z) => {
           return {
             type: 'Feature',
@@ -118,7 +118,7 @@ const populateSources = () => {
     data: {
       type: 'FeatureCollection',
       features: zonesSup
-        .filter((z) => props.arreteRestriction.zonesAlerte.some((za) => za.id === z.id))
+        .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id))
         .map((z) => {
           return {
             type: 'Feature',
@@ -132,7 +132,7 @@ const populateSources = () => {
     data: {
       type: 'FeatureCollection',
       features: zonesSou
-        .filter((z) => !props.arreteRestriction.zonesAlerte.some((za) => za.id === z.id))
+        .filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id))
         .map((z) => {
           return {
             type: 'Feature',
@@ -146,7 +146,7 @@ const populateSources = () => {
     data: {
       type: 'FeatureCollection',
       features: zonesSou
-        .filter((z) => props.arreteRestriction.zonesAlerte.some((za) => za.id === z.id))
+        .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id))
         .map((z) => {
           return {
             type: 'Feature',
@@ -162,15 +162,14 @@ const populateLayers = () => {
   layers.value.forEach((layerName: string) => {
     map.value?.addLayer({
       id: layerName,
-      type: 'fill',
+      type: 'line',
       source: layerName,
       layout: {
         visibility: 'none',
       },
       paint: {
-        'fill-color': '#000091',
-        'fill-opacity': 0.6,
-        'fill-outline-color': '#000091',
+        'line-color': layerName.includes('zoneSup') ? '#7AB1E8' : '#CE614A',
+        'line-opacity': 0.6,
       },
     });
   });
@@ -183,9 +182,9 @@ const populateLayers = () => {
         visibility: 'none',
       },
       paint: {
-        'fill-color': '#18753c',
+        'fill-color': layerName.includes('zoneSup') ? '#7AB1E8' : '#CE614A',
         'fill-opacity': 0.6,
-        'fill-outline-color': '#18753c',
+        'fill-outline-color': layerName.includes('zoneSup') ? '#7AB1E8' : '#CE614A',
       },
     });
   });
@@ -248,7 +247,7 @@ watch(
 );
 
 watch(
-  () => props.arreteRestriction.zonesAlerte,
+  () => props.arreteRestriction.restrictions,
   () => {
     populateSources();
   },
