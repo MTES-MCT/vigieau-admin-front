@@ -17,6 +17,8 @@ export class ArreteCadre {
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
   ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
+  // TMP
+  superpositionCommune: 'yes_distinct' | 'yes_all' | 'yes_except_aep' | 'yes_only_aep' | 'no' | null;
   
   // To upload file
   file: any;
@@ -34,6 +36,7 @@ export class ArreteCadre {
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;
+    this.superpositionCommune = null;
     this.arretesRestriction = [];
   }
 }

@@ -30,7 +30,7 @@ const arreteCadreActions: Ref<any> = ref([
   //   },
   // },
   {
-    text: 'Corriger',
+    text: props.arreteCadre.statut === 'a_valider' ? 'Modifier' : 'Corriger',
     show: canUpdate,
     onclick: () => {
       utils.askEditArreteCadre(props.arreteCadre, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);

@@ -20,7 +20,7 @@ const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteRestrictionActions: Ref<any> = ref([
   {
-    text: "Modifier",
+    text: props.arreteRestriction.statut === 'a_valider' ? 'Modifier' : 'Corriger',
     show: canUpdate,
     onclick: () => {
       askEditArreteRestriction(props.arreteRestriction);

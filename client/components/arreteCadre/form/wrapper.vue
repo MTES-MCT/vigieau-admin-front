@@ -5,6 +5,7 @@ import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import { useAlertStore } from '~/stores/alert';
+import { useAuthStore } from "~/stores/auth";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -14,13 +15,15 @@ const route = useRoute();
 const api = useApi();
 const refDataStore = useRefDataStore();
 const alertStore = useAlertStore();
+const authStore = useAuthStore();
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
+const isDepPilote: Ref<boolean | null> = ref(authStore.user?.role === 'mte' || authStore.user?.roleDepartement === props.arreteCadre.departementPilote.code);
 
 const usageSelected = ref();
 
-const currentStep: Ref<number> = ref(1);
+const currentStep: Ref<number> = ref(!props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 3);
 const steps = [
   'Informations générales',
   "Règles de gestion des niveaux d'alerte",
@@ -154,9 +157,12 @@ const usagesFormRef = ref(null);
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2" :asc="asc">
-      <ArreteCadreFormRegles
+      <ArreteCadreFormReglesBis
         ref="reglesFormRef"
         :arrete-cadre="arreteCadre" />
+<!--      <ArreteCadreFormRegles-->
+<!--        ref="reglesFormRef"-->
+<!--        :arrete-cadre="arreteCadre" />-->
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteCadreFormZones
