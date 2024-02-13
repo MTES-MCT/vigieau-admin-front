@@ -35,15 +35,15 @@ const loginDev = () => {
 <template>
   <div class="fr-px-md-0 fr-py-10v fr-py-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-      <DsfrAlert
-        v-if="isError"
-        type="error"
-        title="La connexion a échoué"
-        description="Il semblerait que vous n'ayez pas les droits pour accéder à cette application. Veuillez contacter le support si vous pensez que c'est une erreur."
-        :small="false"
-        :closeable="true"
-      />
       <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+        <DsfrAlert
+          v-if="isError"
+          class="fr-mb-2w"
+          type="error"
+          title="La connexion a échoué"
+          description="Il semblerait que vous n'ayez pas les droits pour accéder à cette application. Veuillez contacter le support si vous pensez que c'est une erreur."
+          :small="false"
+        />
         <h1>Connexion à {{ runTimeConfig.appName }}</h1>
         <div class="fr-mb-6v">
           <h2>Se connecter avec AgentConnect</h2>

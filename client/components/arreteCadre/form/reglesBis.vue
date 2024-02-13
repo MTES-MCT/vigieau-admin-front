@@ -61,7 +61,7 @@ defineExpose({
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Cas particuliers</h6>
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'communeNiveauGraviteMax')">
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
           <fieldset class="fr-fieldset">
             <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
               Si une commune est traversée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
