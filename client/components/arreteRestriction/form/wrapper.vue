@@ -152,6 +152,7 @@ const usagesFormRef = ref(null);
     <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteRestrictionFormZones
         ref="zonesFormRef"
+        :selected="currentStep === 3"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4" :asc="asc">
@@ -197,10 +198,10 @@ const usagesFormRef = ref(null);
                   :secondary="true"
                   icon="ri-arrow-right-line"
                   data-cy="ArreteCadreFormNextStepBtn"
-                  :disabled="currentStep === 5"
+                  :disabled="currentStep === 4"
                   @click="nextStep()" />
     </li>
-    <li v-if="currentStep === 5 && arreteRestriction.statut === 'a_valider'">
+    <li v-if="currentStep === 4 && arreteRestriction.statut === 'a_valider'">
       <DsfrButton
         label="Publier"
         :disabled="loading"

@@ -23,11 +23,11 @@ const logout = function () {
 const a11yCompliance: string = 'Non conforme';
 const accountOptions = (icon: boolean) => [
   {
-    text: 'Utilisateurs',
+    text: 'Mon département',
     onclick: () => {
-      navigateTo('/utilisateurs');
+      navigateTo('/mon-departement');
     },
-    icon: icon ? 'ri-group-line' : null,
+    icon: icon ? 'ri-settings-3-line' : null,
   },
   {
     text: "Paramètres d'affichage",

@@ -21,7 +21,7 @@ const rules = computed(() => {
   };
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
-const allUsages = props.arreteCadre.usagesArreteCadre;
+const allUsages = props.restriction.usagesArreteRestriction.concat(props.arreteCadre.usagesArreteCadre.filter(u => !usagesSelected.value.includes(u.usage.id)));
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -52,11 +52,8 @@ const accordionTitle = computed(() => {
 
 const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
   usagesSelected.value = checked ? [...usagesSelected.value, id] : usagesSelected.value.filter((val) => val !== id);
+  props.restriction.usagesArreteRestriction = allUsages.filter(u => usagesSelected.value.includes(u.usage.id));
 };
-
-watch(usagesSelected, () => {
-  
-});
 </script>
 
 <template>
@@ -83,7 +80,7 @@ watch(usagesSelected, () => {
                 :name="usageArreteCadre.usage.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.usage.id)"
                 :small="false"
-                @update:model-value="onChange({ id: usageArreteCadre.id, checked: $event })"
+                @update:model-value="onChange({ id: usageArreteCadre.usage.id, checked: $event })"
               >
                 <template #label>
                   <b>{{ usageArreteCadre.usage.nom }}</b>

@@ -10,6 +10,7 @@ import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
+  selected: boolean;
 }>();
 
 const refDataStore = useRefDataStore();
@@ -169,7 +170,7 @@ defineExpose({
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-        <ArreteRestrictionFormZonesMap :arreteRestriction="arreteRestriction" />
+        <ArreteRestrictionFormZonesMap v-if="selected" :arreteRestriction="arreteRestriction" />
       </div>
     </div>
   </form>
