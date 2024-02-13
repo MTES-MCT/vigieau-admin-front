@@ -42,8 +42,7 @@ const regleGestionSuperpositionCommuneOptions = [
     img: '/regles_commune_yes_only_aep.png',
   },
   {
-    label:
-      'Oui, nous appliquons un niveau unique à la commune pour les milieux naturels (1 niveau unique ESU-ESO) mais le niveau AEP est distinct ',
+    label: 'Non',
     value: 'no',
     img: null,
   },
