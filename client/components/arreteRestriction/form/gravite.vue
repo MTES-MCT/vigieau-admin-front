@@ -30,16 +30,20 @@ const getArreteCadreByZone = (zoneId: number) => {
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
-        <p><b>Eaux superficielles</b></p>
-        <div class="divider" />
-        <div v-for="r in getRestrictionsByZoneType('SUP')" class="divider">
-          <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
-        </div>
-        <p><b>Eaux souterraines</b></p>
-        <div class="divider" />
-        <div v-for="r in getRestrictionsByZoneType('SOU')" class="divider">
-          <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
-        </div>
+        <template v-if="getRestrictionsByZoneType('SUP').length > 0">
+          <p><b>Eaux superficielles</b></p>
+          <div class="divider" />
+          <div v-for="r in getRestrictionsByZoneType('SUP')" class="divider">
+            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
+          </div>          
+        </template>
+        <template v-if="getRestrictionsByZoneType('SOU').length > 0">
+          <p><b>Eaux souterraines</b></p>
+          <div class="divider" />
+          <div v-for="r in getRestrictionsByZoneType('SOU')" class="divider">
+            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
+          </div>
+        </template>
       </div>
     </div>
   </form>  

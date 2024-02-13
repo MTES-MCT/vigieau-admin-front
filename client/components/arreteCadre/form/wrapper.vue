@@ -19,7 +19,7 @@ const authStore = useAuthStore();
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
-const isDepPilote: Ref<boolean | null> = ref(authStore.user?.role === 'mte' || authStore.user?.roleDepartement === props.arreteCadre.departementPilote.code);
+const isDepPilote: Ref<boolean | null> = ref(authStore.user?.role === 'mte' || authStore.user?.roleDepartement === props.arreteCadre.departementPilote?.code);
 
 const usageSelected = ref();
 
