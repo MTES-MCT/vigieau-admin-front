@@ -22,6 +22,7 @@ const rules = computed(() => {
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
 const allUsages = props.restriction.usagesArreteRestriction.concat(props.arreteCadre.usagesArreteCadre.filter(u => !usagesSelected.value.includes(u.usage.id)));
+console.log(allUsages);
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -65,7 +66,7 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
           id="role"
           v-model="restriction.niveauGravite"
           :options="niveauGraviteOptions"
-          placeholder="Niveau de gravité"
+          defaultUnselectedText="Niveau de gravité *"
           type="text"
           name="niveauGravite"
         />

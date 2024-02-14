@@ -25,6 +25,9 @@ const assignDepartement = (force = false) => {
     props.arreteRestriction.departement =
       authStore.user.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) : null;
   }
+  if(props.arreteRestriction.departement) {
+    loadArretes();    
+  }
 };
 
 const rules = computed(() => {
@@ -62,7 +65,11 @@ const arretesCadreFiltered: Ref<any> = ref([]);
 const arretesCadre: Ref<any> = ref([]);
 
 const loadArretes = async () => {
-  const results = await Promise.all([api.arreteRestriction.list(), api.arreteCadre.list()]);
+  const query = `depCode=${props.arreteRestriction.departement.code}`;
+  const results = await Promise.all([
+    api.arreteRestriction.list(query),
+    api.arreteCadre.list(query)
+  ]);
   if (results[0].data.value && results[1].data.value) {
     arretesRestrictions.value = results[0].data.value;
     arretesCadre.value = results[1].data.value;
@@ -151,8 +158,8 @@ const computeArretesCadreTags = () => {
 
 const departementChange = (depId: string) => {
   const departement = refDataStore.departements.find((d) => d.id === Number(depId));
-  // Si l'AC a un seul département ou moins, on le remplace
   props.arreteRestriction.departement = departement;
+  loadArretes();
 };
 
 const departementsOptions = refDataStore.departements.map((d) => {
@@ -161,8 +168,6 @@ const departementsOptions = refDataStore.departements.map((d) => {
     text: d.nom,
   };
 });
-
-loadArretes();
 
 defineExpose({
   v$,
@@ -196,6 +201,7 @@ watch(
 
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'arreteRestrictionAbroge')">
           <DsfrRadioButtonSet
+            :disabled="!arreteRestriction.departement"
             legend="Cet arrêté abroge t-il un autre arrêté de restriction"
             :options="abrogeantOptions"
             v-model="isAbrogeant"
@@ -216,6 +222,7 @@ watch(
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
             id="numero"
+            :disabled="!arreteRestriction.departement"
             v-model="arreteRestriction.numero"
             data-cy="ArreteRestrictionFormNumeroInput"
             label="Numéro de l'arrêté"
@@ -228,6 +235,7 @@ watch(
 
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'arretesCadre')">
           <DsfrSelect
+            :disabled="!arreteRestriction.departement"
             label="Ajouter un/des arrêtés cadre"
             data-cy="ArreteRestrictionFormAcSelect"
             :labelVisible="true"

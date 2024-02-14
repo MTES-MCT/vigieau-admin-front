@@ -71,6 +71,7 @@ const saveArrete = async (publish: boolean = false) => {
     return;
   }
   loading.value = true;
+  console.log(props.arreteRestriction);
   const { data, error } = props.arreteRestriction.id
     ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), props.arreteRestriction)
     : await api.arreteRestriction.create({ ...props.arreteRestriction });
@@ -121,14 +122,14 @@ const publishArrete = async (ar: ArreteRestriction) => {
 
 // PUBLISH MODAL
 const modalPublishOpened: Ref<boolean> = ref(false);
-const modalTitle: Ref<string> = ref('Date de publication');
+const modalTitle: Ref<string> = ref('Récapitulatif et publication de l’arrêté de restriction');
 const publierFormRef = ref(null);
 
 // Forms
 const generalFormRef = ref(null);
 const reglesFormRef = ref(null);
 const zonesFormRef = ref(null);
-const usagesFormRef = ref(null);
+const graviteFormRef = ref(null);
 </script>
 
 <template>
@@ -157,7 +158,8 @@ const usagesFormRef = ref(null);
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4" :asc="asc">
       <ArreteRestrictionFormGravite
-        ref="usagesFormRef"
+        ref="graviteFormRef"
+        :key="currentStep"
         :arreteRestriction="arreteRestriction"
       />
     </DsfrTabContent>
@@ -213,7 +215,7 @@ const usagesFormRef = ref(null);
     </li>
   </ul>
   <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
-<!--    <ArreteCadreFormPublier ref="publierFormRef" :arreteRestriction="arreteRestriction" @publier="publishArrete($event)" />-->
+    <ArreteRestrictionFormPublier ref="publierFormRef" :arreteRestriction="arreteRestriction" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">

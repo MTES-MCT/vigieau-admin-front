@@ -1,7 +1,7 @@
 export interface Restriction {
   id: number;
   zoneAlerte: any;
-  niveauGravite: 'vigilance' | 'alerte' | 'alerte_renforcee' | 'crise';
+  niveauGravite: 'vigilance' | 'alerte' | 'alerte_renforcee' | 'crise' | null;
   usagesArreteRestriction: any[];
 }
 

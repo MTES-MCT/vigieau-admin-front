@@ -70,6 +70,7 @@ watch(zonesSelected, () => {
     props.arreteRestriction.restrictions.push({
       zoneAlerte: z,
       niveauGravite: null,
+      usagesArreteRestriction: [],
     });
   });
   computeDepSelected();

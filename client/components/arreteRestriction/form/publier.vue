@@ -27,6 +27,8 @@ const rules = computed(() => {
         return true;
       }),
     },
+    dateSignature: {
+    },
     file: {
       required: helpers.withMessage("Le PDF de l'arrêté doit être ajouté", requiredIf(() => !props.arreteRestriction.fichier)),
       maxSize: helpers.withMessage("La taille du PDF ne doit pas dépasser 10Mo", (value: any) => {
@@ -48,6 +50,10 @@ const submitForm = async () => {
   }
 };
 
+const getRestrictionByNiveauDeGravite = (niveauGravite: string) => {
+  return props.arreteRestriction.restrictions.find((restriction) => restriction.niveauGravite === niveauGravite);
+}
+
 defineExpose({
   submitForm,
 });
@@ -55,6 +61,23 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
+    <p>
+      Cet arrêté de restriction contient&nbsp;:
+      <ul>
+        <li>
+          {{ getRestrictionByNiveauDeGravite('vigilance') }} zone(s) en vigilance
+        </li>
+        <li>
+          {{ getRestrictionByNiveauDeGravite('alerte') }} zone(s) en alerte
+        </li>
+        <li>
+          {{ getRestrictionByNiveauDeGravite('alerte_renforcee') }} zone(s) en alerte renforcée
+        </li>
+        <li>
+          {{ getRestrictionByNiveauDeGravite('crise') }} zone(s) en crise
+        </li>
+      </ul>
+    </p>
     <p>Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin (optionnel)</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
@@ -62,7 +85,7 @@ defineExpose({
           <DsfrInput
             id="dateDebut"
             v-model="arreteRestriction.dateDebut"
-            label="Date de début de l'arrêté"
+            label="Date de début"
             label-visible
             type="date"
             name="dateDebut"
@@ -75,7 +98,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput id="dateFin"
                      v-model="arreteRestriction.dateFin"
-                     label="Date de fin de l'arrêté"
+                     label="Date de fin"
                      label-visible
                      type="date"
                      name="dateFin"
@@ -83,6 +106,16 @@ defineExpose({
         </DsfrInputGroup>
       </div>
     </div>
+    <p>Choisissez la date de signature de l'arrêté</p>
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateSignature')">
+      <DsfrInput id="dateSignature"
+                 v-model="arreteRestriction.dateSignature"
+                 label="Date de signature"
+                 label-visible
+                 type="date"
+                 name="dateSignature"
+                 data-cy="PublishFormDateSignatureInput" />
+    </DsfrInputGroup>
     
     <div class="fr-mt-4w" v-if="arreteRestriction.fichier">
       <DsfrFileDownload
