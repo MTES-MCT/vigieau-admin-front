@@ -99,71 +99,76 @@ defineExpose({
   <form @submit.prevent="">
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
+        <p>
+          Sélectionner les zones d’alerte concernées par cet arrêté
+        </p>
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
-          <DsfrAccordionsGroup>
-            <li v-for="(d, index) in departementsFiletered">
-              <DsfrAccordion :expanded-id="expandedDepCode"
-                             @expand="onAccordionClick(d.code)"
-                             :id="d.code">
-                <template v-slot:title>
-                  <div class="zone-alerte__title">
-                    <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>
-                    <div>
-                      Tout sélectionner
+          <template v-for="(d, index) in departementsFiletered">
+            <div class="divider fr-mb-2w"></div>
+            <div class="fr-grid-row zone-line full-width">
+              <h6>{{ d.nom }}</h6>
+              <DsfrCheckbox
+                label="Tout sélectionner"
+                :onUpdate:modelValue="() => selectAll(d)"
+                :checked="d.nbZonesSelected === d.zonesAlerte.length"
+              />
+              <div class="fr-grid-row full-width">
+                <DsfrAccordion :expanded-id="expandedDepCode"
+                               @expand="onAccordionClick(d.code)"
+                               class="full-width"
+                               :id="d.code">
+                  <template v-slot:title>
+                    Afficher les {{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }} zones
+                  </template>
+                  <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
+                    <p><b>Eaux superficielles</b></p>
+                    <div class="form-group fr-fieldset fr-mt-2w">
                       <DsfrCheckbox
-                        :onUpdate:modelValue="() => selectAll(d)"
-                        :checked="d.nbZonesSelected === d.zonesAlerte.length"
-                      />
+                        v-for="option in zonesOptionsCheckBox(d, 'SUP')"
+                        :id="option.id"
+                        :key="option.id || option.name"
+                        :name="option.name"
+                        :model-value="zonesSelected.includes(option.name)"
+                        :small="false"
+                        @update:model-value="onChange({ name: option.name, checked: $event })"
+                      >
+                        <template #label>
+                          {{ option.label }}
+                          <div class="checkbox-label-info" v-if="option.isAcAssociated">
+                            <VIcon name="ri-information-fill" />
+                            Cette zone est utilisée dans un autre arrêté cadre actif
+                          </div>
+                        </template>
+                      </DsfrCheckbox>
                     </div>
                   </div>
-                </template>
-                <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
-                  <p><b>Eaux superficielles</b></p>
-                  <div class="form-group fr-fieldset fr-mt-2w">
-                    <DsfrCheckbox
-                      v-for="option in zonesOptionsCheckBox(d, 'SUP')"
-                      :id="option.id"
-                      :key="option.id || option.name"
-                      :name="option.name"
-                      :model-value="zonesSelected.includes(option.name)"
-                      :small="false"
-                      @update:model-value="onChange({ name: option.name, checked: $event })"
-                    >
-                      <template #label>
-                        {{ option.label }}
-                        <div class="checkbox-label-info" v-if="option.isAcAssociated">
-                          <VIcon name="ri-information-fill" />
-                          Cette zone est utilisée dans un autre arrêté cadre actif
-                        </div>
-                      </template>
-                    </DsfrCheckbox>
+                  <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SOU').length > 0">
+                    <p><b>Eaux souterraines</b></p>
+                    <div class="form-group fr-fieldset fr-mt-2w">
+                      <DsfrCheckbox
+                        v-for="option in zonesOptionsCheckBox(d, 'SOU')"
+                        :id="option.id"
+                        :key="option.id || option.name"
+                        :name="option.name"
+                        :model-value="zonesSelected.includes(option.name)"
+                        :small="false"
+                        @update:model-value="onChange({ name: option.name, checked: $event })"
+                      >
+                        <template #label>
+                          {{ option.label }}
+                          <div class="checkbox-label-info" v-if="option.isAcAssociated">
+                            <VIcon name="ri-information-fill" />
+                            Cette zone est utilisée dans un autre arrêté cadre actif
+                          </div>
+                        </template>
+                      </DsfrCheckbox>
+                    </div>
                   </div>
-                </div>
-                <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SOU').length > 0">
-                  <p><b>Eaux souterraines</b></p>
-                  <div class="form-group fr-fieldset fr-mt-2w">
-                    <DsfrCheckbox
-                      v-for="option in zonesOptionsCheckBox(d, 'SOU')"
-                      :id="option.id"
-                      :key="option.id || option.name"
-                      :name="option.name"
-                      :model-value="zonesSelected.includes(option.name)"
-                      :small="false"
-                      @update:model-value="onChange({ name: option.name, checked: $event })"
-                    >
-                      <template #label>
-                        {{ option.label }}
-                        <div class="checkbox-label-info" v-if="option.isAcAssociated">
-                          <VIcon name="ri-information-fill" />
-                          Cette zone est utilisée dans un autre arrêté cadre actif
-                        </div>
-                      </template>
-                    </DsfrCheckbox>
-                  </div>
-                </div>
-              </DsfrAccordion>
-            </li>
-          </DsfrAccordionsGroup>
+                </DsfrAccordion>
+              </div>
+            </div>
+            <div class="divider fr-mb-2w"></div>
+          </template>
         </DsfrInputGroup>
       </div>
     </div>
@@ -171,6 +176,24 @@ defineExpose({
 </template>
 
 <style lang="scss">
+.zone-line {
+  justify-content: space-between;
+  align-items: center;
+  
+  h6 {
+    margin-bottom: 0;
+  }
+
+  & > .fr-fieldset__element {
+    flex: none;
+    margin-bottom: 0;
+  }
+
+  .fr-accordion:before {
+    box-shadow: none;
+  }
+}
+
 .zone-alerte {
   &__title {
     display: flex;

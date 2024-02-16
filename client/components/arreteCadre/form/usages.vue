@@ -6,7 +6,7 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
-import deburr from "lodash.deburr";
+import deburr from 'lodash.deburr';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -41,16 +41,24 @@ const filterUsages = () => {
   let tmp: any[] = [];
   if (query.value) {
     tmp = refDataStore.usages.filter((u) => {
-      return deburr(u.nom).replace(/[\s\-\_]/g, '').toLowerCase().includes(deburr(query.value).replace(/[\s\-\_]/g, '').toLowerCase());
+      const nom = deburr(u.nom)
+        .replace(/[\-\_]/g, '');
+      const queryWords = deburr(query.value)
+        .replace(/[\-\_]/g, '')
+        .split(' ')
+        .map(s => s.replace(/^/,"(").replace(/$/,")"))
+        .join('*');
+      const regex = new RegExp(`${queryWords}`, 'gi');
+      return nom.match(regex);
     });
     tmp.map((u) => {
       u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex((uac) => uac.usage.id === u.id) > -1;
       u.display = u.isAlreadyUsed ? '<b>' + u.nom + '</b>' : u.nom;
     });
-    tmp.push({
-      id: null,
-      display: '<span class="select-option-usage"><b>Vous ne trouvez pas l’usage que vous cherchez ?</b> Créez un nouvel usage</span>',
-    });
+    // tmp.push({
+    //   id: null,
+    //   display: '<span class="select-option-usage"><b>Vous ne trouvez pas l’usage que vous cherchez ?</b> Créez un nouvel usage</span>',
+    // });
   }
   usagesFiltered.value = tmp;
 };
@@ -135,24 +143,21 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
   },
   {
     label: 'Enregistrer',
-    'data-cy':'ArreteCadreFormUsagesSaveBtn',
+    'data-cy': 'ArreteCadreFormUsagesSaveBtn',
     onclick: () => {
       usageArreteCadreFormRef.value?.submitForm();
     },
   },
 ]);
 
-const tabTitles = [
-  {title: 'Recherche'},
-  {title: 'Créer un nouvel usage'}
-];
+const tabTitles = [{ title: 'Recherche' }, { title: 'Créer un nouvel usage' }];
 const selectedTabIndex: Ref<number> = ref(0);
 const asc = ref(true);
 const selectTab = (idx: number) => {
   // this.onSelectTab(idx)
-  asc.value = selectedTabIndex.value < idx
-  selectedTabIndex.value = idx
-}
+  asc.value = selectedTabIndex.value < idx;
+  selectedTabIndex.value = idx;
+};
 
 watch(
   query,
@@ -164,17 +169,17 @@ watch(
 watch(
   () => props.usageSelected,
   () => {
-    if(props.usageSelected) {
-      selectUsage(props.usageSelected, true);      
+    if (props.usageSelected) {
+      selectUsage(props.usageSelected, true);
     }
     emit('resetUsageSelected');
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 defineExpose({
   v$,
-  selectUsage
+  selectUsage,
 });
 </script>
 
@@ -182,21 +187,13 @@ defineExpose({
   <form @submit.prevent="">
     <div class="usage-wrapper fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <DsfrTabs
-          ref="tabs"
-          :tab-titles="tabTitles"
-          :initial-selected-index="selectedTabIndex"
-          @select-tab="selectTab($event)">
-          <DsfrTabContent
-            panel-id="tab-content-0"
-            tab-id="tab-0"
-            :asc="asc"
-            :selected="selectedTabIndex === 0">
+        <DsfrTabs ref="tabs" :tab-titles="tabTitles" :initial-selected-index="selectedTabIndex" @select-tab="selectTab($event)">
+          <DsfrTabContent panel-id="tab-content-0" tab-id="tab-0" :asc="asc" :selected="selectedTabIndex === 0">
             <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
               <MixinsAutoComplete
                 class="show-label"
                 data-cy="ArreteCadreFormUsagesAutocomplete"
-                placeholder="Rechercher un usage"
+                placeholder="Saisir le nom d'un usage"
                 buttonText="Ajouter"
                 display-key="display"
                 icon="ri-add-fill"
@@ -208,26 +205,18 @@ defineExpose({
               />
             </DsfrInputGroup>
             <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
-              <UsageArreteCadreForm :usageArreteCadre="usageArreteCadreToEdit"
-                                    :loading="loading"
-                                    @createEdit="addEditUsageArreteCadre()"
-                                    ref="usageArreteCadreFormRef"/>
-              <DsfrButtonGroup :buttons="usageArreteCadreFormButtons"
-                               class="fr-mt-2w"
-                               align="right"
-                               inlineLayoutWhen="always" />
+              <UsageArreteCadreForm
+                :usageArreteCadre="usageArreteCadreToEdit"
+                :loading="loading"
+                @createEdit="addEditUsageArreteCadre()"
+                ref="usageArreteCadreFormRef"
+              />
+              <DsfrButtonGroup :buttons="usageArreteCadreFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
             </div>
           </DsfrTabContent>
-          <DsfrTabContent
-            panel-id="tab-content-1"
-            tab-id="tab-1"
-            :asc="asc"
-            :selected="selectedTabIndex === 1">
+          <DsfrTabContent panel-id="tab-content-1" tab-id="tab-1" :asc="asc" :selected="selectedTabIndex === 1">
             <UsageForm ref="usageFormRef" :loading="loading" :usage="usageToEdit" @createEdit="createEditUsage($event)" />
-            <DsfrButtonGroup :buttons="usageFormButtons"
-                             class="fr-mt-2w"
-                             align="right"
-                             inlineLayoutWhen="always" />
+            <DsfrButtonGroup :buttons="usageFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
           </DsfrTabContent>
         </DsfrTabs>
       </div>
@@ -249,7 +238,7 @@ defineExpose({
 .usage-wrapper {
   .fr-tabs {
     overflow: visible;
-    
+
     &:before {
       height: calc(100% - 40px);
     }

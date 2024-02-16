@@ -14,7 +14,7 @@ const utils = useUtils();
   <DsfrHighlight>
     <span v-for="d of arreteCadre.departements">{{ d.nom }}<br/></span>
   </DsfrHighlight>
-  <p>Date de mise en vigueur&nbsp;: {{ arreteCadre.dateDebut }}</p>
+  <p>Date d'entrée en vigueur&nbsp;: {{ arreteCadre.dateDebut }}</p>
   <p>Date de fin&nbsp;: {{ arreteCadre.dateFin }}</p>
   <DsfrFileDownload
     v-if="arreteCadre.fichier"

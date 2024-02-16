@@ -29,8 +29,8 @@ export class Usage {
     this.concerneEntreprise = false;
     this.concerneCollectivite = false;
     this.concerneExploitation = false;
-    this.concerneEso = false;
-    this.concerneEsu = false;
-    this.concerneAep = false;
+    this.concerneEso = true;
+    this.concerneEsu = true;
+    this.concerneAep = true;
   }
 }

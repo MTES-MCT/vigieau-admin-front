@@ -132,6 +132,10 @@ const publishArrete = async (ac: ArreteCadre) => {
   if (data.value) {
     modalPublishOpened.value = false;
     navigateTo('/arrete-cadre');
+    alertStore.addAlert({
+      description: 'Publication réussie',
+      type: 'success',
+    });
   }
   loading.value = false;
 };

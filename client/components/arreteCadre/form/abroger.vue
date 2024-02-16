@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import { ArreteCadre, ArreteCadreStatutFr } from "~/dto/arrete_cadre.dto";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -35,6 +35,11 @@ const submitForm = async () => {
     emit('abroger', ac.value);
   }
 };
+
+const arEnVigueur = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_venir', 'publie'].includes(ar.statut));
+});
+const arreteCadreStatutFr = ArreteCadreStatutFr;
 
 defineExpose({
   submitForm,
@@ -74,10 +79,10 @@ defineExpose({
         </DsfrInputGroup>
       </div>
     </div>
-    <p v-if="arreteCadre.arretesRestriction.length > 0" class="fr-mt-4w">
+    <p v-if="arEnVigueur.length > 0" class="fr-mt-4w">
       Les arrêtés de restriction suivant seront abrogés :
-      <template v-for="ar of arreteCadre.arretesRestriction">
-        <br/>- {{ ar.numero }} - {{ ar.statut }}
+      <template v-for="ar of arEnVigueur">
+        <br/>- {{ ar.numero }} - {{ arreteCadreStatutFr[ar.statut] }}
       </template>
     </p>
   </form>

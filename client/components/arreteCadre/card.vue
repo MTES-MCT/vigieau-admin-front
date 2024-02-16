@@ -3,6 +3,7 @@ import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
+import { useAlertStore } from "~/stores/alert";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const alertStore = useAlertStore();
 const utils = useUtils();
 const isAcOnDepartementUser: boolean =
   authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
@@ -189,6 +191,10 @@ const repealArrete = async (ac: ArreteCadre) => {
   if (!error.value) {
     repealModalOpened.value = false;
     emit('repeal');
+    alertStore.addAlert({
+      description: 'Abrogement réussi',
+      type: 'success',
+    });
   }
   loading.value = false;
 };

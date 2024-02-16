@@ -92,7 +92,7 @@ defineExpose({
 </script>
 
 <template>
-  <h6>Récapitulatif des usages</h6>
+  <h6>Liste des usages en cours de saisie</h6>
   <DsfrTable v-if="usagesArreteCadre.length > 0" 
              :headers="headers"
              :rows="rows"
