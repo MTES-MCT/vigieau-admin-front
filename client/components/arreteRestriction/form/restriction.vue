@@ -22,7 +22,6 @@ const rules = computed(() => {
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
 const allUsages = props.restriction.usagesArreteRestriction.concat(props.arreteCadre.usagesArreteCadre.filter(u => !usagesSelected.value.includes(u.usage.id)));
-console.log(allUsages);
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -76,8 +75,8 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
           <DsfrAccordion :title="accordionTitle" :expanded-id="expandedId" @expand="expandedId = $event">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="usageArreteCadre.id"
-                :key="usageArreteCadre.id || usageArreteCadre.name"
+                :id="'' + restriction.zoneAlerte.id + usageArreteCadre.id"
+                :key="'' + restriction.zoneAlerte.id + usageArreteCadre.id || usageArreteCadre.name"
                 :name="usageArreteCadre.usage.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.usage.id)"
                 :small="false"

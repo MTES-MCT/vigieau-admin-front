@@ -114,8 +114,6 @@ defineExpose({
 </script>
 
 <template>
-  <div class="divider fr-mb-2w" />
-  <h6>Informations</h6>
   <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
     <DsfrInput
       id="nom"

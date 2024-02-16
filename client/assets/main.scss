@@ -36,11 +36,11 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
       box-shadow: none;
     }
 
-    .fr-tabs__list {
+    & > .fr-tabs__list {
       display: none;
     }
 
-    .fr-tabs__panel {
+    & > .fr-tabs__panel {
       padding: 0;
     }
   }

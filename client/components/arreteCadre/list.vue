@@ -106,10 +106,10 @@ watch(
   <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w" data-cy="ArreteCadreListHeader">
     <DsfrAlert
       v-if="showZaAlert"
-      class="fr-mb-2w"
+      class="fr-mb-2w full-width"
       type="warning"
       title="Zones d'alerte modifiées"
-      description="Des modifications importantes ont été apportées sur une ou plusieurs zones d’alerte, vous ne pourrez plus créer d’arrêté de restrictions associés sur les arrêtés cadres concernés. L’arrêté sera automatiquement abrogé lorsque tous les arrêtés de restrictions associés seront abrogés. Pour effectuer de nouvelles actions, vous devrez dupliquer l’arrêter cadre concerné."
+      description="Des modifications importantes ont été apportées sur une ou plusieurs zones d’alerte."
       :closeable="true"
       @close="showZaAlert = false"
     />

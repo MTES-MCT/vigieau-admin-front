@@ -10,10 +10,9 @@ import deburr from "lodash.deburr";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
-  usageSelected?: Usage;
+  usageSelected?: Usage | null;
 }>();
-const modalUsageOpened: Ref<boolean> = ref(false);
-const modalTitle: Ref<string> = ref("Création d'un nouvel usage");
+const emit = defineEmits(['resetUsageSelected']);
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
 const usageFormRef = ref(null);
 const usageArreteCadreFormRef = ref(null);
@@ -26,6 +25,7 @@ const refDataStore = useRefDataStore();
 const utils = useUtils();
 const api = useApi();
 const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
+const tabs = ref();
 
 const rules = computed(() => {
   return {
@@ -61,7 +61,7 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
   }
   query.value = '';
   if (!usage.id && !isUsageArreteCadre) {
-    modalUsageOpened.value = true;
+    tabs.value.selectIndex(1);
     return;
   }
   if (!isUsageArreteCadre) {
@@ -80,24 +80,25 @@ const deleteUsage = (usage: UsageArreteCadre) => {
   componentKey.value += 1;
 };
 
-const closeModal = () => {
-  modalUsageOpened.value = false;
-};
-
 const validateUsageForm = () => {
   usageFormRef.value?.submitForm();
 };
 
-const modalActions: Ref<any[]> = ref([
+const hideNewUsage = () => {
+  tabs.value.selectIndex(0);
+  usageToEdit.value = new Usage();
+};
+
+const usageFormButtons: Ref<any[]> = ref([
+  {
+    label: 'Annuler',
+    secondary: true,
+    onclick: hideNewUsage,
+  },
   {
     label: 'Enregistrer le nouvel usage',
     'data-cy': 'UsageFormSaveBtn',
     onclick: validateUsageForm,
-  },
-  {
-    label: 'Annuler',
-    secondary: true,
-    onclick: closeModal,
   },
 ]);
 
@@ -105,8 +106,7 @@ const createEditUsage = async (usage: Usage) => {
   loading.value = true;
   const { data, error } = await api.usage.create(usage);
   loading.value = false;
-  closeModal();
-  usageToEdit.value = new Usage();
+  hideNewUsage();
   if (data.value) {
     refDataStore.setUsages([...refDataStore.usages, data.value]);
     selectUsage(data.value);
@@ -130,6 +130,7 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
     secondary: true,
     onclick: () => {
       usageArreteCadreToEdit.value = null;
+      usageToEdit.value = new Usage();
     },
   },
   {
@@ -140,6 +141,18 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
     },
   },
 ]);
+
+const tabTitles = [
+  {title: 'Recherche'},
+  {title: 'Créer un nouvel usage'}
+];
+const selectedTabIndex: Ref<number> = ref(0);
+const asc = ref(true);
+const selectTab = (idx: number) => {
+  // this.onSelectTab(idx)
+  asc.value = selectedTabIndex.value < idx
+  selectedTabIndex.value = idx
+}
 
 watch(
   query,
@@ -154,44 +167,69 @@ watch(
     if(props.usageSelected) {
       selectUsage(props.usageSelected, true);      
     }
+    emit('resetUsageSelected');
   },
+  { immediate: true }
 );
 
 defineExpose({
   v$,
+  selectUsage
 });
 </script>
 
 <template>
   <form @submit.prevent="">
-    <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="usage-wrapper fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <h6>Ajouter un usage</h6>
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
-          <MixinsAutoComplete
-            class="show-label"
-            data-cy="ArreteCadreFormUsagesAutocomplete"
-            placeholder="Rechercher un usage"
-            buttonText="Ajouter"
-            display-key="display"
-            icon="ri-add-fill"
-            v-model="query"
-            :options="usagesFiltered"
-            :required="true"
-            @update:modelValue="selectUsage($event)"
-            @search="selectUsage($event)"
-          />
-        </DsfrInputGroup>
-        <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
-          <UsageArreteCadreForm :usageArreteCadre="usageArreteCadreToEdit"
-                                :loading="loading"
-                                @createEdit="addEditUsageArreteCadre()"
-                                ref="usageArreteCadreFormRef"/>
-          <DsfrButtonGroup :buttons="usageArreteCadreFormButtons"
-                           class="fr-mt-2w"
-                           align="right"
-                           inlineLayoutWhen="always" />
-        </div>
+        <DsfrTabs
+          ref="tabs"
+          :tab-titles="tabTitles"
+          :initial-selected-index="selectedTabIndex"
+          @select-tab="selectTab($event)">
+          <DsfrTabContent
+            panel-id="tab-content-0"
+            tab-id="tab-0"
+            :asc="asc"
+            :selected="selectedTabIndex === 0">
+            <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
+              <MixinsAutoComplete
+                class="show-label"
+                data-cy="ArreteCadreFormUsagesAutocomplete"
+                placeholder="Rechercher un usage"
+                buttonText="Ajouter"
+                display-key="display"
+                icon="ri-add-fill"
+                v-model="query"
+                :options="usagesFiltered"
+                :required="true"
+                @update:modelValue="selectUsage($event)"
+                @search="selectUsage($event)"
+              />
+            </DsfrInputGroup>
+            <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
+              <UsageArreteCadreForm :usageArreteCadre="usageArreteCadreToEdit"
+                                    :loading="loading"
+                                    @createEdit="addEditUsageArreteCadre()"
+                                    ref="usageArreteCadreFormRef"/>
+              <DsfrButtonGroup :buttons="usageArreteCadreFormButtons"
+                               class="fr-mt-2w"
+                               align="right"
+                               inlineLayoutWhen="always" />
+            </div>
+          </DsfrTabContent>
+          <DsfrTabContent
+            panel-id="tab-content-1"
+            tab-id="tab-1"
+            :asc="asc"
+            :selected="selectedTabIndex === 1">
+            <UsageForm ref="usageFormRef" :loading="loading" :usage="usageToEdit" @createEdit="createEditUsage($event)" />
+            <DsfrButtonGroup :buttons="usageFormButtons"
+                             class="fr-mt-2w"
+                             align="right"
+                             inlineLayoutWhen="always" />
+          </DsfrTabContent>
+        </DsfrTabs>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <div class="arrete-cadre-usage-list fr-p-2w fr-mt-7w">
@@ -205,12 +243,19 @@ defineExpose({
       </div>
     </div>
   </form>
-  <DsfrModal :opened="modalUsageOpened" :title="modalTitle" :actions="modalActions" @close="closeModal">
-    <UsageForm ref="usageFormRef" :loading="loading" :usage="usageToEdit" @createEdit="createEditUsage($event)" />
-  </DsfrModal>
 </template>
 
 <style lang="scss">
+.usage-wrapper {
+  .fr-tabs {
+    overflow: visible;
+    
+    &:before {
+      height: calc(100% - 40px);
+    }
+  }
+}
+
 .usage-form-wrapper {
   border: 1px solid var(--grey-925-125);
 }

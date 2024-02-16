@@ -174,13 +174,14 @@ const usagesFormRef = ref(null);
         ref="usagesFormRef"
         :arrete-cadre="arreteCadre"
         :usageSelected="usageSelected"
-        :key="componentKey"
+        :key="componentKey + currentStep"
+        @resetUsageSelected="usageSelected = null"
       />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 5" :asc="asc">
       <ArreteCadreFormRecapitulatif
         :arrete-cadre="arreteCadre"
-        :key="componentKey"
+        :key="componentKey + currentStep"
         :view-only="false"
         @usageSelected="
           usageSelected = $event;
