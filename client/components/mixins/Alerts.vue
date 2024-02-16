@@ -4,7 +4,7 @@ import { useAlertStore } from "~/stores/alert";
 const alertStore = useAlertStore();
 
 onUnmounted(() => {
-  alertStore.clearAll();
+  // alertStore.clearAll();
 });
 </script>
 
