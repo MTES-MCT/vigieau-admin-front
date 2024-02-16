@@ -85,7 +85,7 @@ watch(
     // On récupère le tableau de départements des arrêtés cadres
     const departement = props.arreteRestriction.departement;
     const allZones = props.arreteRestriction.arretesCadre.map((ac) => ac.zonesAlerte).flat();
-    let depsUnique = [departement];
+    let depsUnique = departement ? [departement] : [];
     depsUnique = depsUnique.map((d: any) => {
       return {
         ...d,
@@ -171,7 +171,7 @@ defineExpose({
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-        <ArreteRestrictionFormZonesMap v-if="selected" :arreteRestriction="arreteRestriction" />
+<!--        <ArreteRestrictionFormZonesMap v-if="selected" :arreteRestriction="arreteRestriction" />-->
       </div>
     </div>
   </form>

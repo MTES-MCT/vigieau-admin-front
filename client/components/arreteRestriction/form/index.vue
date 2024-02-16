@@ -45,7 +45,15 @@ const initSticky = () => {
 };
 
 if (isNewArreteRestriction) {
-  arreteRestriction.value = new ArreteRestriction();
+  const newAr = new ArreteRestriction();
+  if(route.query.arretecadre) {
+    const { data, error } = await api.arreteCadre.get(route.query.arretecadre.toString());
+    if(data.value) {
+      newAr.arretesCadre = [data.value];
+      newAr.departement = data.value?.departements[0];
+    }
+  }
+  arreteRestriction.value = newAr;
 } else {
   const { data, error } = await api.arreteRestriction.get(<string>route.params.id);
   if (data.value) {

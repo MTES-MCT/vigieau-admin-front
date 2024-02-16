@@ -41,10 +41,10 @@ const nextStep = async () => {
       await reglesFormRef.value?.v$.$validate()
       errors = reglesFormRef.value?.v$.$errors;
       break;
-    // case 3:
-    //   await zonesFormRef.value?.v$.$validate()
-    //   errors = zonesFormRef.value?.v$.$errors;
-    //   break;
+    case 3:
+      await restrictionsFormRef.value?.v$.$validate()
+      errors = restrictionsFormRef.value?.v$.$errors;
+      break;
     // case 4:
     //   await usagesFormRef.value?.v$.$validate()
     //   errors = usagesFormRef.value?.v$.$errors;
@@ -71,7 +71,6 @@ const saveArrete = async (publish: boolean = false) => {
     return;
   }
   loading.value = true;
-  console.log(props.arreteRestriction);
   const { data, error } = props.arreteRestriction.id
     ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), props.arreteRestriction)
     : await api.arreteRestriction.create({ ...props.arreteRestriction });
@@ -120,6 +119,10 @@ const publishArrete = async (ar: ArreteRestriction) => {
   loading.value = false;
 };
 
+const getRestrictionByNiveauDeGravite = (niveauGravite: string) => {
+  return props.arreteRestriction.restrictions.filter((restriction) => restriction.niveauGravite === niveauGravite);
+}
+
 // PUBLISH MODAL
 const modalPublishOpened: Ref<boolean> = ref(false);
 const modalTitle: Ref<string> = ref('Récapitulatif et publication de l’arrêté de restriction');
@@ -128,7 +131,7 @@ const publierFormRef = ref(null);
 // Forms
 const generalFormRef = ref(null);
 const reglesFormRef = ref(null);
-const zonesFormRef = ref(null);
+const restrictionsFormRef = ref(null);
 const graviteFormRef = ref(null);
 </script>
 
@@ -152,7 +155,7 @@ const graviteFormRef = ref(null);
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteRestrictionFormZones
-        ref="zonesFormRef"
+        ref="restrictionsFormRef"
         :selected="currentStep === 3"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
@@ -215,6 +218,24 @@ const graviteFormRef = ref(null);
     </li>
   </ul>
   <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
+    <p>
+      Cet arrêté de restriction contient&nbsp;:
+      <ul>
+        <li v-if="getRestrictionByNiveauDeGravite('vigilance').length > 0">
+          {{ getRestrictionByNiveauDeGravite('vigilance').length }} zone(s) en vigilance
+        </li>
+        <li v-if="getRestrictionByNiveauDeGravite('alerte').length > 0">
+          {{ getRestrictionByNiveauDeGravite('alerte').length }} zone(s) en alerte
+        </li>
+        <li v-if="getRestrictionByNiveauDeGravite('alerte_renforcee').length > 0">
+          {{ getRestrictionByNiveauDeGravite('alerte_renforcee').length }} zone(s) en alerte renforcée
+        </li>
+        <li v-if="getRestrictionByNiveauDeGravite('crise').length > 0">
+          {{ getRestrictionByNiveauDeGravite('crise').length }} zone(s) en crise
+        </li>
+      </ul>
+      <div class="divider"></div>
+    </p>
     <ArreteRestrictionFormPublier ref="publierFormRef" :arreteRestriction="arreteRestriction" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">

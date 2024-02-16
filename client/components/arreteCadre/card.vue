@@ -24,18 +24,25 @@ const canUpdate = authStore.isMte || (props.arreteCadre.statut !== 'abroge' && i
 const arreteCadreStatutFr = ArreteCadreStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteCadreActions: Ref<any> = ref([
-  // {
-  //   text: 'Créer un arrêté de restriction associé',
-  //   disabled: true,
-  //   onclick: () => {
-  //     console.log('click');
-  //   },
-  // },
   {
     text: props.arreteCadre.statut === 'a_valider' ? 'Modifier' : 'Corriger',
     show: canUpdate,
     onclick: () => {
       utils.askEditArreteCadre(props.arreteCadre, modalTitle, modalDescription, modalActions, modalOpened, editArreteCadre);
+    },
+  },
+  {
+    text: 'Dupliquer',
+    onclick: () => {
+      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
+    },
+    show: authStore.isMte || isAcOnDepartementUser,
+  },
+  {
+    text: 'Créer un arrêté de restriction associé',
+    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
+    onclick: () => {
+      navigateTo(`/arrete-restriction/nouveau/edition?arretecadre=${props.arreteCadre.id}`);
     },
   },
   // {
@@ -44,13 +51,6 @@ const arreteCadreActions: Ref<any> = ref([
   //     console.log('click');
   //   },
   // },
-  {
-    text: 'Dupliquer',
-    onclick: () => {
-      navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
-    },
-    show: authStore.isMte || isAcOnDepartementUser,
-  },
   {
     text: 'Abroger',
     show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,

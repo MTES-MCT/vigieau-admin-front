@@ -21,7 +21,7 @@ const arretesCadreTags: Ref<any> = ref([]);
 const acSelected = ref();
 
 const assignDepartement = (force = false) => {
-  if (!props.arreteRestriction.id || force) {
+  if ((!props.arreteRestriction.id  && !props.arreteRestriction.departement) || force) {
     props.arreteRestriction.departement =
       authStore.user.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) : null;
   }

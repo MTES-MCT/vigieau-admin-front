@@ -50,10 +50,6 @@ const submitForm = async () => {
   }
 };
 
-const getRestrictionByNiveauDeGravite = (niveauGravite: string) => {
-  return props.arreteRestriction.restrictions.find((restriction) => restriction.niveauGravite === niveauGravite);
-}
-
 defineExpose({
   submitForm,
 });
@@ -61,23 +57,6 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
-    <p>
-      Cet arrêté de restriction contient&nbsp;:
-      <ul>
-        <li>
-          {{ getRestrictionByNiveauDeGravite('vigilance') }} zone(s) en vigilance
-        </li>
-        <li>
-          {{ getRestrictionByNiveauDeGravite('alerte') }} zone(s) en alerte
-        </li>
-        <li>
-          {{ getRestrictionByNiveauDeGravite('alerte_renforcee') }} zone(s) en alerte renforcée
-        </li>
-        <li>
-          {{ getRestrictionByNiveauDeGravite('crise') }} zone(s) en crise
-        </li>
-      </ul>
-    </p>
     <p>Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin (optionnel)</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
@@ -105,17 +84,18 @@ defineExpose({
                      data-cy="PublishFormDateFinInput" />
         </DsfrInputGroup>
       </div>
+      <div class="fr-col-12 fr-col-lg-6">
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateSignature')">
+          <DsfrInput id="dateSignature"
+                     v-model="arreteRestriction.dateSignature"
+                     label="Date de signature"
+                     label-visible
+                     type="date"
+                     name="dateSignature"
+                     data-cy="PublishFormDateSignatureInput" />
+        </DsfrInputGroup>
+      </div>
     </div>
-    <p>Choisissez la date de signature de l'arrêté</p>
-    <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateSignature')">
-      <DsfrInput id="dateSignature"
-                 v-model="arreteRestriction.dateSignature"
-                 label="Date de signature"
-                 label-visible
-                 type="date"
-                 name="dateSignature"
-                 data-cy="PublishFormDateSignatureInput" />
-    </DsfrInputGroup>
     
     <div class="fr-mt-4w" v-if="arreteRestriction.fichier">
       <DsfrFileDownload
@@ -130,7 +110,7 @@ defineExpose({
     <div class="fr-mt-4w">
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
         <DsfrFileUpload :required="!arreteRestriction.fichier"
-                        :label="arreteRestriction.fichier ? 'Modifier le PDF de l\'arrêté de restriction' : 'Importer le PDF de l\'arrêté de restriction'"
+                        :label="arreteRestriction.fichier ? 'Modifier le PDF de l\'arrêté' : 'Importer le PDF de l\'arrêté'"
                         hint="Taille maximale autorisée : 10Mo. Le nom du fichier ne doit pas dépasser 50 caractères, évitez les espaces et caractères spéciaux."
                         :arreteCadrecept="['application/pdf']"
                         data-cy="PublishFormFileInput"
