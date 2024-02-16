@@ -142,7 +142,7 @@ const publishArrete = async (ac: ArreteCadre) => {
 
 // PUBLISH MODAL
 const modalPublishOpened: Ref<boolean> = ref(false);
-const modalTitle: Ref<string> = ref('Date de publication');
+const modalTitle: Ref<string> = ref('Récapitulatif et publication');
 const publierFormRef = ref(null);
 
 // Forms
@@ -214,12 +214,11 @@ const usagesFormRef = ref(null);
         @click="saveArrete(arreteCadre.statut !== 'a_valider')"
       />
     </li>
-    <li>
+    <li v-if="currentStep !== 5">
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
                   data-cy="ArreteCadreFormNextStepBtn"
-                  :disabled="currentStep === 5"
                   @click="nextStep()" />
     </li>
     <li v-if="currentStep === 5 && arreteCadre.statut === 'a_valider'">
@@ -234,6 +233,15 @@ const usagesFormRef = ref(null);
     </li>
   </ul>
   <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
+    <p>
+      Cet arrêté cadre contient&nbsp;:
+      <ul>
+        <li v-if="arreteCadre.departements.length > 1">{{ arreteCadre.departements.length }} départements</li>
+        <li>{{ arreteCadre.zonesAlerte.length }} zones d'alertes</li>
+        <li>{{ arreteCadre.usagesArreteCadre.length }} usages</li>
+      </ul>
+      <div class="divider"></div>
+    </p>
     <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">

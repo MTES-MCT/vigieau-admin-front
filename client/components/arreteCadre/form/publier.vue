@@ -62,7 +62,7 @@ defineExpose({
           <DsfrInput
             id="dateDebut"
             v-model="arreteCadre.dateDebut"
-            label="Date de début de l'arrêté"
+            label="Date de début"
             label-visible
             type="date"
             name="dateDebut"
@@ -75,7 +75,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput id="dateFin"
                      v-model="arreteCadre.dateFin"
-                     label="Date de fin de l'arrêté"
+                     label="Date de fin"
                      label-visible
                      type="date"
                      name="dateFin"
@@ -97,7 +97,7 @@ defineExpose({
     <div class="fr-mt-4w">
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'file')">
         <DsfrFileUpload :required="!arreteCadre.fichier"
-                        :label="arreteCadre.fichier ? 'Modifier le PDF de l\'arrêté cadre' : 'Importer le PDF de l\'arrêté cadre'"
+                        :label="arreteCadre.fichier ? 'Modifier le PDF de l\'arrêté' : 'Importer le PDF de l\'arrêté'"
                         hint="Taille maximale autorisée : 10Mo. Le nom du fichier ne doit pas dépasser 50 caractères, évitez les espaces et caractères spéciaux."
                         :arreteCadrecept="['application/pdf']"
                         data-cy="PublishFormFileInput"

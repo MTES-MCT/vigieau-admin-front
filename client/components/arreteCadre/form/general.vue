@@ -87,10 +87,10 @@ const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements.map((d) => {
     return {
       label: d.nom,
-      class: authStore.user.role !== 'mte' && d.code === authStore.user.roleDepartement ? '' : 'fr-tag--dismiss',
+      class: authStore.user?.role !== 'mte' && d.code === authStore.user?.roleDepartement ? '' : 'fr-tag--dismiss',
       tagName: 'button',
       onclick: () => {
-        if (authStore.user.role !== 'mte' && d.code === authStore.user.roleDepartement) {
+        if (authStore.user?.role !== 'mte' && d.code === authStore.user?.roleDepartement) {
           return;
         }
         deleteDepartement(d.id);
@@ -108,6 +108,10 @@ const departementPiloteChange = (depPiloteId: string) => {
 };
 
 computeDepartementsTags();
+
+const isDepPilote = computed(() => {
+  return authStore.user?.role === 'mte' || authStore.user?.roleDepartement === props.arreteCadre.departements[0]?.code;
+})
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 
@@ -168,12 +172,12 @@ defineExpose({
 
         <DsfrRadioButtonSet legend="Cet arrêté est :" :options="aciOptions" v-model="isAci" name="isAci" :small="false" />
         <DsfrHighlight
-          v-if="authStore.user.role !== 'mte' && !isAci && arreteCadre.departements[0]"
+          v-if="authStore.user?.role !== 'mte' && !isAci && arreteCadre.departements[0]"
           :text="arreteCadre.departements[0].nom"
         />
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
           <DsfrSelect
-            v-if="authStore.user.role === 'mte' || isAci"
+            v-if="authStore.user?.role === 'mte' || isAci"
             :model-value="arreteCadre.departements[0]?.id"
             :label="isAci ? 'Département pilote' : 'Département'"
             :options="departementsOptions"
@@ -181,7 +185,7 @@ defineExpose({
           />
         </DsfrInputGroup>
         <DsfrAlert
-          v-if="isAci"
+          v-if="isAci && isDepPilote"
           type="info"
           title="Arrêté Interdépartemental"
           description="En choisissant de créer un arrêté cadre interdépartemental, cela induit que votre département est le pilote de cet arrêté. Vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
@@ -210,7 +214,7 @@ defineExpose({
           </DsfrInputGroup>
         </div>
         <DsfrAlert
-          v-if="departementsTags.length > 0"
+          v-if="departementsTags.length > 0 && isDepPilote"
           type="info"
           title="Email d'information"
           description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
