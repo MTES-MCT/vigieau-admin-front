@@ -90,7 +90,7 @@ const rules = computed(() => {
   };
 });
 
-const v$ = useVuelidate(rules, props.usage);
+const v$ = useVuelidate(rules, props.usage, { $scope: false });
 
 const submitForm = async () => {
   await v$.value.$validate();

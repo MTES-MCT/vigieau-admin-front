@@ -60,16 +60,19 @@ const niveauxRestriction = [
     attribute: 'descriptionVigilance',
     name: 'Vigilance',
     badgeType: 'info',
+    required: false,
   },
   {
     attribute: 'descriptionAlerte',
     name: 'Alerte',
     badgeType: 'new',
+    required: false,
   },
   {
     attribute: 'descriptionAlerteRenforcee',
     name: 'Alerte renforcée',
     badgeType: 'warning',
+    required: false,
   },
   {
     attribute: 'descriptionCrise',

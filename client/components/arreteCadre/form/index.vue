@@ -45,13 +45,13 @@ const initSticky = () => {
   };
 };
 
-if (isNewArreteCadre) {
+if (isNewArreteCadre && !route.query.arretecadre) {
   arreteCadre.value = new ArreteCadre();
 } else {
-  const { data, error } = await api.arreteCadre.get(<string>route.params.id);
+  const { data, error } = await api.arreteCadre.get(isNewArreteCadre ? <string>route.query.arretecadre : <string>route.params.id);
   if (data.value) {
     arreteCadre.value = <ArreteCadre>data.value;
-    if (props.duplicate) {
+    if (props.duplicate || route.query.arretecadre) {
       arreteCadre.value.id = null;
       arreteCadre.value.statut = 'a_valider';
       arreteCadre.value.dateDebut = null;
@@ -68,6 +68,9 @@ if (isNewArreteCadre) {
       const depPilote = arreteCadre.value.departements[depPiloteIndex];
       arreteCadre.value.departements.splice(depPiloteIndex, 1);
       arreteCadre.value.departements.splice(0, 0, depPilote);
+    }
+    if(route.query.arretecadre) {
+      // Mettre l'id de l'arrêté abrogeant
     }
   }
 }

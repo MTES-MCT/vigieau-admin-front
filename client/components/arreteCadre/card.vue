@@ -52,7 +52,14 @@ const arreteCadreActions: Ref<any> = ref([
   //   },
   // },
   {
-    text: 'Abroger',
+    text: `Abroger l'arrêté et le remplacer`,
+    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
+    onclick: () => {
+      navigateTo(`/arrete-cadre/nouveau/edition?arretecadre=${props.arreteCadre.id}`);
+    },
+  },
+  {
+    text: `Mettre fin à l'arrêté`,
     show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
     onclick: () => {
       repealModalOpened.value = true;
