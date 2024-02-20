@@ -46,7 +46,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'search']);
 
-const hasFocus = ref(true);
+const hasFocus = ref(false);
 const displayOptions = computed(() => !!props.options.length);
 
 function convertRemToPixels(rem) {
@@ -153,7 +153,6 @@ function displayOption(option: any) {
         :placeholder="placeholder"
         :label="label"
         v-bind="$attrs"
-        :required="true"
         :disabled="disabled"
         @update:model-value="$emit('update:modelValue', $event)"
         ref="input"
@@ -172,7 +171,7 @@ function displayOption(option: any) {
       </DsfrButton>
     </div>
     <ul
-      v-show="displayOptions"
+      v-show="displayOptions && hasFocus"
       ref="optionsList"
       class="list-none absolute m-0 right-0 z-1 left-0 bg-white box-shadow max-h-17 scroll pointer"
       :class="{ 'at-the-top': displayAtTheTop }"

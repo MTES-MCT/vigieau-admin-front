@@ -199,7 +199,7 @@ const repealArrete = async (ac: ArreteCadre) => {
     repealModalOpened.value = false;
     emit('repeal');
     alertStore.addAlert({
-      description: 'Abrogement réussi',
+      description: 'Abrogation réussie',
       type: 'success',
     });
   }

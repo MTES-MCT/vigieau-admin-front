@@ -39,27 +39,24 @@ const v$ = useVuelidate(rules, props.arreteCadre);
 
 const filterUsages = () => {
   let tmp: any[] = [];
-  if (query.value) {
-    tmp = refDataStore.usages.filter((u) => {
-      const nom = deburr(u.nom)
-        .replace(/[\-\_]/g, '');
-      const queryWords = deburr(query.value)
-        .replace(/[\-\_]/g, '')
-        .split(' ')
-        .map(s => s.replace(/^/,"(").replace(/$/,")"))
-        .join('*');
-      const regex = new RegExp(`${queryWords}`, 'gi');
-      return nom.match(regex);
-    });
-    tmp.map((u) => {
-      u.isAlreadyUsed = props.arreteCadre.usagesArreteCadre.findIndex((uac) => uac.usage.id === u.id) > -1;
-      u.display = u.isAlreadyUsed ? '<b>' + u.nom + '</b>' : u.nom;
-    });
-    // tmp.push({
-    //   id: null,
-    //   display: '<span class="select-option-usage"><b>Vous ne trouvez pas l’usage que vous cherchez ?</b> Créez un nouvel usage</span>',
-    // });
-  }
+  tmp = query.value ? refDataStore.usages.filter((u) => {
+    const nom = deburr(u.nom)
+      .replace(/[\-\_]/g, '');
+    const queryWords = deburr(query.value)
+      .replace(/[\-\_]/g, '')
+      .split(' ')
+      .map(s => s.replace(/^/,"(").replace(/$/,")"))
+      .join('*');
+    const regex = new RegExp(`${queryWords}`, 'gi');
+    return nom.match(regex);
+  }) : refDataStore.usages;
+  tmp = tmp.filter((u) => {
+    return props.arreteCadre.usagesArreteCadre.findIndex((uac) => uac.usage.id === u.id) < 0
+  });
+  // tmp.push({
+  //   id: null,
+  //   display: '<span class="select-option-usage"><b>Vous ne trouvez pas l’usage que vous cherchez ?</b> Créez un nouvel usage</span>',
+  // });
   usagesFiltered.value = tmp;
 };
 
@@ -164,6 +161,7 @@ watch(
   useUtils().debounce(async () => {
     filterUsages();
   }, 300),
+  { immediate: true }
 );
 
 watch(
@@ -177,9 +175,12 @@ watch(
   { immediate: true },
 );
 
+const arreteCadreUsageListRef = ref(null);
+
 defineExpose({
   v$,
   selectUsage,
+  arreteCadreUsageListRef,
 });
 </script>
 
@@ -196,10 +197,9 @@ defineExpose({
               <MixinsAutoComplete
                 class="show-label"
                 data-cy="ArreteCadreFormUsagesAutocomplete"
-                placeholder="Saisir le nom d'un usage"
-                buttonText="Ajouter"
-                display-key="display"
-                icon="ri-add-fill"
+                placeholder="Taper le nom d'un usage"
+                buttonText="Rechercher"
+                display-key="nom"
                 v-model="query"
                 :options="usagesFiltered"
                 :required="true"
@@ -224,8 +224,9 @@ defineExpose({
         </DsfrTabs>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-        <div class="arrete-cadre-usage-list fr-p-2w fr-mt-7w">
+        <div class="arrete-cadre-usage-list fr-p-2w">
           <ArreteCadreUsageList
+            ref="arreteCadreUsageListRef"
             :usagesArreteCadre="arreteCadre.usagesArreteCadre"
             @usage-selected="selectUsage($event, true)"
             @usage-removed="deleteUsage($event)"

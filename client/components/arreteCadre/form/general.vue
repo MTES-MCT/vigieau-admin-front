@@ -214,14 +214,14 @@ defineExpose({
           </DsfrInputGroup>
         </div>
         <DsfrAlert
-          v-if="departementsTags.length > 0 && isDepPilote"
+          v-if="isAci && isDepPilote"
           type="info"
           title="Email d'information"
           description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
           class="fr-mb-2w"
         />
 
-        <ArreteCadreFormPublier v-if="arreteCadre.statut !== 'a_valider'" :arrete-cadre="arreteCadre" />
+        <ArreteCadreFormPublier :showDateFin="true" v-if="arreteCadre.statut !== 'a_valider'" :arrete-cadre="arreteCadre" />
       </div>
     </div>
   </form>

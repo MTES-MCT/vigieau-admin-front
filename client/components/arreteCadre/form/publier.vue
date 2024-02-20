@@ -6,6 +6,7 @@ import { requiredIf } from "@vuelidate/validators";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
+  showDateFin: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -55,7 +56,7 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
-    <p>Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin (optionnel)</p>
+    <p>Choisissez la date d’entrée en vigueur de l’arrêté<span v-if="showDateFin"> et sa date de fin (optionnel)</span></p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
@@ -71,7 +72,7 @@ defineExpose({
           />
         </DsfrInputGroup>
       </div>
-      <div class="fr-col-12 fr-col-lg-6">
+      <div v-if="showDateFin" class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateFin')">
           <DsfrInput id="dateFin"
                      v-model="arreteCadre.dateFin"

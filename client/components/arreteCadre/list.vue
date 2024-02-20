@@ -120,7 +120,7 @@ watch(
       <VIcon v-if="loading" name="ri-loader-4-line" animation="spin" :width="40" :height="40" />
     </h1>
     <NuxtLink to="/arrete-cadre/nouveau/edition">
-      <DsfrButton label="Créer un nouvel arrêté" data-cy="ArreteCadreListAddBtn" />
+      <DsfrButton label="Créer un nouvel arrêté cadre" data-cy="ArreteCadreListAddBtn" />
     </NuxtLink>
     <div class="fr-col-12 fr-grid-row fr-grid-row--bottom fr-grid-row--gutters fr-mt-2w">
       <div class="fr-col-12 fr-col-md-6 fr-mb-2w">

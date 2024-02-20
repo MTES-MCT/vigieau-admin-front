@@ -56,6 +56,7 @@ const nextStep = async () => {
       break;
   }
   if(errors && errors.length > 0) {
+    showErrors(v$.value.$errors, null);
     return;
   }
   currentStep.value++;
@@ -70,9 +71,10 @@ const saveArrete = async (publish: boolean = false) => {
   if (loading.value) {
     return;
   }
-  publish ? v$.value.$validate() : generalFormRef.value?.v$.$validate();
-  if (publish ? v$.value.$error : generalFormRef.value?.v$.$error) {
-    showErrors(publish ? v$.value.$errors : generalFormRef.value?.v$.$errors, publish);
+  publish ? v$.value.$validate() : 
+    generalFormRef.value?.v$.$validate() && usagesFormRef.value?.arreteCadreUsageListRef.v$.$validate();
+  if (publish ? v$.value.$error : generalFormRef.value?.v$.$error || usagesFormRef.value?.arreteCadreUsageListRef.v$.$error) {
+    showErrors(v$.value.$errors, publish ? 'Impossible de publier l\'arrêté cadre' : 'Impossible d\'enregistrer l\'arrêté cadre');
     return;
   }
   loading.value = true;
@@ -103,9 +105,9 @@ const saveArrete = async (publish: boolean = false) => {
   loading.value = false;
 };
 
-const showErrors = (errors, publish) => {
+const showErrors = (errors: any, title: string | null) => {
   alertStore.addAlert({
-    title: publish ? "Impossible de publier l'arrêté cadre" : "Impossible d'enregistrer l'arrêté cadre",
+    title: title,
     description: errors.filter((e: any) => e.$message).map((e: any) => {
       if(Array.isArray(e.$message)) {
         return e.$message.flat().filter((m: any) => m).join(', ');
@@ -242,7 +244,7 @@ const usagesFormRef = ref(null);
       </ul>
       <div class="divider"></div>
     </p>
-    <ArreteCadreFormPublier ref="publierFormRef" :arrete-cadre="arreteCadre" @publier="publishArrete($event)" />
+    <ArreteCadreFormPublier :showDateFin="false" ref="publierFormRef" :arrete-cadre="arreteCadre" @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
