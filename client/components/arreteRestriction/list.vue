@@ -82,7 +82,7 @@ watch(
       departementsOptions.value = refDataStore.departements.map((d) => {
         return {
           value: d.id,
-          text: d.nom,
+          text: `${d.code} - ${d.nom}`,
         };
       });
       departementsOptions.value?.unshift({

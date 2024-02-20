@@ -51,6 +51,12 @@ if (isNewArreteCadre && !route.query.arretecadre) {
   const { data, error } = await api.arreteCadre.get(isNewArreteCadre ? <string>route.query.arretecadre : <string>route.params.id);
   if (data.value) {
     arreteCadre.value = <ArreteCadre>data.value;
+    if(route.query.arretecadre) {
+      arreteCadre.value.arreteCadreAbroge = <ArreteCadre>{
+        id: data.value.id,
+        numero: data.value.numero
+      };
+    }
     if (props.duplicate || route.query.arretecadre) {
       arreteCadre.value.id = null;
       arreteCadre.value.statut = 'a_valider';

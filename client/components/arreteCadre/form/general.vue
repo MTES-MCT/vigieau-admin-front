@@ -7,6 +7,8 @@ import type { Departement } from '~/dto/departement.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
 import deburr from 'lodash.deburr';
+import { requiredIf } from "@vuelidate/validators";
+import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -16,6 +18,7 @@ const query: Ref<string> = ref('');
 const departementsTags: Ref<any> = ref([]);
 const departementsFiltered = ref([]);
 const utils = useUtils();
+const api = useApi();
 const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
 const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
@@ -40,15 +43,15 @@ const rules = computed(() => {
     departements: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins un département", required),
     },
+    arreteCadreAbroge: {},
   };
 });
 
 const filterDepartements = () => {
-  departementsFiltered.value = query.value
-    ? refDataStore.departements.filter((d) => {
-        return (
-          !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id) &&
-          (deburr(d.nom)
+  let tmp = refDataStore.departements.filter((d) => !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id));
+  if(query.value) {
+    tmp = tmp.filter((d) => {
+      return (deburr(d.nom)
             .replace(/[\s\-\_]/g, '')
             .toLowerCase()
             .includes(
@@ -56,16 +59,21 @@ const filterDepartements = () => {
                 .replace(/[\s\-\_]/g, '')
                 .toLowerCase(),
             ) ||
-            d.code.toLowerCase().includes(query.value.toLowerCase()))
-        );
-      })
-    : [];
+          d.code.toLowerCase().includes(query.value.toLowerCase())
+      );
+    });
+  }
+  tmp.map((d: any) => {
+    d.display = `${d.code} - ${d.nom}`;
+    return d;
+  });
+  departementsFiltered.value = tmp;
 };
 
 const departementsOptions = refDataStore.departements.map((d) => {
   return {
     value: d.id,
-    text: d.nom,
+    text: `${d.code} - ${d.nom}`,
   };
 });
 
@@ -86,7 +94,7 @@ const deleteDepartement = (departementId: number) => {
 const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements.map((d) => {
     return {
-      label: d.nom,
+      label: `${d.code} - ${d.nom}`,
       class: authStore.user?.role !== 'mte' && d.code === authStore.user?.roleDepartement ? '' : 'fr-tag--dismiss',
       tagName: 'button',
       onclick: () => {
@@ -131,6 +139,7 @@ watch(
   useUtils().debounce(async () => {
     filterDepartements();
   }, 300),
+  { immediate: true }
 );
 
 watch(isAci, () => {
@@ -201,10 +210,9 @@ defineExpose({
               icon="ri-add-fill"
               :labelVisible="true"
               buttonText="Ajouter"
-              display-key="nom"
+              display-key="display"
               v-model="query"
               :options="departementsFiltered"
-              :required="true"
               placeholder="Rechercher un département"
               @update:modelValue="selectDepartement($event)"
               @search="selectDepartement($event)"
@@ -212,14 +220,27 @@ defineExpose({
 
             <DsfrTags class="fr-mt-2w" :tags="departementsTags" />
           </DsfrInputGroup>
+
+          <DsfrAlert
+            v-if="isDepPilote"
+            type="info"
+            title="Email d'information"
+            description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
+            class="fr-mb-2w"
+          />
         </div>
-        <DsfrAlert
-          v-if="isAci && isDepPilote"
-          type="info"
-          title="Email d'information"
-          description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
-          class="fr-mb-2w"
-        />
+
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'arreteCadreAbroge')">
+          <DsfrInput
+            v-if="arreteCadre.arreteCadreAbroge"
+            disabled
+            :model-value="arreteCadre.arreteCadreAbroge?.numero"
+            data-cy="ArreteCadreFormAbrogeInput"
+            label="Arrêté abrogé"
+            label-visible
+            type="text"
+          />
+        </DsfrInputGroup>
 
         <ArreteCadreFormPublier :showDateFin="true" v-if="arreteCadre.statut !== 'a_valider'" :arrete-cadre="arreteCadre" />
       </div>

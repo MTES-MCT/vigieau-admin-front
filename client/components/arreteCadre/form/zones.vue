@@ -112,7 +112,7 @@ defineExpose({
                 :onUpdate:modelValue="() => selectAll(d)"
                 :checked="d.nbZonesSelected === d.zonesAlerte.length"
               />
-              <div class="fr-grid-row full-width">
+              <div class="fr-grid-row full-width fr-mt-1w">
                 <DsfrAccordion :expanded-id="expandedDepCode"
                                @expand="onAccordionClick(d.code)"
                                class="full-width"

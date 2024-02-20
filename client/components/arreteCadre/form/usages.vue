@@ -202,7 +202,6 @@ defineExpose({
                 display-key="nom"
                 v-model="query"
                 :options="usagesFiltered"
-                :required="true"
                 @update:modelValue="selectUsage($event)"
                 @search="selectUsage($event)"
               />

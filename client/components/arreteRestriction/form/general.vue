@@ -165,7 +165,7 @@ const departementChange = (depId: string) => {
 const departementsOptions = refDataStore.departements.map((d) => {
   return {
     value: d.id,
-    text: d.nom,
+    text: `${d.code} - ${d.nom}`,
   };
 });
 
@@ -202,7 +202,7 @@ watch(
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'arreteRestrictionAbroge')">
           <DsfrRadioButtonSet
             :disabled="!arreteRestriction.departement"
-            legend="Cet arrêté abroge t-il un autre arrêté de restriction"
+            legend="Cet arrêté abroge t-il un autre arrêté de restriction ?"
             :options="abrogeantOptions"
             v-model="isAbrogeant"
             name="isAbrogeant"

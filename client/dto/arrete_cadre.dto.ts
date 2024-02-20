@@ -13,6 +13,7 @@ export class ArreteCadre {
   usagesArreteCadre: any[];
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
   arretesRestriction: ArreteRestriction[];
+  arreteCadreAbroge: ArreteCadre | null;
 
   communeNiveauGraviteMax: 'all' | 'aep' | 'none' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
@@ -38,6 +39,7 @@ export class ArreteCadre {
     this.ressourceEapCommunique = null;
     this.superpositionCommune = null;
     this.arretesRestriction = [];
+    this.arreteCadreAbroge = null;
   }
 }
 

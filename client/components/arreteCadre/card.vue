@@ -145,11 +145,16 @@ const askDeleteArreteCadre = async (arreteCadre: ArreteCadre) => {
 };
 
 const deleteArreteCadre = async (id: string) => {
+  if (loading.value) {
+    return;
+  }
+  loading.value = true;
   const { data, error } = await api.arreteCadre.delete(id);
   if (!error.value) {
     emit('delete');
   }
   modalOpened.value = false;
+  loading.value = false;
 };
 
 // Permet de faire un retour à la ligne sur les underscores
