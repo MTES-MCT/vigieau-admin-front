@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
 import { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+import { ArreteCadre } from "~/dto/arrete_cadre.dto";
 
 const props = defineProps<{
   duplicate?: boolean;
@@ -44,7 +45,7 @@ const initSticky = () => {
   };
 };
 
-if (isNewArreteRestriction) {
+if (isNewArreteRestriction && !route.query.arreterestriction) {
   const newAr = new ArreteRestriction();
   if(route.query.arretecadre) {
     const { data, error } = await api.arreteCadre.get(route.query.arretecadre.toString());
@@ -55,11 +56,30 @@ if (isNewArreteRestriction) {
   }
   arreteRestriction.value = newAr;
 } else {
-  const { data, error } = await api.arreteRestriction.get(<string>route.params.id);
+  const { data, error } = await api.arreteRestriction.get(isNewArreteRestriction && route.query.arreterestriction ?
+    <string>route.query.arreterestriction : <string>route.params.id);
   if (data.value) {
     arreteRestriction.value = <ArreteRestriction>data.value;
-    if (props.duplicate) {
+    if(route.query.arreterestriction) {
+      arreteRestriction.value.arreteRestrictionAbroge = <ArreteRestriction>{
+        id: data.value.id,
+        numero: data.value.numero
+      };
+    }
+    if (props.duplicate || route.query.arreterestriction) {
       arreteRestriction.value.id = null;
+      arreteRestriction.value.statut = 'a_valider';
+      arreteRestriction.value.dateDebut = null;
+      arreteRestriction.value.dateFin = null;
+      arreteRestriction.value.dateSignature = null;
+      arreteRestriction.value.fichier = null;
+      arreteRestriction.value.restrictions = arreteRestriction.value.restrictions.filter((r) => {
+        return !r.zoneAlerte.disabled;
+      });
+      arreteRestriction.value.restrictions.map((r) => {
+        r.id = null;
+        return r;
+      });
     }
   }
 }

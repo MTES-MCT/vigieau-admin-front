@@ -59,7 +59,12 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
 <template>
   <form @submit.prevent="">
     <div class="fr-grid-row restriction-line">
-      {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}
+      <template v-if="restriction.isAep">
+        Zone AEP        
+      </template>
+      <template v-else>
+        {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}        
+      </template>
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
         <DsfrSelect
           id="role"
@@ -75,8 +80,8 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
           <DsfrAccordion :title="accordionTitle" :expanded-id="expandedId" @expand="expandedId = $event">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="'' + restriction.zoneAlerte.id + usageArreteCadre.id"
-                :key="'' + restriction.zoneAlerte.id + usageArreteCadre.id || usageArreteCadre.name"
+                :id="'' + restriction.zoneAlerte?.id + usageArreteCadre.id"
+                :key="'' + restriction.zoneAlerte?.id + usageArreteCadre.id || usageArreteCadre.name"
                 :name="usageArreteCadre.usage.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.usage.id)"
                 :small="false"

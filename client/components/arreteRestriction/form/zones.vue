@@ -68,9 +68,11 @@ watch(zonesSelected, () => {
   const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id));
   newZones.forEach((z) => {
     props.arreteRestriction.restrictions.push({
+      id: null,
       zoneAlerte: z,
       niveauGravite: null,
       usagesArreteRestriction: [],
+      isAep: false,
     });
   });
   computeDepSelected();

@@ -26,12 +26,6 @@ const arreteRestrictionActions: Ref<any> = ref([
       askEditArreteRestriction(props.arreteRestriction);
     }
   },
-  // {
-  //   text: 'Exporter',
-  //   onclick: () => {
-  //     console.log('click');
-  //   },
-  // },
   {
     text: "Dupliquer",
     onclick: () => {
@@ -40,7 +34,14 @@ const arreteRestrictionActions: Ref<any> = ref([
     show: authStore.isMte || isArOnDepartementUser,
   },
   {
-    text: "Abroger",
+    text: `Abroger l'arrêté et le remplacer`,
+    show: ['a_venir', 'publie'].includes(props.arreteRestriction.statut) && isArOnDepartementUser,
+    onclick: () => {
+      navigateTo(`/arrete-restriction/nouveau/edition?arreterestriction=${props.arreteRestriction.id}`);
+    },
+  },
+  {
+    text: "Mettre fin à l'arrête",
     show: ["a_venir", "publie"].includes(props.arreteRestriction.statut) && isArOnDepartementUser,
     onclick: () => {
       repealModalOpened.value = true;
@@ -53,6 +54,12 @@ const arreteRestrictionActions: Ref<any> = ref([
       askDeleteArreteRestriction(props.arreteRestriction);
     }
   }
+  // {
+  //   text: 'Exporter',
+  //   onclick: () => {
+  //     console.log('click');
+  //   },
+  // },
 ]);
 
 const onKeyDown = (e: KeyboardEvent) => {

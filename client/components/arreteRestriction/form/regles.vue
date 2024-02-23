@@ -10,8 +10,12 @@ const props = defineProps<{
 
 const rules = computed(() => {
   return {
+    perimetreAr: {
+      required: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.", required),      
+    },
     niveauGraviteSpecifiqueEap: {
-      required: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.", required),
+      requiredIf: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.",
+        requiredIf(() => props.arreteRestriction.perimetreAr == 'all'),),
     },
     ressourceEapCommunique: {
       requiredIf: helpers.withMessage(
@@ -24,18 +28,30 @@ const rules = computed(() => {
 
 const utils = useUtils();
 
-const niveauGraviteSpecifiqueEapOptions = [
+const perimetreArOptions = [
   {
-    label: 'Non, le niveau de gravité ESO/ESU s’applique à l’ensemble des usages y compris l’eau potable.',
-    value: false,
+    label: 'Zones ESO / ESU',
+    value: 'zones',
   },
   {
-    label:
-      'Oui, des niveaux de gravité spécifiques aux usages issus de l’AEP peuvent être appliqués sur des périmètres géographiques distincts',
-    value: true,
+    label: 'Zones AEP',
+    value: 'aep',
+  },
+  {
+    label: 'Les deux',
+    value: 'all',
   },
 ];
-
+const niveauGraviteSpecifiqueEapOptions = [
+  {
+    label: 'Oui, je souhaite créer des périmètres géographiques spécifiques à l’eau potable.',
+    value: true,
+  },
+  {
+    label: 'Non, les niveaux de gravité ESO/ESU s’appliquent à l’ensemble des usages y compris l’eau potable.',
+    value: false,
+  },
+];
 const ressourceEapCommuniqueOptions = [
   {
     label: 'Eaux superficielles (ESU)',
@@ -63,18 +79,32 @@ defineExpose({
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Gestion de l'eau potable</h6>
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGraviteSpecifiqueEap')">
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'perimetreAr')">
           <DsfrRadioButtonSet
-            legend="Dans cet arrêté cadre, prévoyez-vous d’appliquer des niveaux de gravité spécifiques aux usages issus de l'eau potable ?"
+            legend="Dans cet arrêté de restriction, sur quels types de ressources comptez-vous appliquer des restrictions ?"
+            :options="perimetreArOptions"
+            v-model="arreteRestriction.perimetreAr"
+            name="perimetreAr"
+            :small="false"
+          />
+        </DsfrInputGroup>
+        
+        <DsfrInputGroup
+          v-if="arreteRestriction.perimetreAr == 'all'"
+          :error-message="utils.showInputError(v$, 'niveauGraviteSpecifiqueEap')">
+          <DsfrRadioButtonSet
+            legend="Souhaitez-vous différencier les niveaux de gravité eau potable des niveaux de gravité ESU/ESO ?"
             :options="niveauGraviteSpecifiqueEapOptions"
             v-model="arreteRestriction.niveauGraviteSpecifiqueEap"
             name="niveauGraviteSpecifiqueEap"
             :small="false"
           />
         </DsfrInputGroup>
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'ressourceEapCommunique')">
+        
+        <DsfrInputGroup 
+          v-if="arreteRestriction.niveauGraviteSpecifiqueEap == false"
+          :error-message="utils.showInputError(v$, 'ressourceEapCommunique')">
           <DsfrRadioButtonSet
-            v-if="arreteRestriction.niveauGraviteSpecifiqueEap == false"
             legend="Pour une localisation géographique donnée, un seul niveau de gravité sera communiqué pour l'eau potable. Précisez quel niveau de gravité s'applique à l'eau potable si des zones ESU et ESO se superposent ?"
             :options="ressourceEapCommuniqueOptions"
             v-model="arreteRestriction.ressourceEapCommunique"

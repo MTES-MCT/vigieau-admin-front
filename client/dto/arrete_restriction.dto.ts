@@ -14,9 +14,11 @@ export class ArreteRestriction {
   restrictions: Restriction[];
   arreteRestrictionAbroge: ArreteRestriction | null;
   departement: Departement | null;
-  
+
+  perimetreAr: 'zones' | 'aep' | 'all' | null;
   niveauGraviteSpecifiqueEap: boolean | null;
   ressourceEapCommunique: 'esu' | 'eso' | 'max' | null;
+  isAepFullDepartement: boolean | null;
 
   // To upload file
   file: any;
@@ -32,9 +34,12 @@ export class ArreteRestriction {
     this.fichier = null;
     this.arretesCadre = [];
     this.restrictions = [];
+    this.arreteRestrictionAbroge = null;
+
+    this.perimetreAr = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;
-    this.arreteRestrictionAbroge = null;
+    this.isAepFullDepartement = null;
   }
 }
 

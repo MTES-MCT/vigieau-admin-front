@@ -156,8 +156,15 @@ const graviteFormRef = ref(null);
     <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteRestrictionFormZones
         ref="restrictionsFormRef"
+        v-if="arreteRestriction.perimetreAr !== 'aep'"
         :selected="currentStep === 3"
         :arreteRestriction="arreteRestriction" />
+      <ArreteRestrictionFormZonesAep
+        ref="restrictionsAepFormRef"
+        v-if="arreteRestriction.perimetreAr === 'aep' ||
+         (arreteRestriction.perimetreAr === 'all' && arreteRestriction.niveauGraviteSpecifiqueEap)"
+        :selected="currentStep === 3"
+        :arreteRestriction="arreteRestriction"/>
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 4" :asc="asc">
       <ArreteRestrictionFormGravite

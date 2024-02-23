@@ -18,7 +18,6 @@ const query: Ref<string> = ref('');
 const departementsTags: Ref<any> = ref([]);
 const departementsFiltered = ref([]);
 const utils = useUtils();
-const api = useApi();
 const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
 const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
@@ -166,6 +165,19 @@ defineExpose({
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Généralité</h6>
+        <DsfrInputGroup
+          v-if="arreteCadre.arreteCadreAbroge"
+          :error-message="utils.showInputError(v$, 'arreteCadreAbroge')">
+          <DsfrInput
+            disabled
+            :model-value="arreteCadre.arreteCadreAbroge?.numero"
+            data-cy="ArreteCadreFormAbrogeInput"
+            label="Arrêté abrogé"
+            label-visible
+            type="text"
+          />
+        </DsfrInputGroup>
+        
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
             id="numero"
@@ -229,18 +241,6 @@ defineExpose({
             class="fr-mb-2w"
           />
         </div>
-
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'arreteCadreAbroge')">
-          <DsfrInput
-            v-if="arreteCadre.arreteCadreAbroge"
-            disabled
-            :model-value="arreteCadre.arreteCadreAbroge?.numero"
-            data-cy="ArreteCadreFormAbrogeInput"
-            label="Arrêté abrogé"
-            label-visible
-            type="text"
-          />
-        </DsfrInputGroup>
 
         <ArreteCadreFormPublier :showDateFin="true" v-if="arreteCadre.statut !== 'a_valider'" :arrete-cadre="arreteCadre" />
       </div>
