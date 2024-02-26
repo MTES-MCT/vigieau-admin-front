@@ -2,6 +2,7 @@
 import type { Ref } from "vue";
 import { type ArreteRestriction, ArreteRestrictionStatutFr } from "~/dto/arrete_restriction.dto";
 import { useAuthStore } from "~/stores/auth";
+import { useAlertStore } from "~/stores/alert";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -13,6 +14,7 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const alertStore = useAlertStore();
 const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.arretesCadre.some(ac => ac.departements.some(d => d.code === authStore.user.roleDepartement));
 const canUpdate = authStore.isMte
   || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser);
@@ -41,7 +43,7 @@ const arreteRestrictionActions: Ref<any> = ref([
     },
   },
   {
-    text: "Mettre fin à l'arrête",
+    text: "Abroger",
     show: ["a_venir", "publie"].includes(props.arreteRestriction.statut) && isArOnDepartementUser,
     onclick: () => {
       repealModalOpened.value = true;
@@ -195,6 +197,10 @@ const repealArrete = async (ar: ArreteRestriction) => {
   if (!error.value) {
     repealModalOpened.value = false;
     emit("repeal");
+    alertStore.addAlert({
+      description: 'Abrogation réussie',
+      type: 'success',
+    });
   }
   loading.value = false;
 };

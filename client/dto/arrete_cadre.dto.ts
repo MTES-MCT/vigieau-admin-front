@@ -45,7 +45,7 @@ export class ArreteCadre {
 
 export enum ArreteCadreStatutFr {
   a_valider = 'Brouillon',
-  a_venir = 'Publication à venir',
+  a_venir = 'En vigueur prochainement',
   publie = 'En vigueur',
   abroge = 'Abrogé',
 }

@@ -40,7 +40,7 @@ const arreteCadreActions: Ref<any> = ref([
   },
   {
     text: 'Créer un arrêté de restriction associé',
-    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
+    show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser && !isZaOutdated,
     onclick: () => {
       navigateTo(`/arrete-restriction/nouveau/edition?arretecadre=${props.arreteCadre.id}`);
     },
@@ -59,7 +59,7 @@ const arreteCadreActions: Ref<any> = ref([
     },
   },
   {
-    text: `Mettre fin à l'arrêté`,
+    text: `Abroger`,
     show: ['a_venir', 'publie'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
     onclick: () => {
       repealModalOpened.value = true;

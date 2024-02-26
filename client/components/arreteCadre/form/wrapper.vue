@@ -239,7 +239,7 @@ const usagesFormRef = ref(null);
       Cet arrêté cadre contient&nbsp;:
       <ul>
         <li v-if="arreteCadre.departements.length > 1">{{ arreteCadre.departements.length }} départements</li>
-        <li>{{ arreteCadre.zonesAlerte.length }} zones d'alertes</li>
+        <li>{{ arreteCadre.zonesAlerte.length }} zones d'alerte</li>
         <li>{{ arreteCadre.usagesArreteCadre.length }} usages</li>
       </ul>
       <div class="divider"></div>

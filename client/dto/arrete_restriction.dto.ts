@@ -45,7 +45,7 @@ export class ArreteRestriction {
 
 export enum ArreteRestrictionStatutFr {
   a_valider = 'Brouillon',
-  a_venir = 'Publication à venir',
-  publie = 'Publié',
+  a_venir = 'En vigueur prochainement',
+  publie = 'En vigueur prochainement',
   abroge = 'Abrogé',
 }
