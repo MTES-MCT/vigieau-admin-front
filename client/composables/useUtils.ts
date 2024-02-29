@@ -1,4 +1,4 @@
-import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 
 export const useUtils = () => {
   return {
@@ -51,18 +51,20 @@ export const useUtils = () => {
       b.forEach((bItem: any) => (c.some((cItem) => predicate(bItem, cItem)) ? null : c.push(bItem)));
       return c;
     },
-    
+
     fileSizeString(size: number) {
       const i = Math.floor(Math.log(size) / Math.log(1024));
-      return `${(size / Math.pow(1024, i)).toFixed(2)} ${["o", "Ko", "Mo", "Go", "To"][i]}`;
+      return `${(size / Math.pow(1024, i)).toFixed(2)} ${['o', 'Ko', 'Mo', 'Go', 'To'][i]}`;
     },
 
-    askEditArreteCadre(arreteCadre: ArreteCadre,
-                       modalTitle: Ref<string>,
-                       modalDescription: Ref<string>,
-                       modalActions:Ref<any>,
-                       modalOpened: Ref<boolean>,
-                       callBackFunction: any) {
+    askEditArreteCadre(
+      arreteCadre: ArreteCadre,
+      modalTitle: Ref<string>,
+      modalDescription: Ref<string>,
+      modalActions: Ref<any>,
+      modalOpened: Ref<boolean>,
+      callBackFunction: any,
+    ) {
       modalActions.value = [
         {
           label: 'Confirmer',
@@ -95,6 +97,18 @@ export const useUtils = () => {
 Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
         modalOpened.value = true;
       }
-    }
+    },
+
+    hasCommonElements(arrays: any[]): boolean {
+      for (let i = 0; i < arrays.length - 1; i++) {
+        for (let j = i + 1; j < arrays.length; j++) {
+          // Si un élément commun est trouvé entre les deux tableaux actuellement comparés, retourne true.
+          if (arrays[i].some((ai) => arrays[j].includes(ai))) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
   };
 };

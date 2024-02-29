@@ -15,13 +15,15 @@ const props = defineProps<{
 
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.map((r) => r.zoneAlerte.id));
+const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.filter(r => !r.isAep).map((r) => r.zoneAlerte.id));
 const departementsFiletered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
   return {
     restrictions: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", required),
+      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte.", () => {
+        return props.arreteRestriction.restrictions.filter(r => !r.isAep).length > 0;
+      }),
     },
   };
 });
@@ -64,8 +66,8 @@ const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
 
 watch(zonesSelected, () => {
   const zones = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
-  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(r => zonesSelected.value.includes(r.zoneAlerte.id));
-  const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte.id === z.id));
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(r => r.isAep || zonesSelected.value.includes(r.zoneAlerte.id));
+  const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id));
   newZones.forEach((z) => {
     props.arreteRestriction.restrictions.push({
       id: null,
@@ -73,6 +75,7 @@ watch(zonesSelected, () => {
       niveauGravite: null,
       usagesArreteRestriction: [],
       isAep: false,
+      communes: null,
     });
   });
   computeDepSelected();

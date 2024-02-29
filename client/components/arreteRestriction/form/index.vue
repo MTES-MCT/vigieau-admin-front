@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { ArreteRestriction } from "~/dto/arrete_restriction.dto";
-import { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 
 const props = defineProps<{
   duplicate?: boolean;
@@ -21,7 +21,7 @@ const initSticky = () => {
   const ro = new ResizeObserver(() => {
     isStickyButtons();
   });
-  if(document.querySelector('.fr-tabs')) {
+  if (document.querySelector('.fr-tabs')) {
     ro.observe(document.querySelector('.fr-tabs'));
   }
   let footer = document.getElementsByTagName('footer')[0];
@@ -47,23 +47,41 @@ const initSticky = () => {
 
 if (isNewArreteRestriction && !route.query.arreterestriction) {
   const newAr = new ArreteRestriction();
-  if(route.query.arretecadre) {
+  if (route.query.arretecadre) {
     const { data, error } = await api.arreteCadre.get(route.query.arretecadre.toString());
-    if(data.value) {
+    if (data.value) {
       newAr.arretesCadre = [data.value];
       newAr.departement = data.value?.departements[0];
     }
   }
   arreteRestriction.value = newAr;
 } else {
-  const { data, error } = await api.arreteRestriction.get(isNewArreteRestriction && route.query.arreterestriction ?
-    <string>route.query.arreterestriction : <string>route.params.id);
+  const { data, error } = await api.arreteRestriction.get(
+    isNewArreteRestriction && route.query.arreterestriction ? <string>route.query.arreterestriction : <string>route.params.id,
+  );
   if (data.value) {
     arreteRestriction.value = <ArreteRestriction>data.value;
-    if(route.query.arreterestriction) {
+    // Format restrictions
+    arreteRestriction.value.restrictions.map((r) => {
+      if (!r.zoneAlerte) {
+        r.isAep = true;
+      }
+      return r;
+    });
+    // Format périmètre AR
+    if(arreteRestriction.value.restrictions.length < 1) {
+      arreteRestriction.value.perimetreAr = null;
+    } else if (arreteRestriction.value.restrictions.some(r => r.isAep) && arreteRestriction.value.restrictions.some(r => !r.isAep)) {
+      arreteRestriction.value.perimetreAr = 'all';
+    } else if (arreteRestriction.value.restrictions.some(r => r.isAep)) {
+      arreteRestriction.value.perimetreAr = 'aep';
+    } else {
+      arreteRestriction.value.perimetreAr = 'zones';
+    }
+    if (route.query.arreterestriction) {
       arreteRestriction.value.arreteRestrictionAbroge = <ArreteRestriction>{
         id: data.value.id,
-        numero: data.value.numero
+        numero: data.value.numero,
       };
     }
     if (props.duplicate || route.query.arreterestriction) {
@@ -92,7 +110,7 @@ onMounted(() => {
   if (arreteRestriction.value) {
     initSticky();
   }
-})
+});
 </script>
 
 <template>

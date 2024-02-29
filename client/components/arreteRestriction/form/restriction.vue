@@ -60,7 +60,7 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
   <form @submit.prevent="">
     <div class="fr-grid-row restriction-line">
       <template v-if="restriction.isAep">
-        Zone AEP        
+        {{ restriction.nomGroupementAep }}
       </template>
       <template v-else>
         {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}        

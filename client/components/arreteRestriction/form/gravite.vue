@@ -18,11 +18,14 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, props.arreteRestriction);
 
 const getRestrictionsByZoneType = (type: string) => {
-  return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte.type === type);
+  if(type === 'AEP') {
+    return props.arreteRestriction.restrictions.filter((r) => r.isAep);    
+  }
+  return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type);
 };
 
 const getArreteCadreByZone = (zoneId: number) => {
-  return props.arreteRestriction.arretesCadre.find((ac) => ac.zonesAlerte.some(z => z.id === zoneId));
+  return props.arreteRestriction.arretesCadre.find((ac) => ac.zonesAlerte?.some(z => z.id === zoneId));
 };
 </script>
 
@@ -42,6 +45,13 @@ const getArreteCadreByZone = (zoneId: number) => {
           <div class="divider" />
           <div v-for="r in getRestrictionsByZoneType('SOU')" class="divider">
             <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
+          </div>
+        </template>
+        <template v-if="getRestrictionsByZoneType('AEP').length > 0">
+          <p><b>Eau potable</b></p>
+          <div class="divider" />
+          <div v-for="r in getRestrictionsByZoneType('AEP')" class="divider">
+            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="arreteRestriction.arretesCadre[0]" />
           </div>
         </template>
       </div>

@@ -1,4 +1,3 @@
-import { BaseApiPagination } from '~/api/base-api-pagination';
 import { UserApi } from '~/api/user';
 import { ZoneAlerteApi } from '~/api/zone-alerte';
 import { BaseApi } from '~/api/base-api';
@@ -14,5 +13,6 @@ export const useApi = () => {
     departement: new UserApi('departement'),
     usage: new BaseApi('usage'),
     thematique: new BaseApi('thematique'),
+    commune: new BaseApi('commune'),
   };
 };
