@@ -16,8 +16,9 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
 const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.departement?.code === authStore.user?.roleDepartement;
+const isZaOutdated: boolean = props.arreteRestriction.statut !== 'abroge' && props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.disabled);
 const canUpdate = authStore.isMte
-  || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser);
+  || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser && !isZaOutdated);
 const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
 const actionsOpened: Ref<boolean> = ref(false);
 const arreteRestrictionActions: Ref<any> = ref([
@@ -222,6 +223,9 @@ const repealArrete = async (ar: ArreteRestriction) => {
         <!--        </p>-->
         <div class="fr-card__start">
           <ul class="fr-badges-group">
+            <li v-if="isZaOutdated">
+              <DsfrBadge label="Zones d’alerte modifiées" type="warning" />
+            </li>
             <li>
               <MixinsStatutBadge :statut="arreteRestriction.statut" />
             </li>

@@ -82,9 +82,11 @@ const filterArretesCadre = () => {
 const selectArreteCadre = (acId: string) => {
   const ac = arretesCadre.value.find((ac: ArreteCadre) => ac.id === +acId);
   props.arreteRestriction.arretesCadre = [...props.arreteRestriction.arretesCadre, ac];
-  acSelected.value = null;
   computeArretesCadreTags();
   filterArretesCadre();
+  setTimeout(() => {
+    acSelected.value = null;
+  });
 };
 
 const deleteArreteCadre = (acId: number) => {
@@ -186,7 +188,6 @@ watch(
             v-model="acSelected"
             required
             @update:modelValue="selectArreteCadre($event)"
-            @search="selectArreteCadre($event)"
           />
 
           <DsfrTags class="fr-mt-2w" :tags="arretesCadreTags" />

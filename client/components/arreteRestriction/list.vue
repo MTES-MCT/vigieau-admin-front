@@ -29,6 +29,7 @@ const statusOptions = ref([
 const departementsOptions: Ref<any[] | undefined> = ref();
 const contextStore = useContextStore();
 const departementFilter = ref(contextStore.departementFilter);
+const showZaAlert = ref(false);
 
 const api = useApi();
 
@@ -56,6 +57,7 @@ const paginate = async () => {
       };
     });
     arretesRestrictionPaginated.value = data.value;
+    showZaAlert.value = statusFilter.value === 'publie' && arretesRestrictionPaginated.value?.data.some((ar) => ar.restrictions.some((r) => r.zoneAlerte?.disabled));
   }
 };
 
@@ -103,6 +105,16 @@ watch(
 
 <template>
   <div class="arrete-restriction-header fr-grid-row fr-grid-row--middle fr-mb-2w">
+    <DsfrAlert
+      v-if="showZaAlert"
+      class="fr-mb-2w full-width"
+      type="warning"
+      title="Zones d'alerte modifiées"
+      description="Des modifications importantes ont été apportées sur une ou plusieurs zones d’alerte."
+      :closeable="true"
+      @close="showZaAlert = false"
+    />
+    <MixinsAlerts class="fr-mb-2w" />
     <h1 class="fr-my-0">
       Les arrêtés de restriction
 

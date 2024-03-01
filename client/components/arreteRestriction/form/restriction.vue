@@ -22,12 +22,12 @@ const rules = computed(() => {
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
 const allUsages = props.restriction.usagesArreteRestriction.concat(
-  props.arreteCadre.usagesArreteCadre
+  props.arreteCadre ? props.arreteCadre.usagesArreteCadre
     .filter((u) => !usagesSelected.value.includes(u.usage.id))
     .map((u) => {
       u.id = null;
       return u;
-    }),
+    }) : [],
 );
 const utils = useUtils();
 

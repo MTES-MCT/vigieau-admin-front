@@ -43,7 +43,8 @@ const nextStep = async () => {
         errors = restrictionsAepFormRef.value?.v$.$errors;
       } else {
         await restrictionsFormRef.value?.v$.$validate();
-        errors = restrictionsFormRef.value?.v$.$errors;      }
+        errors = restrictionsFormRef.value?.v$.$errors;
+      }
       break;
     case 4:
       if (showRestrictionsForm.value && showRestrictionsAepForm.value) {
@@ -80,9 +81,15 @@ const saveArrete = async (publish: boolean = false) => {
     return;
   }
   loading.value = true;
+  const arToSend = JSON.parse(JSON.stringify(props.arreteRestriction));
+  arToSend.arretesCadre = arToSend.arretesCadre.map((ac: any) => {
+    return {
+      id: ac.id
+    };
+  });
   const { data, error } = props.arreteRestriction.id
-    ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), props.arreteRestriction)
-    : await api.arreteRestriction.create({ ...props.arreteRestriction });
+    ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), arToSend)
+    : await api.arreteRestriction.create({ ...arToSend });
   if (data.value) {
     // Mise à jour des ids des objets nouvellement crées
     props.arreteRestriction.id = data.value.id;
