@@ -15,7 +15,7 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
-const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.arretesCadre.some(ac => ac.departements.some(d => d.code === authStore.user.roleDepartement));
+const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.departement?.code === authStore.user?.roleDepartement;
 const canUpdate = authStore.isMte
   || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser);
 const arreteRestrictionStatutFr = ArreteRestrictionStatutFr;
