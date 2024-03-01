@@ -37,21 +37,27 @@ const getArreteCadreByZone = (zoneId: number) => {
           <p><b>Eaux superficielles</b></p>
           <div class="divider" />
           <div v-for="r in getRestrictionsByZoneType('SUP')" class="divider">
-            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
+            <ArreteRestrictionFormRestriction :restriction="r"
+                                              :type="'SUP'"
+                                              :arretesCadre="[getArreteCadreByZone(r.zoneAlerte.id)]" />
           </div>          
         </template>
         <template v-if="getRestrictionsByZoneType('SOU').length > 0">
           <p><b>Eaux souterraines</b></p>
           <div class="divider" />
           <div v-for="r in getRestrictionsByZoneType('SOU')" class="divider">
-            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="getArreteCadreByZone(r.zoneAlerte.id)" />
+            <ArreteRestrictionFormRestriction :restriction="r"
+                                              :type="'SOU'"
+                                              :arretesCadre="[getArreteCadreByZone(r.zoneAlerte.id)]" />
           </div>
         </template>
         <template v-if="getRestrictionsByZoneType('AEP').length > 0">
           <p><b>Eau potable</b></p>
           <div class="divider" />
           <div v-for="r in getRestrictionsByZoneType('AEP')" class="divider">
-            <ArreteRestrictionFormRestriction :restriction="r" :arreteCadre="arreteRestriction.arretesCadre[0]" />
+            <ArreteRestrictionFormRestriction :restriction="r"
+                                              :type="'AEP'"
+                                              :arretesCadre="arreteRestriction.arretesCadre" />
           </div>
         </template>
       </div>

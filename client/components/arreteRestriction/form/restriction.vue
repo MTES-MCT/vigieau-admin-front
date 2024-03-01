@@ -7,7 +7,8 @@ import type { Ref } from 'vue';
 
 const props = defineProps<{
   restriction: Restriction;
-  arreteCadre: ArreteCadre;
+  arretesCadre: ArreteCadre[];
+  type: 'SUP' | 'SOU' | 'AEP';
 }>();
 
 const rules = computed(() => {
@@ -21,14 +22,32 @@ const rules = computed(() => {
   };
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
-const allUsages = props.restriction.usagesArreteRestriction.concat(
-  props.arreteCadre ? props.arreteCadre.usagesArreteCadre
+const allUsages: Ref<any[]> = ref([]);
+if(props.arretesCadre.length < 1) {
+  allUsages.value = props.restriction.usagesArreteRestriction;
+} else {
+  let usagesAc = props.arretesCadre.map((ac) => ac.usagesArreteCadre).flat();
+  usagesAc = usagesAc.filter((value, index, self) =>
+      index === self.findIndex((t) => (
+        t.usage.id === value.usage.id
+      ))
+  );
+  allUsages.value = props.restriction.usagesArreteRestriction.concat(usagesAc
     .filter((u) => !usagesSelected.value.includes(u.usage.id))
     .map((u) => {
       u.id = null;
       return u;
-    }) : [],
-);
+    }),
+  ).filter(u => {
+    if(props.type === 'SUP') {
+      return u.concerneEsu;
+    } else  if (props.type === 'SOU') {
+      return u.concerneEso;
+    } else {
+      return u.concerneAep;
+    }
+  });
+}
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -54,12 +73,12 @@ const niveauGraviteOptions = [
 const expandedId = ref();
 
 const accordionTitle = computed(() => {
-  return `Afficher les ${props.restriction.usagesArreteRestriction.length}/${allUsages.length} usages`;
+  return `Afficher les ${props.restriction.usagesArreteRestriction.length}/${allUsages.value.length} usages`;
 });
 
 const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
   usagesSelected.value = checked ? [...usagesSelected.value, id] : usagesSelected.value.filter((val) => val !== id);
-  props.restriction.usagesArreteRestriction = allUsages.filter((u) => usagesSelected.value.includes(u.usage.id));
+  props.restriction.usagesArreteRestriction = allUsages.value.filter((u) => usagesSelected.value.includes(u.usage.id));
 };
 </script>
 
