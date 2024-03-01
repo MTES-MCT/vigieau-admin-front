@@ -134,7 +134,7 @@ const publishArrete = async (ar: ArreteRestriction) => {
     return;
   }
   loading.value = true;
-  const { data, error } = await api.arreteCadre.publish(ar.id?.toString(), ar);
+  const { data, error } = await api.arreteRestriction.publish(ar.id?.toString(), ar);
   if (data.value) {
     modalPublishOpened.value = false;
     navigateTo("/arrete-restriction");

@@ -22,7 +22,7 @@ const initSticky = () => {
   const ro = new ResizeObserver(() => {
     isStickyButtons();
   });
-  const tabs = document.querySelector('.fr-tabs')
+  const tabs = document.querySelector('.fr-tabs');
   if (tabs) {
     ro.observe(tabs);
     isInitSticky.value = true;
@@ -72,11 +72,11 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       return r;
     });
     // Format périmètre AR
-    if(arreteRestriction.value.restrictions.length < 1) {
+    if (arreteRestriction.value.restrictions.length < 1) {
       arreteRestriction.value.perimetreAr = null;
-    } else if (arreteRestriction.value.restrictions.some(r => r.isAep) && arreteRestriction.value.restrictions.some(r => !r.isAep)) {
+    } else if (arreteRestriction.value.restrictions.some((r) => r.isAep) && arreteRestriction.value.restrictions.some((r) => !r.isAep)) {
       arreteRestriction.value.perimetreAr = 'all';
-    } else if (arreteRestriction.value.restrictions.some(r => r.isAep)) {
+    } else if (arreteRestriction.value.restrictions.some((r) => r.isAep)) {
       arreteRestriction.value.perimetreAr = 'aep';
     } else {
       arreteRestriction.value.perimetreAr = 'zones';
@@ -95,10 +95,14 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       arreteRestriction.value.dateSignature = null;
       arreteRestriction.value.fichier = null;
       arreteRestriction.value.restrictions = arreteRestriction.value.restrictions.filter((r) => {
-        return !r.zoneAlerte.disabled;
+        return !r.zoneAlerte || !r.zoneAlerte.disabled;
       });
       arreteRestriction.value.restrictions.map((r) => {
         r.id = null;
+        r.usagesArreteRestriction.map((u) => {
+          u.id = null;
+          return u;
+        });
         return r;
       });
     }

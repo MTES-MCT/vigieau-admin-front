@@ -9,6 +9,12 @@ const arreteRestriction: Ref<ArreteRestriction> = ref();
 const { data, error } = await api.arreteRestriction.get(<string>route.params.id);
 if (data.value) {
   arreteRestriction.value = <ArreteRestriction>data.value;
+  arreteRestriction.value.restrictions.map((r) => {
+    if (!r.zoneAlerte) {
+      r.isAep = true;
+    }
+    return r;
+  });
 }
 </script>
 

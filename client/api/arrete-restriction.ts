@@ -9,6 +9,9 @@ export class ArreteRestrictionApi extends BaseApiPagination {
     if (payload.dateFin) {
       formData.append('dateFin', payload.dateFin);
     }
+    if (payload.dateSignature) {
+      formData.append('dateSignature', payload.dateSignature);
+    }
 
     return useCustomFetch(`/${this.resource}/${id}/publier`, {
       method: 'POST',

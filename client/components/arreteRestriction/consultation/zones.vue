@@ -10,7 +10,10 @@ const props = defineProps<{
 const restrictionNiveauGraviteFr = RestrictionNiveauGraviteFr;
 
 const getRestrictionsByZoneType = (type: string) => {
-  return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte.type === type);
+  if(type === 'AEP') {
+    return props.arreteRestriction.restrictions.filter((r) => r.isAep);
+  }
+  return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type);
 };
 </script>
 
@@ -26,6 +29,13 @@ const getRestrictionsByZoneType = (type: string) => {
     <p>Eaux souterraines</p>
     <p v-for="r of getRestrictionsByZoneType('SOU')" class="fr-ml-2w fr-my-2w">
       {{ r.zoneAlerte.code }} {{ r.zoneAlerte.nom }}
+      <NiveauGraviteBadge :niveauGravite="r.niveauGravite" />
+    </p>
+  </template>
+  <template v-if="getRestrictionsByZoneType('AEP').length > 0">
+    <p>Eaux potable</p>
+    <p v-for="r of getRestrictionsByZoneType('AEP')" class="fr-ml-2w fr-my-2w">
+      {{ r.nomGroupementAep }}
       <NiveauGraviteBadge :niveauGravite="r.niveauGravite" />
     </p>
   </template>
