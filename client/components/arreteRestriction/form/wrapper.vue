@@ -88,8 +88,16 @@ const saveArrete = async (publish: boolean = false) => {
     props.arreteRestriction.id = data.value.id;
     props.arreteRestriction.restrictions.map((restriction: Restriction) => {
       restriction.id = (<ArreteRestriction>data.value).restrictions.find(
-        (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte.id : r.nomGroupementAep === restriction.nomGroupementAep
+        (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte?.id : r.nomGroupementAep === restriction.nomGroupementAep
       ).id;
+      restriction.usagesArreteRestriction.map((usagesArreteRestriction: UsageArreteCadre) => {
+        usagesArreteRestriction.id = (<ArreteRestriction>data.value).restrictions.find(
+          (r: Restriction) => r.id === restriction.id
+        ).usagesArreteRestriction.find(
+          (u: UsageArreteCadre) => u.usage.id === usagesArreteRestriction.usage.id
+        ).id;
+        return usagesArreteRestriction;
+      });
       return restriction;
     });
     componentKey.value++;

@@ -2,7 +2,7 @@
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import { requiredIf } from '@vuelidate/validators';
-import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -11,11 +11,13 @@ const props = defineProps<{
 const rules = computed(() => {
   return {
     perimetreAr: {
-      required: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.", required),      
+      required: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.", required),
     },
     niveauGraviteSpecifiqueEap: {
-      requiredIf: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.",
-        requiredIf(() => props.arreteRestriction.perimetreAr == 'all'),),
+      requiredIf: helpers.withMessage(
+        "La règle de gestion de l'eau potable est obligatoire.",
+        requiredIf(() => props.arreteRestriction.perimetreAr == 'all'),
+      ),
     },
     ressourceEapCommunique: {
       requiredIf: helpers.withMessage(
@@ -72,6 +74,29 @@ const v$ = useVuelidate(rules, props.arreteRestriction);
 defineExpose({
   v$,
 });
+
+watch(
+  () => props.arreteRestriction.perimetreAr,
+  () => {
+    if (props.arreteRestriction.perimetreAr == 'all') {
+      props.arreteRestriction.niveauGraviteSpecifiqueEap = null;
+      return;
+    } else if (props.arreteRestriction.perimetreAr === 'zones') {
+      props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep);
+    } else {
+      props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => r.isAep);
+    }
+  },
+);
+
+watch(
+  () => props.arreteRestriction.niveauGraviteSpecifiqueEap,
+  () => {
+    if (props.arreteRestriction.niveauGraviteSpecifiqueEap === false) {
+      props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep);
+    }
+  },
+);
 </script>
 
 <template>
@@ -88,10 +113,11 @@ defineExpose({
             :small="false"
           />
         </DsfrInputGroup>
-        
+
         <DsfrInputGroup
           v-if="arreteRestriction.perimetreAr == 'all'"
-          :error-message="utils.showInputError(v$, 'niveauGraviteSpecifiqueEap')">
+          :error-message="utils.showInputError(v$, 'niveauGraviteSpecifiqueEap')"
+        >
           <DsfrRadioButtonSet
             legend="Souhaitez-vous différencier les niveaux de gravité eau potable des niveaux de gravité ESU/ESO ?"
             :options="niveauGraviteSpecifiqueEapOptions"
@@ -100,10 +126,11 @@ defineExpose({
             :small="false"
           />
         </DsfrInputGroup>
-        
-        <DsfrInputGroup 
+
+        <DsfrInputGroup
           v-if="arreteRestriction.niveauGraviteSpecifiqueEap == false"
-          :error-message="utils.showInputError(v$, 'ressourceEapCommunique')">
+          :error-message="utils.showInputError(v$, 'ressourceEapCommunique')"
+        >
           <DsfrRadioButtonSet
             legend="Pour une localisation géographique donnée, un seul niveau de gravité sera communiqué pour l'eau potable. Précisez quel niveau de gravité s'applique à l'eau potable si des zones ESU et ESO se superposent ?"
             :options="ressourceEapCommuniqueOptions"

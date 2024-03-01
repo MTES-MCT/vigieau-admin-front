@@ -13,6 +13,7 @@ const route = useRoute();
 const api = useApi();
 const isNewArreteCadre = route.params.id === 'nouveau';
 const mounted = ref(false);
+const isInitSticky = ref(false);
 
 const initSticky = () => {
   window.onscroll = function () {
@@ -21,8 +22,10 @@ const initSticky = () => {
   const ro = new ResizeObserver(() => {
     isStickyButtons();
   });
-  if(document.querySelector('.fr-tabs')) {
-    ro.observe(document.querySelector('.fr-tabs'));    
+  const tabs = document.querySelector('.fr-tabs')
+  if (tabs) {
+    ro.observe(tabs);
+    isInitSticky.value = true;
   }
   let footer = document.getElementsByTagName('footer')[0];
   const sticky = footer.offsetHeight;
@@ -78,13 +81,13 @@ if (isNewArreteCadre && !route.query.arretecadre) {
     }
   }
 }
-if (mounted.value) {
+if (mounted.value && !isInitSticky.value) {
   initSticky();
 }
 
 onMounted(() => {
   mounted.value = true;
-  if (arreteCadre.value) {
+  if (arreteCadre.value && !isInitSticky.value) {
     initSticky();
   }
 })

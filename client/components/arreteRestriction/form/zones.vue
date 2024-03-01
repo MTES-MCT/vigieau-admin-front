@@ -3,7 +3,6 @@ import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import { useRefDataStore } from '~/stores/refData';
 import type { Ref } from 'vue';
 import { helpers } from '@vuelidate/validators/dist';
-import { required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import type { Departement } from '~/dto/departement.dto';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
@@ -15,14 +14,14 @@ const props = defineProps<{
 
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.filter(r => !r.isAep).map((r) => r.zoneAlerte.id));
+const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.filter((r) => !r.isAep).map((r) => r.zoneAlerte.id));
 const departementsFiletered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
   return {
     restrictions: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte.", () => {
-        return props.arreteRestriction.restrictions.filter(r => !r.isAep).length > 0;
+        return props.arreteRestriction.restrictions.filter((r) => !r.isAep).length > 0;
       }),
     },
   };
@@ -66,7 +65,9 @@ const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
 
 watch(zonesSelected, () => {
   const zones = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
-  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(r => r.isAep || zonesSelected.value.includes(r.zoneAlerte.id));
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(
+    (r) => r.isAep || zonesSelected.value.includes(r.zoneAlerte.id),
+  );
   const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id));
   newZones.forEach((z) => {
     props.arreteRestriction.restrictions.push({
@@ -94,8 +95,7 @@ watch(
     depsUnique = depsUnique.map((d: any) => {
       return {
         ...d,
-        zonesAlerte: allZones
-          .filter((z) => z.departement.id === d.id)
+        zonesAlerte: allZones.filter((z) => z.departement.id === d.id),
       };
     });
     departementsFiletered.value = depsUnique;
@@ -122,10 +122,7 @@ defineExpose({
               <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>
               <div>
                 Tout sélectionner
-                <DsfrCheckbox
-                  :onUpdate:modelValue="() => selectAll(d)"
-                  :checked="d.nbZonesSelected === d.zonesAlerte.length"
-                />
+                <DsfrCheckbox :onUpdate:modelValue="() => selectAll(d)" :checked="d.nbZonesSelected === d.zonesAlerte.length" />
               </div>
             </div>
             <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
@@ -142,10 +139,10 @@ defineExpose({
                 >
                   <template #label>
                     {{ option.label }}
-<!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
-<!--                      <VIcon name="ri-information-fill" />-->
-<!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
-<!--                    </div>-->
+                    <!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
+                    <!--                      <VIcon name="ri-information-fill" />-->
+                    <!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
+                    <!--                    </div>-->
                   </template>
                 </DsfrCheckbox>
               </div>
@@ -164,10 +161,10 @@ defineExpose({
                 >
                   <template #label>
                     {{ option.label }}
-<!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
-<!--                      <VIcon name="ri-information-fill" />-->
-<!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
-<!--                    </div>-->
+                    <!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
+                    <!--                      <VIcon name="ri-information-fill" />-->
+                    <!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
+                    <!--                    </div>-->
                   </template>
                 </DsfrCheckbox>
               </div>
@@ -176,7 +173,7 @@ defineExpose({
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-<!--        <ArreteRestrictionFormZonesMap v-if="selected" :arreteRestriction="arreteRestriction" />-->
+        <!--        <ArreteRestrictionFormZonesMap v-if="selected" :arreteRestriction="arreteRestriction" />-->
       </div>
     </div>
   </form>

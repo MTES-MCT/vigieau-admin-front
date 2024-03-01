@@ -13,6 +13,7 @@ const route = useRoute();
 const api = useApi();
 const isNewArreteRestriction = route.params.id === 'nouveau';
 const mounted = ref(false);
+const isInitSticky = ref(false);
 
 const initSticky = () => {
   window.onscroll = function () {
@@ -21,8 +22,10 @@ const initSticky = () => {
   const ro = new ResizeObserver(() => {
     isStickyButtons();
   });
-  if (document.querySelector('.fr-tabs')) {
-    ro.observe(document.querySelector('.fr-tabs'));
+  const tabs = document.querySelector('.fr-tabs')
+  if (tabs) {
+    ro.observe(tabs);
+    isInitSticky.value = true;
   }
   let footer = document.getElementsByTagName('footer')[0];
   const sticky = footer.offsetHeight;
@@ -30,7 +33,7 @@ const initSticky = () => {
   const isStickyButtons = () => {
     const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
     const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
-    if (!buttons) {
+    if (!buttons || !buttonsShadow) {
       return;
     }
     if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
@@ -101,13 +104,13 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     }
   }
 }
-if (mounted.value) {
+if (mounted.value && !isInitSticky.value) {
   initSticky();
 }
 
 onMounted(() => {
   mounted.value = true;
-  if (arreteRestriction.value) {
+  if (arreteRestriction.value && !isInitSticky.value) {
     initSticky();
   }
 });

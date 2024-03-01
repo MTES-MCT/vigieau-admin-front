@@ -21,7 +21,14 @@ const rules = computed(() => {
   };
 });
 const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
-const allUsages = props.restriction.usagesArreteRestriction.concat(props.arreteCadre.usagesArreteCadre.filter(u => !usagesSelected.value.includes(u.usage.id)));
+const allUsages = props.restriction.usagesArreteRestriction.concat(
+  props.arreteCadre.usagesArreteCadre
+    .filter((u) => !usagesSelected.value.includes(u.usage.id))
+    .map((u) => {
+      u.id = null;
+      return u;
+    }),
+);
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -52,7 +59,7 @@ const accordionTitle = computed(() => {
 
 const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
   usagesSelected.value = checked ? [...usagesSelected.value, id] : usagesSelected.value.filter((val) => val !== id);
-  props.restriction.usagesArreteRestriction = allUsages.filter(u => usagesSelected.value.includes(u.usage.id));
+  props.restriction.usagesArreteRestriction = allUsages.filter((u) => usagesSelected.value.includes(u.usage.id));
 };
 </script>
 
@@ -62,9 +69,7 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
       <template v-if="restriction.isAep">
         {{ restriction.nomGroupementAep }}
       </template>
-      <template v-else>
-        {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}        
-      </template>
+      <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }} </template>
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
         <DsfrSelect
           id="role"
@@ -80,8 +85,8 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
           <DsfrAccordion :title="accordionTitle" :expanded-id="expandedId" @expand="expandedId = $event">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="'' + restriction.zoneAlerte?.id + usageArreteCadre.id"
-                :key="'' + restriction.zoneAlerte?.id + usageArreteCadre.id || usageArreteCadre.name"
+                :id="'' + restriction.zoneAlerte?.id + usageArreteCadre.usage.id"
+                :key="'' + restriction.zoneAlerte?.id + usageArreteCadre.usage.id || usageArreteCadre.name"
                 :name="usageArreteCadre.usage.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.usage.id)"
                 :small="false"

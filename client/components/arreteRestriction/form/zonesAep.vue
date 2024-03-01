@@ -21,13 +21,16 @@ const rules = computed(() => {
     },
     restrictions: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte AEP.", () => {
-        return props.arreteRestriction.restrictions.filter(r => r.isAep).length > 0;
+        return props.arreteRestriction.restrictions.filter((r) => r.isAep).length > 0;
       }),
-      different: helpers.withMessage("Les zones AEP sélectionnées contiennent des doublons de communes.", () => {
-        const communesId = props.arreteRestriction.restrictions.filter(r => r.isAep).map(r => r.communes.map(c => c.id)).flat();
-        return (new Set(communesId)).size === communesId.length;
+      different: helpers.withMessage('Les zones AEP sélectionnées contiennent des doublons de communes.', () => {
+        const communesId = props.arreteRestriction.restrictions
+          .filter((r) => r.isAep)
+          .map((r) => r.communes.map((c) => c.id))
+          .flat();
+        return new Set(communesId).size === communesId.length;
       }),
-    }
+    },
   };
 });
 
@@ -40,6 +43,7 @@ const zonesAep: Ref<Restriction[]> = ref(props.arreteRestriction.restrictions.fi
 const zonesSelected: Ref<string[]> = ref(zonesAep.value.map((r) => r.nomGroupementAep));
 
 const isFullDepartement = ref(null);
+const canComputeFullDepartement = ref(true);
 const fullDepartementOptions = [
   {
     label: 'Choisir mon département en entier',
@@ -100,20 +104,40 @@ defineExpose({
 });
 
 watch(isFullDepartement, () => {
-  // On enlève les restrictions AEP
-  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep);
+  if (!canComputeFullDepartement.value) {
+    canComputeFullDepartement.value = true;
+    return;
+  }
   if (isFullDepartement.value) {
     // On assigne toutes les communes
-    props.arreteRestriction.restrictions.push({
-      id: null,
-      nomGroupementAep: 'Zone AEP départementale',
-      zoneAlerte: null,
-      niveauGravite: null,
-      usagesArreteRestriction: [],
-      isAep: true,
-      communes: communes.value,
-      communesText: undefined,
-    });
+    if(!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
+      zonesAep.value.push({
+        id: null,
+        nomGroupementAep: 'Zone AEP départementale',
+        zoneAlerte: null,
+        niveauGravite: null,
+        usagesArreteRestriction: [],
+        isAep: true,
+        communes: communes.value.map((c) => {
+          return { id: c.id };
+        }),
+        communesText: undefined,
+      });      
+    } else {
+      zonesAep.value = zonesAep.value.map((r) => {
+        if (r.nomGroupementAep === 'Zone AEP départementale') {
+          r.communes = communes.value.map((c) => {
+            return { id: c.id };
+          });
+        }
+        return r;
+      });
+    }
+    zonesSelected.value = ['Zone AEP départementale'];
+  } else {
+    zonesAep.value = zonesAep.value.filter((r) => r.nomGroupementAep !== 'Zone AEP départementale');
+    // On enlève les restrictions AEP
+    zonesSelected.value = [];
   }
 });
 
@@ -124,6 +148,11 @@ watch(
     const { data, error } = await api.commune.list(query);
     if (data.value) {
       communes.value = data.value;
+      const restrictionsAep = props.arreteRestriction.restrictions.filter((r) => r.isAep);
+      if (restrictionsAep.length > 0) {
+        canComputeFullDepartement.value = false;
+        isFullDepartement.value = restrictionsAep.length < 2 && communesAssociated.value === communes.value.length;
+      }
     }
   },
   { immediate: true },
@@ -132,7 +161,6 @@ watch(
 watch(zonesSelected, () => {
   const zonesAepSelected = zonesAep.value.filter((r) => zonesSelected.value.includes(r.nomGroupementAep));
   props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep).concat(zonesAepSelected);
-  console.log(props.arreteRestriction.restrictions);
 });
 </script>
 
@@ -156,7 +184,7 @@ watch(zonesSelected, () => {
           <h6>Création de zones AEP avec un groupement de commune</h6>
 
           <div class="form-group fr-fieldset fr-mt-2w">
-            <DsfrInputGroup :error-message="utils.showInputError(v$, 'restrictions')">
+            <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
               <template v-for="(r, index) in zonesAep">
                 <DsfrCheckbox
                   :id="r.id || r.nomGroupementAep"
@@ -169,15 +197,15 @@ watch(zonesSelected, () => {
                     {{ r.nomGroupementAep }}
                   </template>
                 </DsfrCheckbox>
-  
-                <DsfrAccordion v-if="r.communes"
-                               class="full-width"
-                               :title="'Voir les ' + r.communes.length + ' communes'"
-                               :expanded-id="expandedId"
-                               @expand="expandedId = $event">
-                  <span v-for="c of r.communes">
-                    {{ c.code }} - {{ c.nom }}<br/>
-                  </span>
+
+                <DsfrAccordion
+                  v-if="r.communes"
+                  class="full-width"
+                  :title="'Voir les ' + r.communes.length + ' communes'"
+                  :expanded-id="expandedId"
+                  @expand="expandedId = $event"
+                >
+                  <span v-for="c of r.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
                 </DsfrAccordion>
               </template>
             </DsfrInputGroup>
@@ -212,7 +240,7 @@ watch(zonesSelected, () => {
 .zone-alerte-aep {
   .fr-checkbox-group {
     margin-top: 1rem;
-    
+
     input[type='checkbox'] + label {
       margin-left: 0;
       padding-right: 3rem;
