@@ -24,8 +24,8 @@ const getRestrictionsByZoneType = (type: string) => {
   return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type);
 };
 
-const getArreteCadreByZone = (zoneId: number) => {
-  return props.arreteRestriction.arretesCadre.find((ac) => ac.zonesAlerte?.some(z => z.id === zoneId));
+const getArretesCadreByZone = (zoneId: number) => {
+  return props.arreteRestriction.arretesCadre.filter((ac) => ac.zonesAlerte?.some(z => z.id === zoneId));
 };
 </script>
 
@@ -39,7 +39,7 @@ const getArreteCadreByZone = (zoneId: number) => {
           <div v-for="r in getRestrictionsByZoneType('SUP')" class="divider">
             <ArreteRestrictionFormRestriction :restriction="r"
                                               :type="'SUP'"
-                                              :arretesCadre="[getArreteCadreByZone(r.zoneAlerte.id)]" />
+                                              :arretesCadre="getArretesCadreByZone(r.zoneAlerte.id)" />
           </div>          
         </template>
         <template v-if="getRestrictionsByZoneType('SOU').length > 0">
@@ -48,7 +48,7 @@ const getArreteCadreByZone = (zoneId: number) => {
           <div v-for="r in getRestrictionsByZoneType('SOU')" class="divider">
             <ArreteRestrictionFormRestriction :restriction="r"
                                               :type="'SOU'"
-                                              :arretesCadre="[getArreteCadreByZone(r.zoneAlerte.id)]" />
+                                              :arretesCadre="getArretesCadreByZone(r.zoneAlerte.id)" />
           </div>
         </template>
         <template v-if="getRestrictionsByZoneType('AEP').length > 0">

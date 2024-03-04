@@ -8,6 +8,7 @@ const props = defineProps<{
 }>();
 
 const restrictionNiveauGraviteFr = RestrictionNiveauGraviteFr;
+const expandedId = ref();
 
 const getRestrictionsByZoneType = (type: string) => {
   if(type === 'AEP') {
@@ -15,28 +16,49 @@ const getRestrictionsByZoneType = (type: string) => {
   }
   return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type);
 };
+
+const zonesType = [
+  { type: 'SUP', label: 'Eaux superficielles' },
+  { type: 'SOU', label: 'Eaux souterraines' },
+  { type: 'AEP', label: 'Eaux potable' },
+];
 </script>
 
 <template>
-  <template v-if="getRestrictionsByZoneType('SUP').length > 0">
-    <p>Eaux superficielles</p>
-    <p v-for="r of getRestrictionsByZoneType('SUP')" class="fr-ml-2w fr-my-2w">
-      {{ r.zoneAlerte.code }} {{ r.zoneAlerte.nom }}
-      <NiveauGraviteBadge :niveauGravite="r.niveauGravite" />
-    </p>
-  </template>
-  <template v-if="getRestrictionsByZoneType('SOU').length > 0">
-    <p>Eaux souterraines</p>
-    <p v-for="r of getRestrictionsByZoneType('SOU')" class="fr-ml-2w fr-my-2w">
-      {{ r.zoneAlerte.code }} {{ r.zoneAlerte.nom }}
-      <NiveauGraviteBadge :niveauGravite="r.niveauGravite" />
-    </p>
-  </template>
-  <template v-if="getRestrictionsByZoneType('AEP').length > 0">
-    <p>Eaux potable</p>
-    <p v-for="r of getRestrictionsByZoneType('AEP')" class="fr-ml-2w fr-my-2w">
-      {{ r.nomGroupementAep }}
-      <NiveauGraviteBadge :niveauGravite="r.niveauGravite" />
-    </p>
+  <template v-for="zoneType of zonesType">
+    <template v-if="getRestrictionsByZoneType(zoneType.type).length > 0">
+      <p>{{ zoneType.label }}</p>
+      <p v-for="r of getRestrictionsByZoneType(zoneType.type)" class="fr-ml-2w fr-my-2w">
+        <div class="fr-grid-row fr-grid-row--middle fr-mb-2w">
+          <template v-if="r.zoneAlerte">
+            {{ r.zoneAlerte?.code }} {{ r.zoneAlerte?.nom }}
+          </template>
+          <template v-else>
+            {{ r.nomGroupementAep }}
+          </template>
+          <NiveauGraviteBadge class="fr-ml-2w" :niveauGravite="r.niveauGravite" />          
+        </div>
+        <DsfrAccordion :title="'Voir les ' + r.usagesArreteRestriction.length + ' usages'" :expanded-id="expandedId" @expand="expandedId = $event">
+          <div v-for="usage in r.usagesArreteRestriction">
+                <b>{{ usage.usage.nom }}</b>
+                <div class="full-width">
+                  <template v-if="r.niveauGravite === 'vigilance'">
+                    {{ usage.descriptionVigilance }}
+                  </template>
+                  <template v-else-if="r.niveauGravite === 'alerte'">
+                    {{ usage.descriptionAlerte }}
+                  </template>
+                  <template v-else-if="r.niveauGravite === 'alerte_renforcee'">
+                    {{ usage.descriptionAlerteRenforcee }}
+                  </template>
+                  <template v-else-if="r.niveauGravite === 'crise'">
+                    {{ usage.descriptionCrise }}
+                  </template>
+                </div>
+            <div class="divider fr-mb-2w" />
+          </div>
+        </DsfrAccordion>
+      </p>
+    </template>
   </template>
 </template>

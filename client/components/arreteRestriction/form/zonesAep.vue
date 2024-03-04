@@ -110,7 +110,7 @@ watch(isFullDepartement, () => {
   }
   if (isFullDepartement.value) {
     // On assigne toutes les communes
-    if(!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
+    if (!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
       zonesAep.value.push({
         id: null,
         nomGroupementAep: 'Zone AEP départementale',
@@ -122,7 +122,7 @@ watch(isFullDepartement, () => {
           return { id: c.id };
         }),
         communesText: undefined,
-      });      
+      });
     } else {
       zonesAep.value = zonesAep.value.map((r) => {
         if (r.nomGroupementAep === 'Zone AEP départementale') {
@@ -160,7 +160,23 @@ watch(
 
 watch(zonesSelected, () => {
   const zonesAepSelected = zonesAep.value.filter((r) => zonesSelected.value.includes(r.nomGroupementAep));
-  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep).concat(zonesAepSelected);
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(
+    (r) => !r.isAep || zonesSelected.value.includes(r.nomGroupementAep),
+  );
+  const newZones = zonesAepSelected.filter(
+    (z) => !props.arreteRestriction.restrictions.some((r) => r.nomGroupementAep === z.nomGroupementAep),
+  );
+  newZones.forEach((z) => {
+    let usagesAc = props.arreteRestriction.arretesCadre.map((ac) => ac.usagesArreteCadre).flat();
+    usagesAc = usagesAc
+      .filter((value, index, self) => index === self.findIndex((t) => t.usage.id === value.usage.id))
+      .map((u) => {
+        u.id = null;
+        return u;
+      });
+    z.usagesArreteRestriction = usagesAc;
+    props.arreteRestriction.restrictions.push(z);
+  });
 });
 </script>
 

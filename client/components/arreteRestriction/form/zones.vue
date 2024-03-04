@@ -71,13 +71,26 @@ watch(zonesSelected, () => {
   );
   const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id));
   newZones.forEach((z) => {
+    let usagesAc = props.arreteRestriction.arretesCadre
+      .filter((ac) => ac.zonesAlerte?.some(za => za.id === z.id))
+      .map((ac) => ac.usagesArreteCadre).flat();
+    usagesAc = usagesAc.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.usage.id === value.usage.id
+        ))
+    ).map(u => {
+      u.id = null;
+      return u;
+    });
     props.arreteRestriction.restrictions.push({
       id: null,
       zoneAlerte: z,
       niveauGravite: null,
-      usagesArreteRestriction: [],
+      usagesArreteRestriction: usagesAc,
       isAep: false,
       communes: null,
+      nomGroupementAep: null,
+      communesText: undefined,
     });
   });
   computeZonesSelected();
