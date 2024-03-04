@@ -31,6 +31,7 @@ const rules = computed(() => {
 const v$ = useVuelidate(rules, props.arreteRestriction);
 
 const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
+  const arsAssociated = ac.arretesRestriction.filter((ar) => ar.id !== props.arreteRestriction.id);
   return ac.zonesAlerte
     .filter((z) => z.type === type)
     .map((z) => {
@@ -38,7 +39,7 @@ const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
         id: z.id,
         name: z.id,
         label: `${z.code} ${z.nom}`,
-        // isAcAssociated: z.arretesCadre.filter((ac) => ac.id !== props.arreteRestriction.id).length > 0,
+        isArAssociated: arsAssociated.some((ar) => ar.restrictions.some((r) => r.zoneAlerte?.id === z.id)),
       };
     });
 };
@@ -154,10 +155,10 @@ defineExpose({
                 >
                   <template #label>
                     {{ option.label }}
-                    <!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
-                    <!--                      <VIcon name="ri-information-fill" />-->
-                    <!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
-                    <!--                    </div>-->
+                    <div class="checkbox-label-info" v-if="option.isArAssociated">
+                      <VIcon name="ri-information-fill" />
+                      Cette zone est utilisée dans un autre arrêté de restriction actif
+                    </div>
                   </template>
                 </DsfrCheckbox>
               </div>
@@ -176,10 +177,10 @@ defineExpose({
                 >
                   <template #label>
                     {{ option.label }}
-                    <!--                    <div class="checkbox-label-info" v-if="option.isAcAssociated">-->
-                    <!--                      <VIcon name="ri-information-fill" />-->
-                    <!--                      Cette zone est utilisée dans un autre arrêté cadre actif-->
-                    <!--                    </div>-->
+                    <div class="checkbox-label-info" v-if="option.isArAssociated">
+                      <VIcon name="ri-information-fill" />
+                      Cette zone est utilisée dans un autre arrêté de restriction actif
+                    </div>
                   </template>
                 </DsfrCheckbox>
               </div>

@@ -37,7 +37,7 @@ const zonesType = [
   { type: 'AEP', label: 'Eaux potable' },
 ];
 const isSameNiveauGravite = ref(props.arreteRestriction.restrictions?.every((r, i, arr) => r.niveauGravite === arr[0].niveauGravite));
-const sameNiveauGravite = ref(isSameNiveauGravite.value ? props.arreteRestriction.restrictions[0].niveauGravite : null);
+const sameNiveauGravite = ref(isSameNiveauGravite.value ? props.arreteRestriction.restrictions[0]?.niveauGravite : null);
 const niveauGraviteOptions = [
   {
     text: 'Vigilance',
