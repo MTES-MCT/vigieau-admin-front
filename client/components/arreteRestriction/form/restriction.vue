@@ -9,6 +9,7 @@ const props = defineProps<{
   restriction: Restriction;
   arretesCadre: ArreteCadre[];
   type: 'SUP' | 'SOU' | 'AEP';
+  disableNiveauGravite: boolean;
 }>();
 
 const rules = computed(() => {
@@ -97,6 +98,7 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
           defaultUnselectedText="Niveau de gravité *"
           type="text"
           name="niveauGravite"
+          :disabled="disableNiveauGravite"
         />
       </DsfrInputGroup>
       <div class="fr-grid-row">

@@ -25,6 +25,7 @@ const zonesType = [
 </script>
 
 <template>
+  <h2>Zones d'alerte</h2>
   <template v-for="zoneType of zonesType">
     <template v-if="getRestrictionsByZoneType(zoneType.type).length > 0">
       <p>{{ zoneType.label }}</p>
