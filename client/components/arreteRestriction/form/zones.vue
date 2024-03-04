@@ -6,6 +6,7 @@ import { helpers } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import type { Departement } from '~/dto/departement.dto';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
+import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -15,7 +16,7 @@ const props = defineProps<{
 const refDataStore = useRefDataStore();
 const utils = useUtils();
 const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.filter((r) => !r.isAep).map((r) => r.zoneAlerte.id));
-const departementsFiletered: Ref<any[]> = ref([]);
+const acFiltered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
   return {
@@ -29,8 +30,8 @@ const rules = computed(() => {
 
 const v$ = useVuelidate(rules, props.arreteRestriction);
 
-const zonesOptionsCheckBox = (dep: Departement, type: string) => {
-  return dep.zonesAlerte
+const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
+  return ac.zonesAlerte
     .filter((z) => z.type === type)
     .map((z) => {
       return {
@@ -53,9 +54,9 @@ const selectAll = (d: any) => {
   }
 };
 
-const computeDepSelected = () => {
-  departementsFiletered.value.forEach((d) => {
-    d.nbZonesSelected = zonesSelected.value.filter((z) => d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
+const computeZonesSelected = () => {
+  acFiltered.value.forEach((ac) => {
+    ac.nbZonesSelected = zonesSelected.value.filter((z) => ac.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
   });
 };
 
@@ -79,7 +80,7 @@ watch(zonesSelected, () => {
       communes: null,
     });
   });
-  computeDepSelected();
+  computeZonesSelected();
 });
 
 watch(
@@ -90,22 +91,21 @@ watch(
     }
     // On récupère le tableau de départements des arrêtés cadres
     const departement = props.arreteRestriction.departement;
-    const allZones = props.arreteRestriction.arretesCadre.map((ac) => ac.zonesAlerte).flat();
-    let depsUnique = departement ? [departement] : [];
-    depsUnique = depsUnique.map((d: any) => {
+    acFiltered.value = props.arreteRestriction.arretesCadre.map((ac) => {
       return {
-        ...d,
-        zonesAlerte: allZones.filter((z) => z.departement.id === d.id),
+        ...ac,
+        zonesAlerte: ac.zonesAlerte.filter((z) => z.departement.id === departement?.id),
       };
     });
-    departementsFiletered.value = depsUnique;
+    const allZones = acFiltered.value.flatMap((ac) => ac.zonesAlerte);
+    
     zonesSelected.value = zonesSelected.value.filter((z) => allZones.map((za: ZoneAlerte) => za.id).includes(z));
-    computeDepSelected();
+    computeZonesSelected();
   },
   { immediate: true },
 );
 
-computeDepSelected();
+computeZonesSelected();
 
 defineExpose({
   v$,
@@ -117,19 +117,21 @@ defineExpose({
     <div class="fr-grid-row">
       <div class="fr-col-12 fr-col-lg-6">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'restrictions')">
-          <div v-for="d of departementsFiletered">
+          <div v-for="ac of acFiltered">
             <div class="zone-alerte__title">
-              <h6>{{ d.nom }} ({{ d.nbZonesSelected }}/{{ d.zonesAlerte.length }})</h6>
+              <h6>Zones d'alerte de l'arrêté {{ ac.numero }} ({{ ac.nbZonesSelected }}/{{ ac.zonesAlerte.length }})</h6>
               <div>
                 Tout sélectionner
-                <DsfrCheckbox :onUpdate:modelValue="() => selectAll(d)" :checked="d.nbZonesSelected === d.zonesAlerte.length" />
+                <DsfrCheckbox :onUpdate:modelValue="() => selectAll(ac)"
+                              :disabled="ac.zonesAlerte.length < 1"
+                              :checked="ac.nbZonesSelected === ac.zonesAlerte.length" />
               </div>
             </div>
-            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SUP').length > 0">
+            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(ac, 'SUP').length > 0">
               <p><b>Eaux superficielles</b></p>
               <div class="form-group fr-fieldset fr-mt-2w">
                 <DsfrCheckbox
-                  v-for="option in zonesOptionsCheckBox(d, 'SUP')"
+                  v-for="option in zonesOptionsCheckBox(ac, 'SUP')"
                   :id="option.id"
                   :key="option.id || option.name"
                   :name="option.name"
@@ -147,11 +149,11 @@ defineExpose({
                 </DsfrCheckbox>
               </div>
             </div>
-            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(d, 'SOU').length > 0">
+            <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(ac, 'SOU').length > 0">
               <p><b>Eaux souterraines</b></p>
               <div class="form-group fr-fieldset fr-mt-2w">
                 <DsfrCheckbox
-                  v-for="option in zonesOptionsCheckBox(d, 'SOU')"
+                  v-for="option in zonesOptionsCheckBox(ac, 'SOU')"
                   :id="option.id"
                   :key="option.id || option.name"
                   :name="option.name"
