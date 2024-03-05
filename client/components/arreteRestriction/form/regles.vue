@@ -145,7 +145,7 @@ watch(
         <DsfrAlert
           type="info"
           title="Information"
-          description="Vous aurez la possibilité de créer une zone géographique spécifique pour l'eau potable lors de la saisie de vos arrêtés de restriction."
+          description="Vous allez pouvoir créer une ou plusieurs zones pour l'eau potable à l’aide des codes INSEE des communes ou en choisissant le département en entier"
         />
       </div>
     </div>

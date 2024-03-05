@@ -63,41 +63,41 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     isNewArreteRestriction && route.query.arreterestriction ? <string>route.query.arreterestriction : <string>route.params.id,
   );
   if (data.value) {
-    arreteRestriction.value = <ArreteRestriction>data.value;
+    const ar = <ArreteRestriction>data.value;
     // Format restrictions
-    arreteRestriction.value.restrictions.map((r) => {
+    ar.restrictions = ar.restrictions.map((r) => {
       if (!r.zoneAlerte) {
         r.isAep = true;
       }
       return r;
     });
     // Format périmètre AR
-    if (arreteRestriction.value.restrictions.length < 1) {
-      arreteRestriction.value.perimetreAr = null;
-    } else if (arreteRestriction.value.restrictions.some((r) => r.isAep) && arreteRestriction.value.restrictions.some((r) => !r.isAep)) {
-      arreteRestriction.value.perimetreAr = 'all';
-    } else if (arreteRestriction.value.restrictions.some((r) => r.isAep)) {
-      arreteRestriction.value.perimetreAr = 'aep';
+    if (ar.restrictions.length < 1) {
+      ar.perimetreAr = null;
+    } else if (ar.restrictions.some((r) => r.isAep) && ar.restrictions.some((r) => !r.isAep)) {
+      ar.perimetreAr = 'all';
+    } else if (ar.restrictions.some((r) => r.isAep)) {
+      ar.perimetreAr = 'aep';
     } else {
-      arreteRestriction.value.perimetreAr = 'zones';
+      ar.perimetreAr = 'zones';
     }
     if (route.query.arreterestriction) {
-      arreteRestriction.value.arreteRestrictionAbroge = <ArreteRestriction>{
+      ar.arreteRestrictionAbroge = <ArreteRestriction>{
         id: data.value.id,
         numero: data.value.numero,
       };
     }
     if (props.duplicate || route.query.arreterestriction) {
-      arreteRestriction.value.id = null;
-      arreteRestriction.value.statut = 'a_valider';
-      arreteRestriction.value.dateDebut = null;
-      arreteRestriction.value.dateFin = null;
-      arreteRestriction.value.dateSignature = null;
-      arreteRestriction.value.fichier = null;
-      arreteRestriction.value.restrictions = arreteRestriction.value.restrictions.filter((r) => {
+      ar.id = null;
+      ar.statut = 'a_valider';
+      ar.dateDebut = null;
+      ar.dateFin = null;
+      ar.dateSignature = null;
+      ar.fichier = null;
+      ar.restrictions = ar.restrictions.filter((r) => {
         return !r.zoneAlerte || !r.zoneAlerte.disabled;
       });
-      arreteRestriction.value.restrictions.map((r) => {
+      ar.restrictions.map((r) => {
         r.id = null;
         r.usagesArreteRestriction.map((u) => {
           u.id = null;
@@ -106,6 +106,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
         return r;
       });
     }
+    arreteRestriction.value = ar;
   }
 }
 if (mounted.value && !isInitSticky.value) {
@@ -121,6 +122,11 @@ onMounted(() => {
 </script>
 
 <template>
+  <MixinsAlerts class="fr-mb-2w" />
+  <h1>
+    {{ duplicate ? 'Duplication' : isNewArreteRestriction ? 'Création' : 'Edition' }} d'un arrêté de restriction
+    <MixinsStatutBadge :statut="arreteRestriction.statut" />
+  </h1>
   <ArreteRestrictionFormWrapper v-if="arreteRestriction" :arreteRestriction="arreteRestriction" />
 </template>
 

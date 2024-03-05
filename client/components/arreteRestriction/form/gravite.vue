@@ -114,7 +114,6 @@ watch(
                 :restriction="r"
                 :type="zoneType"
                 :arretesCadre="getArretesCadreByZone(r.zoneAlerte?.id)"
-                :disableNiveauGravite="isSameNiveauGravite"
               />
             </div>
           </template>

@@ -39,7 +39,7 @@ const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
         id: z.id,
         name: z.id,
         label: `${z.code} ${z.nom}`,
-        isArAssociated: arsAssociated.some((ar) => ar.restrictions.some((r) => r.zoneAlerte?.id === z.id)),
+        isArAssociated: arsAssociated.some((ar) => ar.restrictions?.some((r) => r.zoneAlerte?.id === z.id)),
       };
     });
 };

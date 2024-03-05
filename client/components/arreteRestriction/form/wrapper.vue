@@ -178,14 +178,14 @@ const steps = computed(() => {
   if (showRestrictionsForm.value && !showRestrictionsAepForm.value) {
     return [
       "Informations générales",
-      "Gestion de l'eau potable",
+      "Restrictions appliquées à l'eau potable",
       "Liste des zones d'alertes",
       "Niveaux de gravité et usages"
     ];
   } else if (showRestrictionsForm.value && showRestrictionsAepForm.value) {
     return [
       "Informations générales",
-      "Gestion de l'eau potable",
+      "Restrictions appliquées à l'eau potable",
       "Liste des zones d'alertes",
       "Liste des zones d'alertes AEP",
       "Niveaux de gravité et usages"
@@ -193,7 +193,7 @@ const steps = computed(() => {
   } else {
     return [
       "Informations générales",
-      "Gestion de l'eau potable",
+      "Restrictions appliquées à l'eau potable",
       "Liste des zones d'alertes AEP",
       "Niveaux de gravité et usages"
     ];
@@ -214,12 +214,7 @@ const graviteFormRef = ref(null);
 </script>
 
 <template>
-  <h1>
-    {{ isNewArreteRestriction ? "Création" : "Edition" }} d'un arrêté de restriction
-    <MixinsStatutBadge :statut="arreteRestriction.statut" />
-  </h1>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <MixinsAlerts class="fr-mb-2w" />
   <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1" :asc="asc">
       <ArreteRestrictionFormGeneral

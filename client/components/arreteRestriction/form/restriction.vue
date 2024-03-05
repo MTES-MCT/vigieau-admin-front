@@ -9,7 +9,6 @@ const props = defineProps<{
   restriction: Restriction;
   arretesCadre: ArreteCadre[];
   type: 'SUP' | 'SOU' | 'AEP';
-  disableNiveauGravite: boolean;
 }>();
 
 const rules = computed(() => {
@@ -86,22 +85,25 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
 <template>
   <form @submit.prevent="">
     <div class="fr-grid-row restriction-line">
-      <template v-if="restriction.isAep">
-        {{ restriction.nomGroupementAep }}
-      </template>
-      <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }} </template>
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
-        <DsfrSelect
-          id="role"
-          v-model="restriction.niveauGravite"
-          :options="niveauGraviteOptions"
-          defaultUnselectedText="Niveau de gravité *"
-          type="text"
-          name="niveauGravite"
-          :disabled="disableNiveauGravite"
-        />
-      </DsfrInputGroup>
-      <div class="fr-grid-row">
+      <div class="fr-col-8">
+        <template v-if="restriction.isAep">
+          {{ restriction.nomGroupementAep }}
+        </template>
+        <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }} </template>        
+      </div>
+      <div class="fr-col-4">
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
+          <DsfrSelect
+            id="role"
+            v-model="restriction.niveauGravite"
+            :options="niveauGraviteOptions"
+            defaultUnselectedText="Niveau de gravité *"
+            type="text"
+            name="niveauGravite"
+          />
+        </DsfrInputGroup>        
+      </div>
+      <div class="fr-col-12 fr-grid-row">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteRestriction')">
           <DsfrAccordion :title="accordionTitle" :expanded-id="expandedId" @expand="expandedId = $event">
             <div v-for="usageArreteCadre in allUsages">
