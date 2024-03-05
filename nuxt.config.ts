@@ -1,7 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config';
 import istanbulPlugin from "vite-plugin-istanbul";
 
-const appName = "Règl'Eau";
+const appName = "VigiEau Admin";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({

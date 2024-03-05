@@ -1,4 +1,4 @@
-# Règl'eau - Frontend
+# VigiEau Admin - Frontend
 
 ## Description
 
