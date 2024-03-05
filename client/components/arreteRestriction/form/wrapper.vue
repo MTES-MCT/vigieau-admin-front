@@ -87,6 +87,13 @@ const saveArrete = async (publish: boolean = false) => {
       id: ac.id
     };
   });
+  arToSend.restrictions = arToSend.restrictions.map((r: any) => {
+    r.zoneAlerte = r.zoneAlerte ? { id: r.zoneAlerte.id } : null;
+    r.communes = r.communes ? r.communes.map((c: any) => {
+      return { id: c.id };
+    }) : [];
+    return r;
+  });
   const { data, error } = props.arreteRestriction.id
     ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), arToSend)
     : await api.arreteRestriction.create({ ...arToSend });
