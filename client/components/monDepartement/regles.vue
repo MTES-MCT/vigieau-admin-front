@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
-import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import { Parametres } from "~/dto/parametres.dto";
 
 const props = defineProps<{
-  arreteCadre: ArreteCadre;
+  parametres: Parametres
 }>();
 
 const rules = computed(() => {
@@ -53,7 +53,7 @@ const regleGestionSuperpositionCommuneOptions = [
   },
 ];
 
-const v$ = useVuelidate(rules, props.arreteCadre);
+const v$ = useVuelidate(rules, props.parametres);
 const expandedId = ref();
 
 defineExpose({
@@ -65,7 +65,6 @@ defineExpose({
   <form @submit.prevent="">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <h6>Cas particuliers</h6>
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
           <fieldset class="fr-fieldset">
             <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
@@ -75,11 +74,11 @@ defineExpose({
               <DsfrRadioButton
                 :value="option.value"
                 name="superpositionCommune"
-                v-model="arreteCadre.superpositionCommune"
+                v-model="parametres.superpositionCommune"
                 :label="option.label"
                 :data-cy="`ArreteCadreFormCommuneRadio${option.value}`"
               />
-              <DsfrAccordion v-if="option.img" 
+              <DsfrAccordion v-if="option.img"
                              class="fr-mb-2w"
                              title="Voir le schéma explicatif"
                              :expanded-id="expandedId"
@@ -88,14 +87,6 @@ defineExpose({
               </DsfrAccordion>
             </template>
           </fieldset>
-          <!--          <DsfrRadioButtonSet-->
-          <!--            legend="Dans cet arrêté cadre, si une commune est touchée par plusieurs zones de mêmes types choisissez-vous d’uniformiser au niveau de gravité maximal  ?"-->
-          <!--            :options="regleGestionSuperpositionCommuneOptions"-->
-          <!--            v-model="arreteCadre.communeNiveauGraviteMax"-->
-          <!--            name="communeNiveauGraviteMax"-->
-          <!--            data-cy="ArreteCadreFormCommuneRadio"-->
-          <!--            :small="false"-->
-          <!--          />-->
         </DsfrInputGroup>
       </div>
     </div>

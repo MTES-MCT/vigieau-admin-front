@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
-import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
   duplicate?: boolean;
@@ -54,31 +53,33 @@ if (isNewArreteCadre && !route.query.arretecadre) {
   const { data, error } = await api.arreteCadre.get(isNewArreteCadre && route.query.arretecadre ?
     <string>route.query.arretecadre : <string>route.params.id);
   if (data.value) {
-    arreteCadre.value = <ArreteCadre>data.value;
+    const ac = <ArreteCadre>data.value;
     if(route.query.arretecadre) {
-      arreteCadre.value.arreteCadreAbroge = <ArreteCadre>{
+      ac.arreteCadreAbroge = <ArreteCadre>{
         id: data.value.id,
         numero: data.value.numero
       };
     }
     if (props.duplicate || route.query.arretecadre) {
-      arreteCadre.value.id = null;
-      arreteCadre.value.statut = 'a_valider';
-      arreteCadre.value.dateDebut = null;
-      arreteCadre.value.dateFin = null;
-      arreteCadre.value.fichier = null;
-      arreteCadre.value.usagesArreteCadre.map((u) => {
+      ac.id = null;
+      ac.numero = '';
+      ac.statut = 'a_valider';
+      ac.dateDebut = null;
+      ac.dateFin = null;
+      ac.fichier = null;
+      ac.usagesArreteCadre.map((u) => {
         u.id = null;
         return u;
       });
-      arreteCadre.value.zonesAlerte = arreteCadre.value.zonesAlerte.filter(za => !za.disabled);
+      ac.zonesAlerte = ac.zonesAlerte.filter(za => !za.disabled);
     }
-    if (arreteCadre.value.departements.length > 1 && arreteCadre.value.departementPilote?.code) {
-      const depPiloteIndex = arreteCadre.value.departements.findIndex((d) => d.code === arreteCadre.value.departementPilote.code);
-      const depPilote = arreteCadre.value.departements[depPiloteIndex];
-      arreteCadre.value.departements.splice(depPiloteIndex, 1);
-      arreteCadre.value.departements.splice(0, 0, depPilote);
+    if (ac.departements.length > 1 && ac.departementPilote?.code) {
+      const depPiloteIndex = ac.departements.findIndex((d) => d.code === ac.departementPilote.code);
+      const depPilote = ac.departements[depPiloteIndex];
+      ac.departements.splice(depPiloteIndex, 1);
+      ac.departements.splice(0, 0, depPilote);
     }
+    arreteCadre.value = ac;
   }
 }
 if (mounted.value && !isInitSticky.value) {

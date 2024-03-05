@@ -3,6 +3,7 @@ import { ZoneAlerteApi } from '~/api/zone-alerte';
 import { BaseApi } from '~/api/base-api';
 import { ArreteCadreApi } from "~/api/arrete-cadre";
 import { ArreteRestrictionApi } from "~/api/arrete-restriction";
+import { ParametresApi } from "~/api/parametres";
 
 export const useApi = () => {
   return {
@@ -14,5 +15,6 @@ export const useApi = () => {
     usage: new BaseApi('usage'),
     thematique: new BaseApi('thematique'),
     commune: new BaseApi('commune'),
+    parametres: new ParametresApi('parametres'),
   };
 };

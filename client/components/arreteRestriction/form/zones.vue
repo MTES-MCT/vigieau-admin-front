@@ -179,7 +179,7 @@ defineExpose({
                     {{ option.label }}
                     <div class="checkbox-label-info" v-if="option.isArAssociated">
                       <VIcon name="ri-information-fill" />
-                      Cette zone est utilisée dans un autre arrêté de restriction actif
+                      Cette zone est utilisée dans un autre arrêté de restriction en vigueur
                     </div>
                   </template>
                 </DsfrCheckbox>

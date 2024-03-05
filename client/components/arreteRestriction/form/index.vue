@@ -89,6 +89,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     }
     if (props.duplicate || route.query.arreterestriction) {
       ar.id = null;
+      ar.numero = '';
       ar.statut = 'a_valider';
       ar.dateDebut = null;
       ar.dateFin = null;

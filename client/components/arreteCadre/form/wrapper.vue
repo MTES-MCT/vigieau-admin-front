@@ -26,7 +26,6 @@ const usageSelected = ref();
 const currentStep: Ref<number> = ref(!props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 3);
 const steps = [
   'Informations générales',
-  "Règles de gestion des niveaux d'alerte",
   "Liste des zones d'alertes",
   'Les usages',
   'Récapitulatif',
@@ -43,14 +42,10 @@ const nextStep = async () => {
       errors = generalFormRef.value?.v$.$errors;
       break;
     case 2:
-      await reglesFormRef.value?.v$.$validate()
-      errors = reglesFormRef.value?.v$.$errors;
-      break;
-    case 3:
       await zonesFormRef.value?.v$.$validate()
       errors = zonesFormRef.value?.v$.$errors;
       break;
-    case 4:
+    case 3:
       await usagesFormRef.value?.v$.$validate()
       errors = usagesFormRef.value?.v$.$errors;
       break;
@@ -149,7 +144,6 @@ const publierFormRef = ref(null);
 
 // Forms
 const generalFormRef = ref(null);
-const reglesFormRef = ref(null);
 const zonesFormRef = ref(null);
 const usagesFormRef = ref(null);
 </script>
@@ -163,19 +157,11 @@ const usagesFormRef = ref(null);
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2" :asc="asc">
-      <ArreteCadreFormReglesBis
-        ref="reglesFormRef"
-        :arrete-cadre="arreteCadre" />
-<!--      <ArreteCadreFormRegles-->
-<!--        ref="reglesFormRef"-->
-<!--        :arrete-cadre="arreteCadre" />-->
-    </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteCadreFormZones
         ref="zonesFormRef"
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4" :asc="asc">
+    <DsfrTabContent :selected="currentStep === 3" :asc="asc">
       <ArreteCadreFormUsages
         ref="usagesFormRef"
         :arrete-cadre="arreteCadre"
@@ -184,7 +170,7 @@ const usagesFormRef = ref(null);
         @resetUsageSelected="usageSelected = null"
       />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 5" :asc="asc">
+    <DsfrTabContent :selected="currentStep === 4" :asc="asc">
       <ArreteCadreFormRecapitulatif
         :arrete-cadre="arreteCadre"
         :key="componentKey + currentStep"
@@ -216,14 +202,14 @@ const usagesFormRef = ref(null);
         @click="saveArrete(arreteCadre.statut !== 'a_valider')"
       />
     </li>
-    <li v-if="currentStep !== 5">
+    <li v-if="currentStep !== 4">
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
                   data-cy="ArreteCadreFormNextStepBtn"
                   @click="nextStep()" />
     </li>
-    <li v-if="currentStep === 5 && arreteCadre.statut === 'a_valider'">
+    <li v-if="currentStep === 4 && arreteCadre.statut === 'a_valider'">
       <DsfrButton
         label="Publier"
         :disabled="loading"
