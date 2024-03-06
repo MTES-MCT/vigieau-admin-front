@@ -12,6 +12,7 @@ const emit = defineEmits(['usageSelected', 'usageRemoved']);
 const headers = ['Usages', 'Actions'];
 const rows: Ref<any[]> = ref([]);
 const componentKey = ref(0);
+const utils = useUtils();
 
 const rules = computed(() => {
   return {
@@ -55,7 +56,7 @@ const generateRows = () => {
                   {
                     label: 'Valider',
                     onClick: () => {
-                      modalOpened.value = false;
+                      utils.closeModal(modalOpened);
                       emit('usageRemoved', u);
                     },
                   },
@@ -63,7 +64,7 @@ const generateRows = () => {
                     label: 'Annuler',
                     secondary: true,
                     onClick: () => {
-                      modalOpened.value = false;
+                      utils.closeModal(modalOpened);
                     },
                   },
                 ]
@@ -106,7 +107,7 @@ defineExpose({
   <DsfrModal :opened="modalOpened"
              :title="modalTitle"
              :actions="modalActions"
-             @close="modalOpened = false">
+             @close="utils.closeModal(modalOpened)">
     <div v-html="modalDescription" />
   </DsfrModal>
 </template>

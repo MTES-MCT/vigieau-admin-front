@@ -41,7 +41,7 @@ if(authStore.isMte || (arreteCadre.value.statut !== 'abroge' && isAcOnDepartemen
 }
 
 const editArreteCadre = (id: string) => {
-  modalOpened.value = false;
+  utils.closeModal(modalOpened);
   navigateTo(`/arrete-cadre/${id}/edition`);
 };
 
@@ -67,7 +67,11 @@ const modalActions: Ref<any[]> = ref([]);
                      align="right"
                      inlineLayoutWhen="always" />
     
-    <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
+    <DsfrModal :opened="modalOpened" 
+               icon="ri-arrow-right-line"
+               :title="modalTitle"
+               :actions="modalActions"
+               @close="utils.closeModal(modalOpened);">
       <div v-html="modalDescription"></div>
     </DsfrModal>
   </template>

@@ -16,7 +16,7 @@ const route = useRoute();
 const api = useApi();
 const refDataStore = useRefDataStore();
 const alertStore = useAlertStore();
-const isNewArreteRestriction = route.params.id === "nouveau";
+const utils = useUtils();
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
@@ -150,7 +150,7 @@ const publishArrete = async (ar: ArreteRestriction) => {
   loading.value = true;
   const { data, error } = await api.arreteRestriction.publish(ar.id?.toString(), ar);
   if (data.value) {
-    modalPublishOpened.value = false;
+    utils.closeModal(modalPublishOpened);
     navigateTo("/arrete-restriction");
   }
   loading.value = false;
@@ -288,7 +288,7 @@ const graviteFormRef = ref(null);
       />
     </li>
   </ul>
-  <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="modalPublishOpened = false">
+  <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="utils.closeModal(modalPublishOpened);">
     <p>
       Cet arrêté de restriction contient&nbsp;:
       <ul>
@@ -311,7 +311,7 @@ const graviteFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="modalPublishOpened = false" />
+          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="utils.closeModal(modalPublishOpened);" />
         </li>
         <li>
           <DsfrButton

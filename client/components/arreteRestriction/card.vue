@@ -15,6 +15,7 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
+const utils = useUtils();
 const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.departement?.code === authStore.user?.roleDepartement;
 const isZaOutdated: boolean = props.arreteRestriction.statut !== 'abroge' && props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.disabled);
 const canUpdate = authStore.isMte
@@ -110,7 +111,7 @@ const askDeleteArreteRestriction = async (arreteRestriction: ArreteRestriction) 
       label: "Annuler",
       secondary: true,
       onclick: () => {
-        modalOpened.value = false;
+        utils.closeModal(modalOpened);
       }
     }
   ];
@@ -123,7 +124,7 @@ const deleteArreteRestriction = async (id: string) => {
   if (!error.value) {
     emit("delete");
   }
-  modalOpened.value = false;
+  utils.closeModal(modalOpened);
 };
 
 // Permet de faire un retour à la ligne sur les underscores
@@ -146,7 +147,7 @@ const askEditArreteRestriction = async (arreteRestriction: ArreteRestriction) =>
       label: "Annuler",
       secondary: true,
       onclick: () => {
-        modalOpened.value = false;
+        utils.closeModal(modalOpened);
       }
     }
   ];
@@ -160,7 +161,7 @@ const askEditArreteRestriction = async (arreteRestriction: ArreteRestriction) =>
 };
 
 const editArreteRestriction = (id: string) => {
-  modalOpened.value = false;
+  utils.closeModal(modalOpened);
   navigateTo(`/arrete-restriction/${id}/edition`);
 };
 
@@ -184,7 +185,7 @@ const repealModalActions: Ref<any[]> = ref([
     label: "Annuler",
     secondary: true,
     onclick: () => {
-      repealModalOpened.value = false;
+      utils.closeModal(repealModalOpened);
     }
   }
 ]);
@@ -196,7 +197,7 @@ const repealArrete = async (ar: ArreteRestriction) => {
   loading.value = true;
   const { data, error } = await api.arreteRestriction.repeal(ar.id?.toString(), ar);
   if (!error.value) {
-    repealModalOpened.value = false;
+    utils.closeModal(repealModalOpened);
     emit("repeal");
     alertStore.addAlert({
       description: 'Abrogation réussie',
@@ -274,7 +275,7 @@ const repealArrete = async (ar: ArreteRestriction) => {
       </div>
     </div>
   </div>
-  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
+  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="utils.closeModal(modalOpened);">
     <div v-html="modalDescription"></div>
   </DsfrModal>
   <DsfrModal
@@ -282,7 +283,7 @@ const repealArrete = async (ar: ArreteRestriction) => {
     icon="ri-arrow-right-line"
     :title="`Abroger l'arrêté ${arreteRestriction.numero}`"
     :actions="repealModalActions"
-    @close="repealModalOpened = false"
+    @close="utils.closeModal(repealModalOpened);"
   >
     <ArreteRestrictionFormAbroger ref="abrogeFormRef" :arreteRestriction="arreteRestriction" @abroger="repealArrete($event)" />
   </DsfrModal>

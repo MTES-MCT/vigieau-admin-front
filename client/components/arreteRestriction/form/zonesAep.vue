@@ -65,7 +65,7 @@ modalActions.value = [
     label: 'Annuler',
     secondary: true,
     onclick: () => {
-      modalCommunesOpened.value = false;
+      utils.closeModal(modalCommunesOpened);
     },
   },
 ];
@@ -90,7 +90,7 @@ const createEditGroupement = async (restriction: Restriction) => {
     const idx = zonesAep.value.findIndex((r) => r.id === restriction.id);
     zonesAep.value[idx] = restriction;
   }
-  modalCommunesOpened.value = false;
+  utils.closeModal(modalCommunesOpened);
 };
 
 const onChange = ({ name, checked }: { name: string; checked: boolean }) => {
@@ -240,7 +240,7 @@ watch(zonesSelected, () => {
     :opened="modalCommunesOpened"
     title="Nouveau groupement de communes"
     :actions="modalActions"
-    @close="modalCommunesOpened = false"
+    @close="utils.closeModal(modalCommunesOpened);"
   >
     <ArreteRestrictionFormGroupementCommunes
       :restriction="groupementToEdit"

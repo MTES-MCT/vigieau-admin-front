@@ -7,6 +7,7 @@ const props = defineProps<{
   onClickEdit: Function;
 }>();
 
+const utils = useUtils();
 const modalOpened: Ref<boolean> = ref(false);
 const modalActions: Ref<any[]> = ref(
   props.viewOnly ?  [] :[{
@@ -21,7 +22,7 @@ modalActions.value.push({
   label: 'Fermer',
   secondary: true,
   onclick: () => {
-    modalOpened.value = false;
+    utils.closeModal(modalOpened);
   },
 })
 
@@ -67,7 +68,7 @@ if(props.html?.length > lengthTruncated) {
   </div>
   <DsfrModal :opened="modalOpened"
              :actions="modalActions"
-             @close="modalOpened = false">
+             @close="utils.closeModal(modalOpened);">
     <div v-html="html" />
   </DsfrModal>
 </template>

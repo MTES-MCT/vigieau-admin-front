@@ -129,7 +129,7 @@ const askDeleteArreteCadre = async (arreteCadre: ArreteCadre) => {
       label: 'Annuler',
       secondary: true,
       onclick: () => {
-        modalOpened.value = false;
+        utils.closeModal(modalOpened);
       },
     },
   ];
@@ -153,7 +153,7 @@ const deleteArreteCadre = async (id: string) => {
   if (!error.value) {
     emit('delete');
   }
-  modalOpened.value = false;
+  utils.closeModal(modalOpened);
   loading.value = false;
 };
 
@@ -165,7 +165,7 @@ const numeroToDisplay = computed(() => {
 });
 
 const editArreteCadre = (id: string) => {
-  modalOpened.value = false;
+  utils.closeModal(modalOpened);
   navigateTo(`/arrete-cadre/${id}/edition`);
 };
 
@@ -189,7 +189,7 @@ const repealModalActions: Ref<any[]> = ref([
     label: 'Annuler',
     secondary: true,
     onclick: () => {
-      repealModalOpened.value = false;
+      utils.closeModal(repealModalOpened);
     },
   },
 ]);
@@ -201,7 +201,7 @@ const repealArrete = async (ac: ArreteCadre) => {
   loading.value = true;
   const { data, error } = await api.arreteCadre.repeal(ac.id?.toString(), ac);
   if (!error.value) {
-    repealModalOpened.value = false;
+    utils.closeModal(repealModalOpened);
     emit('repeal');
     alertStore.addAlert({
       description: 'Abrogation réussie',
@@ -298,7 +298,11 @@ const depString = computed(() => {
       </div>
     </div>
   </div>
-  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="modalOpened = false">
+  <DsfrModal :opened="modalOpened"
+             icon="ri-arrow-right-line"
+             :title="modalTitle"
+             :actions="modalActions"
+             @close="utils.closeModal(modalOpened);">
     <div v-html="modalDescription"></div>
   </DsfrModal>
   <DsfrModal
@@ -306,7 +310,7 @@ const depString = computed(() => {
     icon="ri-arrow-right-line"
     :title="`Abroger l'arrêté ${arreteCadre.numero}`"
     :actions="repealModalActions"
-    @close="repealModalOpened = false"
+    @close="utils.closeModal(repealModalOpened);"
   >
     <ArreteCadreFormAbroger ref="abrogerFormRef" :arrete-cadre="arreteCadre" @abroger="repealArrete($event)" />
   </DsfrModal>

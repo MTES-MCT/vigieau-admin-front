@@ -22,6 +22,7 @@ const userFormRef = ref(null);
 const componentKey = ref(0);
 
 const authStore = useAuthStore();
+const utils = useUtils();
 
 const generateRows = () => {
   rows.value = [
@@ -63,7 +64,7 @@ if (data.value) {
 }
 
 const askEditUser = (user) => {
-  modalDeleteOpened.value = false;
+  utils.closeModal(modalDeleteOpened);
   modalEditOpened.value = true;
   modalTitle.value = "Modification d'un utilisateur";
   modalIcon.value = 'ri-ball-pen-line';
@@ -83,7 +84,7 @@ const askEditUser = (user) => {
 };
 
 const askAddUser = () => {
-  modalDeleteOpened.value = false;
+  utils.closeModal(modalDeleteOpened);
   modalEditOpened.value = true;
   modalTitle.value = "Ajout d'un utilisateur";
   modalIcon.value = 'ri-ball-pen-line';
@@ -103,7 +104,7 @@ const askAddUser = () => {
 };
 
 const askDeleteUser = (user) => {
-  modalEditOpened.value = false;
+  utils.closeModal(modalEditOpened);
   modalDeleteOpened.value = true;
   modalTitle.value = "Suppression d'un utilisateur";
   modalIcon.value = 'ri-delete-bin-5-fill';
@@ -125,8 +126,8 @@ const askDeleteUser = (user) => {
   ];
 };
 const closeModal = () => {
-  modalEditOpened.value = false;
-  modalDeleteOpened.value = false;
+  utils.closeModal(modalEditOpened);
+  utils.closeModal(modalDeleteOpened);
 };
 
 const deleteUser = async () => {
