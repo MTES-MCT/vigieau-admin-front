@@ -110,6 +110,7 @@ const thematiqueDescription = computed(() => {
 
 defineExpose({
   submitForm,
+  v$,
 });
 </script>
 

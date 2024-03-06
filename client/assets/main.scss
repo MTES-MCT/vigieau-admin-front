@@ -103,3 +103,8 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
     text-align: right;
   }
 }
+
+// BREADCRUMB
+.fr-breadcrumb {
+  margin-bottom: 0.5rem;
+}

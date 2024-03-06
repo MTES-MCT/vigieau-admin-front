@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
+import useClickOutside from "~/composables/useClickOutside";
 
 const container = ref(undefined);
 const optionsList = ref(undefined);
@@ -56,6 +57,7 @@ function convertRemToPixels(rem) {
 function selectOption(option) {
   optionSelected.value = option;
   emit('update:modelValue', option);
+  hasFocus.value = false;
 }
 
 const displayAtTheTop = ref(false);
@@ -115,16 +117,14 @@ function checkKeyboardNav($event) {
   }
   if ($event.key === 'Enter') {
     selectOption(props.options[activeOption.value > 0 ? activeOption.value : 0]);
-    hasFocus.value = false;
   } else if ($event.key === 'ArrowUp') {
     moveToPreviousOption();
   } else if ($event.key === 'ArrowDown') {
     moveToNextOption();
   } else if ($event.key === 'search') {
-    if (!!props.options.length) {
+    if (displayOptions.value && hasFocus.value) {
       selectOption(props.options[activeOption.value > 0 ? activeOption.value : 0]);
     }
-    hasFocus.value = false;
   }
 }
 
@@ -139,10 +139,17 @@ function displayOption(option: any) {
   });
   return toDisplay;
 }
+
+useClickOutside(
+  container,
+  () => looseFocus(),
+  null
+)
 </script>
 
 <template>
-  <div ref="container" class="relative search-autocomplete">
+  <div ref="container"
+       class="relative search-autocomplete">
     <div
       class="fr-search-bar"
       :class="{ 'fr-search-bar--lg': !light }"
@@ -157,13 +164,13 @@ function displayOption(option: any) {
         @update:model-value="$emit('update:modelValue', $event)"
         ref="input"
         @focus="hasFocus = true"
-        @blur="looseFocus()"
         @keydown="checkKeyboardNav($event)"
         @search="checkKeyboardNav({ key: 'search' })"
       />
       <DsfrButton
-        title="Rechercher"
+        :title="buttonText"
         :disabled="disabled"
+        type="button"
         @click="checkKeyboardNav({ key: 'search' })"
       >
         <VIcon :name="icon" class="fr-mr-1w" />

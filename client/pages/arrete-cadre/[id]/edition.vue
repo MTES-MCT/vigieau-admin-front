@@ -6,8 +6,19 @@ definePageMeta({
 useHead({
   title: `Edition arrêté cadre - ${useRuntimeConfig().public.appName}`,
 });
+
+const route = useRoute();
+const breadcrumb = [
+  {
+    to: "/arrete-cadre",
+    text: "Arrêtes cadre"
+  }, {
+    text: route.params.id === 'nouveau' ? 'Création' : 'Edition'
+  }
+];
 </script>
 
 <template>
+  <DsfrBreadcrumb :links="breadcrumb" />
   <ArreteCadreForm />
 </template>

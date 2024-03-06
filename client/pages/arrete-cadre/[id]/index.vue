@@ -6,8 +6,18 @@ definePageMeta({
 useHead({
   title: `Consultation arrêté cadre - ${useRuntimeConfig().public.appName}`,
 });
+
+const breadcrumb = [
+  {
+    to: "/arrete-cadre",
+    text: "Arrêtes cadre"
+  }, {
+    text: "Consultation"
+  }
+];
 </script>
 
 <template>
+  <DsfrBreadcrumb :links="breadcrumb" />
   <ArreteCadreConsultation />
 </template>

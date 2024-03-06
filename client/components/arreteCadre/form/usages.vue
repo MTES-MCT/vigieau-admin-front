@@ -7,6 +7,7 @@ import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import deburr from 'lodash.deburr';
+import { useAlertStore } from "~/stores/alert";
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -24,6 +25,7 @@ const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
 const utils = useUtils();
 const api = useApi();
+const alertStore = useAlertStore();
 const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
 const tabs = ref();
 
@@ -69,6 +71,7 @@ const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadr
     tabs.value.selectIndex(1);
     return;
   }
+  componentKey.value += 1;
   if (!isUsageArreteCadre) {
     let usageArreteCadre = props.arreteCadre.usagesArreteCadre.find((uac) => uac.usage.id === (<Usage>usage).id);
     if (!usageArreteCadre) {
@@ -90,8 +93,10 @@ const validateUsageForm = () => {
 };
 
 const hideNewUsage = () => {
+  usageFormRef.value?.v$.$reset();
   tabs.value.selectIndex(0);
   usageToEdit.value = new Usage();
+  componentKey.value += 1;
 };
 
 const usageFormButtons: Ref<any[]> = ref([
@@ -127,6 +132,10 @@ const addEditUsageArreteCadre = () => {
   }
   componentKey.value += 1;
   usageArreteCadreToEdit.value = null;
+  alertStore.addAlert({
+    description: 'Usage enregistré',
+    type: 'success',
+  });
 };
 
 const usageArreteCadreFormButtons: Ref<any[]> = ref([
@@ -151,7 +160,6 @@ const tabTitles = [{ title: 'Recherche' }, { title: 'Créer un nouvel usage' }];
 const selectedTabIndex: Ref<number> = ref(0);
 const asc = ref(true);
 const selectTab = (idx: number) => {
-  // this.onSelectTab(idx)
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
 };
@@ -198,17 +206,17 @@ defineExpose({
                 class="show-label"
                 data-cy="ArreteCadreFormUsagesAutocomplete"
                 placeholder="Taper le nom d'un usage"
-                buttonText="Rechercher"
+                buttonText="Ajouter"
                 display-key="nom"
                 v-model="query"
                 :options="usagesFiltered"
                 @update:modelValue="selectUsage($event)"
-                @search="selectUsage($event)"
               />
             </DsfrInputGroup>
             <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
               <UsageArreteCadreForm
                 :usageArreteCadre="usageArreteCadreToEdit"
+                :key="componentKey"
                 :loading="loading"
                 @createEdit="addEditUsageArreteCadre()"
                 ref="usageArreteCadreFormRef"
@@ -217,7 +225,11 @@ defineExpose({
             </div>
           </DsfrTabContent>
           <DsfrTabContent panel-id="tab-content-1" tab-id="tab-1" :asc="asc" :selected="selectedTabIndex === 1">
-            <UsageForm ref="usageFormRef" :loading="loading" :usage="usageToEdit" @createEdit="createEditUsage($event)" />
+            <UsageForm ref="usageFormRef"
+                       :key="componentKey"
+                       :loading="loading"
+                       :usage="usageToEdit"
+                       @createEdit="createEditUsage($event)" />
             <DsfrButtonGroup :buttons="usageFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
           </DsfrTabContent>
         </DsfrTabs>
