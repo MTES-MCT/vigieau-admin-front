@@ -220,7 +220,10 @@ const usagesFormRef = ref(null);
       />
     </li>
   </ul>
-  <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="utils.closeModal(modalPublishOpened);">
+  <DsfrModal :opened="modalPublishOpened"
+             icon="ri-arrow-right-line"
+             :title="modalTitle"
+             @close="modalPublishOpened = utils.closeModal(modalPublishOpened);">
     <p>
       Cet arrêté cadre contient&nbsp;:
       <ul>
@@ -234,7 +237,7 @@ const usagesFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="utils.closeModal(modalPublishOpened);" />
+          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
         </li>
         <li>
           <DsfrButton

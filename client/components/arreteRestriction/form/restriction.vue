@@ -119,16 +119,16 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
                   <b>{{ usageArreteCadre.usage.nom }}</b>
                   <div class="full-width">
                     <template v-if="restriction.niveauGravite === 'vigilance'">
-                      {{ usageArreteCadre.descriptionVigilance }}
+                      {{ usageArreteCadre.descriptionVigilance ? usageArreteCadre.descriptionVigilance : 'Pas de restrictions pour ce niveau de gravité.' }}
                     </template>
                     <template v-else-if="restriction.niveauGravite === 'alerte'">
-                      {{ usageArreteCadre.descriptionAlerte }}
+                      {{ usageArreteCadre.descriptionAlerte ? usageArreteCadre.descriptionAlerte : 'Pas de restrictions pour ce niveau de gravité.' }}
                     </template>
                     <template v-else-if="restriction.niveauGravite === 'alerte_renforcee'">
-                      {{ usageArreteCadre.descriptionAlerteRenforcee }}
+                      {{ usageArreteCadre.descriptionAlerteRenforcee ? usageArreteCadre.descriptionAlerteRenforcee : 'Pas de restrictions pour ce niveau de gravité.' }}
                     </template>
                     <template v-else-if="restriction.niveauGravite === 'crise'">
-                      {{ usageArreteCadre.descriptionCrise }}
+                      {{ usageArreteCadre.descriptionCrise ? usageArreteCadre.descriptionCrise : 'Pas de restrictions pour ce niveau de gravité.' }}
                     </template>
                   </div>
                 </template>

@@ -115,6 +115,7 @@ const saveArrete = async (publish: boolean = false) => {
       return restriction;
     });
     componentKey.value++;
+    loading.value = false;
     if (props.arreteRestriction.statut !== "a_valider") {
       await publishArrete(props.arreteRestriction);
     }
@@ -152,6 +153,10 @@ const publishArrete = async (ar: ArreteRestriction) => {
   if (data.value) {
     utils.closeModal(modalPublishOpened);
     navigateTo("/arrete-restriction");
+    alertStore.addAlert({
+      description: 'Publication réussie',
+      type: 'success',
+    });
   }
   loading.value = false;
 };
@@ -255,25 +260,25 @@ const graviteFormRef = ref(null);
       <DsfrButton label="Précedent"
                   :secondary="true"
                   icon="ri-arrow-left-line"
-                  data-cy="ArreteCadreFormPreviousStepBtn"
+                  data-cy="ArreteRestrictionFormPreviousStepBtn"
                   :disabled="currentStep === 1"
                   @click="previousStep()" />
     </li>
     <li>
       <DsfrButton
         :label="arreteRestriction.statut === 'a_valider' ? 'Enregistrer en brouillon' : 'Enregistrer'"
-        data-cy="ArreteCadreFormSaveBtn"
+        data-cy="ArreteRestrictionFormSaveBtn"
         :secondary="true"
         :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : 'ri-settings-3-line'"
         :disabled="loading"
-        @click="saveArrete()"
+        @click="saveArrete(arreteRestriction.statut !== 'a_valider')"
       />
     </li>
     <li>
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
-                  data-cy="ArreteCadreFormNextStepBtn"
+                  data-cy="ArreteRestrictionFormNextStepBtn"
                   :disabled="currentStep === totalSteps"
                   @click="nextStep()" />
     </li>
@@ -283,12 +288,15 @@ const graviteFormRef = ref(null);
         :disabled="loading"
         :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
         :iconRight="true"
-        data-cy="ArreteCadreFormPublishBtn"
+        data-cy="ArreteRestrictionFormPublishBtn"
         @click="askPublishArrete()"
       />
     </li>
   </ul>
-  <DsfrModal :opened="modalPublishOpened" icon="ri-arrow-right-line" :title="modalTitle" @close="utils.closeModal(modalPublishOpened);">
+  <DsfrModal :opened="modalPublishOpened"
+             icon="ri-arrow-right-line"
+             :title="modalTitle"
+             @close="modalPublishOpened = utils.closeModal(modalPublishOpened);">
     <p>
       Cet arrêté de restriction contient&nbsp;:
       <ul>
@@ -311,7 +319,10 @@ const graviteFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="utils.closeModal(modalPublishOpened);" />
+          <DsfrButton label="Annuler"
+                      :disabled="loading"
+                      :secondary="true"
+                      @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
         </li>
         <li>
           <DsfrButton

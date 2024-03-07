@@ -107,7 +107,7 @@ defineExpose({
   <DsfrModal :opened="modalOpened"
              :title="modalTitle"
              :actions="modalActions"
-             @close="utils.closeModal(modalOpened)">
+             @close="modalOpened = utils.closeModal(modalOpened)">
     <div v-html="modalDescription" />
   </DsfrModal>
 </template>

@@ -31,11 +31,21 @@ const rules = computed(() => {
 const utils = useUtils();
 
 const parseCommunes = (communesText: string) => {
-  const inseeRegex = new RegExp('(0[1-9]|[1-9][ABab\\d])\\d{3}', 'gim');
-  const codesExtracted = communesText?.match(inseeRegex);
-  if(!codesExtracted) {
+  if(!communesText) {
     return;
   }
+  const inseeRegex = new RegExp('(0[1-9]|[1-9][ABab\\d])\\d{3}', 'gim');
+  const inseeRegexWithout0 = new RegExp('([1-9])\\d{3}', 'gim');
+  let codesExtracted = communesText.match(inseeRegex);
+  let codesExtractedWithout0 = communesText.match(inseeRegexWithout0);
+  if(!codesExtracted && !codesExtractedWithout0) {
+    return;
+  }
+  // On récupère les séries de 4 chiffres au cas où certains mettent des codes INSEE sans le 0 devant
+  codesExtracted = codesExtracted ? codesExtracted : [];
+  codesExtractedWithout0 = codesExtractedWithout0 ? codesExtractedWithout0 : [];
+  codesExtractedWithout0 = codesExtractedWithout0.map((c) => `0${c}`);
+  codesExtracted = [...new Set([...codesExtracted, ...codesExtractedWithout0])];
   props.restriction.communes = props.communes.filter((c) => codesExtracted.includes(c.code));
 };
 
@@ -74,9 +84,10 @@ props.restriction.communesText = props.restriction.communes?.map((c) => c.code).
         <DsfrAlert
           type="info"
           title="Liste des codes INSEE par département"
-          description="Pour créer vos groupement de commune, vous allez devoir nous fournir les codes INSEE de chaque commune. Copier / coller à partir de la liste des codes correspondant à un groupement."
-          class="fr-mb-2w"
-        />
+          class="fr-mb-2w">
+          Pour créer vos groupement de commune, vous allez devoir nous fournir les codes INSEE de chaque commune. Copier / coller à partir de la liste des codes correspondant à un groupement.
+          <br/><a class="fr-link" href="https://www.insee.fr/fr/information/2560452" target="_blank">Liste des codes INSEE</a>
+        </DsfrAlert>
 
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'communes')">
           <DsfrInput

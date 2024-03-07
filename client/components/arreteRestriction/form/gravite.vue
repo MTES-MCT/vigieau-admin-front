@@ -103,7 +103,7 @@ watch(
           </div>
         </div>
         <h6>Zones d'alerte</h6>
-        <template v-for="zoneType of zonesType">
+        <div class="fr-mb-4w" v-for="zoneType of zonesType">
           <template v-if="getRestrictionsByZoneType(zoneType.type).length > 0">
             <p>
               <b>{{ zoneType.label }}</b>
@@ -117,7 +117,7 @@ watch(
               />
             </div>
           </template>
-        </template>
+        </div>
       </div>
     </div>
   </form>

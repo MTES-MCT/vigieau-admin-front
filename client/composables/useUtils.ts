@@ -111,9 +111,12 @@ Vous confirmez prendre en compte que les modifications faites à cet arrêté vo
       return false;
     },
 
-    closeModal(modalBoolean: any): void {
-      modalBoolean.value = false;
+    closeModal(modalBoolean: any): boolean {
       document.body.classList.remove('modal-open');
+      if(typeof modalBoolean != 'boolean') {
+        modalBoolean.value = false;        
+      }
+      return false;
     },
   };
 };

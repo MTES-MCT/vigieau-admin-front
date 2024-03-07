@@ -302,7 +302,7 @@ const depString = computed(() => {
              icon="ri-arrow-right-line"
              :title="modalTitle"
              :actions="modalActions"
-             @close="utils.closeModal(modalOpened);">
+             @close="modalOpened = utils.closeModal(modalOpened);">
     <div v-html="modalDescription"></div>
   </DsfrModal>
   <DsfrModal
@@ -310,7 +310,7 @@ const depString = computed(() => {
     icon="ri-arrow-right-line"
     :title="`Abroger l'arrêté ${arreteCadre.numero}`"
     :actions="repealModalActions"
-    @close="utils.closeModal(repealModalOpened);"
+    @close="repealModalOpened = utils.closeModal(repealModalOpened);"
   >
     <ArreteCadreFormAbroger ref="abrogerFormRef" :arrete-cadre="arreteCadre" @abroger="repealArrete($event)" />
   </DsfrModal>

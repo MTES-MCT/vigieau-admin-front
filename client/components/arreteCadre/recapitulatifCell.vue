@@ -68,7 +68,7 @@ if(props.html?.length > lengthTruncated) {
   </div>
   <DsfrModal :opened="modalOpened"
              :actions="modalActions"
-             @close="utils.closeModal(modalOpened);">
+             @close="modalOpened = utils.closeModal(modalOpened);">
     <div v-html="html" />
   </DsfrModal>
 </template>

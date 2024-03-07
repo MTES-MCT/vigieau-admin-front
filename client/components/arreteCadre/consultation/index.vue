@@ -71,7 +71,7 @@ const modalActions: Ref<any[]> = ref([]);
                icon="ri-arrow-right-line"
                :title="modalTitle"
                :actions="modalActions"
-               @close="utils.closeModal(modalOpened);">
+               @close="modalOpened = utils.closeModal(modalOpened);">
       <div v-html="modalDescription"></div>
     </DsfrModal>
   </template>

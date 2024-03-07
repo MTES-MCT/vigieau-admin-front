@@ -53,7 +53,7 @@ const arreteRestrictionActions: Ref<any> = ref([
   },
   {
     text: "Supprimer",
-    show: authStore.isMte || isArOnDepartementUser,
+    show: authStore.isMte || (isArOnDepartementUser && props.arreteRestriction.statut === "a_valider"),
     onclick: () => {
       askDeleteArreteRestriction(props.arreteRestriction);
     }
@@ -102,13 +102,13 @@ const api = useApi();
 const askDeleteArreteRestriction = async (arreteRestriction: ArreteRestriction) => {
   modalActions.value = [
     {
-      label: "Confirmer",
+      label: 'Confirmer',
       onclick: () => {
         deleteArreteRestriction(arreteRestriction.id);
       }
     },
     {
-      label: "Annuler",
+      label: 'Annuler',
       secondary: true,
       onclick: () => {
         utils.closeModal(modalOpened);
@@ -120,11 +120,16 @@ const askDeleteArreteRestriction = async (arreteRestriction: ArreteRestriction) 
   modalOpened.value = true;
 };
 const deleteArreteRestriction = async (id: string) => {
+  if (loading.value) {
+    return;
+  }
+  loading.value = true;
   const { data, error } = await api.arreteRestriction.delete(id);
   if (!error.value) {
     emit("delete");
   }
   utils.closeModal(modalOpened);
+  loading.value = false;
 };
 
 // Permet de faire un retour à la ligne sur les underscores
@@ -275,7 +280,11 @@ const repealArrete = async (ar: ArreteRestriction) => {
       </div>
     </div>
   </div>
-  <DsfrModal :opened="modalOpened" icon="ri-arrow-right-line" :title="modalTitle" :actions="modalActions" @close="utils.closeModal(modalOpened);">
+  <DsfrModal :opened="modalOpened"
+             icon="ri-arrow-right-line"
+             :title="modalTitle"
+             :actions="modalActions"
+             @close="modalOpened = utils.closeModal(modalOpened);">
     <div v-html="modalDescription"></div>
   </DsfrModal>
   <DsfrModal
@@ -283,9 +292,9 @@ const repealArrete = async (ar: ArreteRestriction) => {
     icon="ri-arrow-right-line"
     :title="`Abroger l'arrêté ${arreteRestriction.numero}`"
     :actions="repealModalActions"
-    @close="utils.closeModal(repealModalOpened);"
+    @close="repealModalOpened = utils.closeModal(repealModalOpened);"
   >
-    <ArreteRestrictionFormAbroger ref="abrogeFormRef" :arreteRestriction="arreteRestriction" @abroger="repealArrete($event)" />
+    <ArreteRestrictionFormAbroger ref="abrogerFormRef" :arreteRestriction="arreteRestriction" @abroger="repealArrete($event)" />
   </DsfrModal>
 </template>
 

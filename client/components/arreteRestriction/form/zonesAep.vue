@@ -240,7 +240,7 @@ watch(zonesSelected, () => {
     :opened="modalCommunesOpened"
     title="Nouveau groupement de communes"
     :actions="modalActions"
-    @close="utils.closeModal(modalCommunesOpened);"
+    @close="modalCommunesOpened = utils.closeModal(modalCommunesOpened);"
   >
     <ArreteRestrictionFormGroupementCommunes
       :restriction="groupementToEdit"
