@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+import { useAuthStore } from "~/stores/auth";
 
 const route = useRoute();
 const api = useApi();
+const router = useRouter();
+const utils = useUtils();
+const authStore = useAuthStore();
 
 const arreteRestriction: Ref<ArreteRestriction> = ref();
 const { data, error } = await api.arreteRestriction.get(<string>route.params.id);
@@ -16,6 +20,41 @@ if (data.value) {
     return r;
   });
 }
+
+const isArOnDepartementUser: boolean = authStore.isMte || arreteRestriction.value.departement?.code === authStore.user?.roleDepartement;
+const isZaOutdated: boolean = arreteRestriction.value.statut !== 'abroge' && arreteRestriction.value.restrictions.some((r) => r.zoneAlerte?.disabled);
+
+const consultationButtons: Ref<any[]> = ref([
+  {
+    label: 'Retour',
+    icon: "ri-arrow-left-line",
+    secondary: true,
+    onclick: () => {
+      router.go(-1)
+    },
+  },
+]);
+
+if(authStore.isMte || (arreteRestriction.value.statut !== 'abroge' && isArOnDepartementUser && !isZaOutdated)) {
+  consultationButtons.value.push({
+    label: 'Modifier',
+    icon: 'ri-edit-2-fill',
+    secondary: true,
+    onclick: () => {
+      utils.askEditArreteRestriction(arreteRestriction.value, modalTitle, modalDescription, modalActions, modalOpened, editArreteRestriction);
+    },
+  })
+}
+
+const editArreteRestriction = (id: string) => {
+  utils.closeModal(modalOpened);
+  navigateTo(`/arrete-restriction/${id}/edition`);
+};
+
+const modalOpened: Ref<boolean> = ref(false);
+const modalTitle: Ref<string> = ref('');
+const modalDescription: Ref<string> = ref('');
+const modalActions: Ref<any[]> = ref([]);
 </script>
 
 <template>
@@ -25,5 +64,18 @@ if (data.value) {
     <ArreteRestrictionConsultationGeneral :arreteRestriction="arreteRestriction" />
 
     <ArreteRestrictionConsultationZones :arreteRestriction="arreteRestriction" />
+
+    <DsfrButtonGroup :buttons="consultationButtons"
+                     class="fr-mt-2w"
+                     align="right"
+                     inlineLayoutWhen="always" />
+
+    <DsfrModal :opened="modalOpened"
+               icon="ri-arrow-right-line"
+               :title="modalTitle"
+               :actions="modalActions"
+               @close="modalOpened = utils.closeModal(modalOpened);">
+      <div v-html="modalDescription"></div>
+    </DsfrModal>
   </template>
 </template>

@@ -191,8 +191,8 @@ const steps = computed(() => {
     return [
       "Informations générales",
       "Restrictions appliquées à l'eau potable",
-      "Liste des zones d'alertes",
       "Liste des zones d'alertes AEP",
+      "Liste des zones d'alertes",
       "Niveaux de gravité et usages"
     ];
   } else {

@@ -14,6 +14,7 @@ const { data, error } = await api.arreteCadre.get(<string>route.params.id);
 if (data.value) {
   arreteCadre.value = <ArreteCadre>data.value;
 }
+
 const isAcOnDepartementUser: boolean =
   authStore.isMte || arreteCadre.value.departements.some((d) => d.code === authStore.user.roleDepartement);
 const isZaOutdated: boolean = arreteCadre.value.statut !== 'abroge' && arreteCadre.value.zonesAlerte.some((za) => za.disabled);

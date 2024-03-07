@@ -6,7 +6,7 @@ import { helpers } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import type { Departement } from '~/dto/departement.dto';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
-import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -15,7 +15,13 @@ const props = defineProps<{
 
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const zonesSelected: Ref<number[]> = ref(props.arreteRestriction.restrictions.filter((r) => !r.isAep).map((r) => r.zoneAlerte.id));
+const zonesSelected: Ref<{ zoneId: number; acId: number }[]> = ref(
+  props.arreteRestriction.restrictions
+    .filter((r) => !r.isAep)
+    .map((r) => {
+      return { zoneId: r.zoneAlerte.id, acId: r.arreteCadre.id };
+    }),
+);
 const acFiltered: Ref<any[]> = ref([]);
 
 const rules = computed(() => {
@@ -44,50 +50,67 @@ const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
     });
 };
 
-const selectAll = (d: any) => {
-  if (d.nbZonesSelected === d.zonesAlerte.length) {
-    zonesSelected.value = zonesSelected.value.filter((z) => !d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z));
+const selectAll = (ac: any) => {
+  if (ac.nbZonesSelected === ac.zonesAlerte.length) {
+    zonesSelected.value = zonesSelected.value.filter((z) => !(ac.zonesAlerte.some((za: any) => za.id === z.zoneId) && z.acId === ac.id));
   } else {
     zonesSelected.value = useUtils().mergeArrays(
       zonesSelected.value,
-      d.zonesAlerte.map((za: ZoneAlerte) => za.id),
+      ac.zonesAlerte.map((za: ZoneAlerte) => {
+        return {
+          zoneId: za.id,
+          acId: ac.id,
+        }
+      }),
     );
   }
 };
 
 const computeZonesSelected = () => {
   acFiltered.value.forEach((ac) => {
-    ac.nbZonesSelected = zonesSelected.value.filter((z) => ac.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z)).length;
+    ac.nbZonesSelected = zonesSelected.value.filter(
+      (z) => ac.zonesAlerte.some((za: ZoneAlerte) => za.id === z.zoneId) && ac.id === z.acId,
+    ).length;
   });
 };
 
-const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
-  zonesSelected.value = checked ? [...zonesSelected.value, name] : zonesSelected.value.filter((val) => val !== name);
+const onChange = ({ zoneId, checked, acId }: { zoneId: number; checked: boolean; acId: number }) => {
+  zonesSelected.value = checked
+    ? [...zonesSelected.value, { zoneId: zoneId, acId: acId }]
+    : zonesSelected.value.filter((z) => !(z.zoneId === zoneId && z.acId === acId));
 };
 
 watch(zonesSelected, () => {
-  const zones = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
   props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(
-    (r) => r.isAep || zonesSelected.value.includes(r.zoneAlerte.id),
+    (r) => r.isAep || zonesSelected.value.some((zs) => zs.zoneId === r.zoneAlerte.id && zs.acId === r.arreteCadre.id)
   );
-  const newZones = zones.filter((z) => !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id));
+  const allZones = acFiltered.value
+    .map((ac) => {
+      return ac.zonesAlerte.map((za) => {
+        return { zoneAlerte: za, acId: ac.id };
+      });
+    })
+    .flat();
+  const allZonesSelected = allZones.filter(
+    (z) => zonesSelected.value.some(zs => zs.zoneId === z.zoneAlerte.id && zs.acId === z.acId )
+  );
+  const newZones = allZonesSelected.filter((z) => 
+    !props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.zoneAlerte.id && r.arreteCadre?.id === z.acId)
+  );
   newZones.forEach((z) => {
-    let usagesAc = props.arreteRestriction.arretesCadre
-      .filter((ac) => ac.zonesAlerte?.some(za => za.id === z.id))
-      .map((ac) => ac.usagesArreteCadre).flat();
-    usagesAc = usagesAc.filter((value, index, self) =>
-        index === self.findIndex((t) => (
-          t.usage.id === value.usage.id
-        ))
-    ).map(u => {
-      u.id = null;
-      return u;
-    });
+    let ac = props.arreteRestriction.arretesCadre
+      .find((ac) => ac.id === z.acId);
+    const usagesAc = ac?.usagesArreteCadre
+      .map((u) => {
+        u.id = null;
+        return u;
+      });
     props.arreteRestriction.restrictions.push({
       id: null,
-      zoneAlerte: z,
+      zoneAlerte: z.zoneAlerte,
+      arreteCadre: ac,
       niveauGravite: null,
-      usagesArreteRestriction: usagesAc,
+      usagesArreteRestriction: usagesAc ? usagesAc : [],
       isAep: false,
       communes: null,
       nomGroupementAep: null,
@@ -111,9 +134,10 @@ watch(
         zonesAlerte: ac.zonesAlerte.filter((z) => z.departement.id === departement?.id),
       };
     });
-    const allZones = acFiltered.value.flatMap((ac) => ac.zonesAlerte);
-    
-    zonesSelected.value = zonesSelected.value.filter((z) => allZones.map((za: ZoneAlerte) => za.id).includes(z));
+
+    zonesSelected.value = zonesSelected.value.filter((z) =>
+      acFiltered.value.some((ac) => ac.id === z.acId && ac.zonesAlerte.some((za) => za.id === z.zoneId)),
+    );
     computeZonesSelected();
   },
   { immediate: true },
@@ -136,9 +160,11 @@ defineExpose({
               <h6>Zones d'alerte de l'arrêté {{ ac.numero }} ({{ ac.nbZonesSelected }}/{{ ac.zonesAlerte.length }})</h6>
               <div>
                 Tout sélectionner
-                <DsfrCheckbox :onUpdate:modelValue="() => selectAll(ac)"
-                              :disabled="ac.zonesAlerte.length < 1"
-                              :checked="ac.nbZonesSelected === ac.zonesAlerte.length" />
+                <DsfrCheckbox
+                  :onUpdate:modelValue="() => selectAll(ac)"
+                  :disabled="ac.zonesAlerte.length < 1 || zonesSelected.some((z) => ac.zonesAlerte.some(za => za.id === z.zoneId) && z.acId !== ac.id)"
+                  :checked="ac.nbZonesSelected === ac.zonesAlerte.length"
+                />
               </div>
             </div>
             <div class="zone-alerte__body" v-if="zonesOptionsCheckBox(ac, 'SUP').length > 0">
@@ -146,12 +172,13 @@ defineExpose({
               <div class="form-group fr-fieldset fr-mt-2w">
                 <DsfrCheckbox
                   v-for="option in zonesOptionsCheckBox(ac, 'SUP')"
-                  :id="option.id"
+                  :id="ac.id + ' ' + option.id"
                   :key="option.id || option.name"
                   :name="option.name"
-                  :model-value="zonesSelected.includes(option.name)"
+                  :model-value="zonesSelected.some((z) => z.zoneId === option.id && z.acId === ac.id)"
                   :small="false"
-                  @update:model-value="onChange({ name: option.name, checked: $event })"
+                  :disabled="zonesSelected.some((z) => z.zoneId === option.id && z.acId !== ac.id)"
+                  @update:model-value="onChange({ zoneId: option.id, checked: $event, acId: ac.id })"
                 >
                   <template #label>
                     {{ option.label }}
@@ -168,12 +195,13 @@ defineExpose({
               <div class="form-group fr-fieldset fr-mt-2w">
                 <DsfrCheckbox
                   v-for="option in zonesOptionsCheckBox(ac, 'SOU')"
-                  :id="option.id"
+                  :id="ac.id + ' ' + option.id"
                   :key="option.id || option.name"
                   :name="option.name"
-                  :model-value="zonesSelected.includes(option.name)"
+                  :model-value="zonesSelected.some((z) => z.zoneId === option.id && z.acId === ac.id)"
                   :small="false"
-                  @update:model-value="onChange({ name: option.name, checked: $event })"
+                  :disabled="zonesSelected.some((z) => z.zoneId === option.id && z.acId !== ac.id)"
+                  @update:model-value="onChange({ zoneId: option.id, checked: $event, acId: ac.id })"
                 >
                   <template #label>
                     {{ option.label }}

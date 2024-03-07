@@ -20,7 +20,7 @@ const getRestrictionsByZoneType = (type: string) => {
 const zonesType = [
   { type: 'SUP', label: 'Eaux superficielles' },
   { type: 'SOU', label: 'Eaux souterraines' },
-  { type: 'AEP', label: 'Eaux potable' },
+  { type: 'AEP', label: 'Eau potable' },
 ];
 </script>
 
@@ -28,7 +28,7 @@ const zonesType = [
   <h2>Zones d'alerte</h2>
   <template v-for="zoneType of zonesType">
     <template v-if="getRestrictionsByZoneType(zoneType.type).length > 0">
-      <p>{{ zoneType.label }}</p>
+      <p><b>{{ zoneType.label }}</b></p>
       <p v-for="r of getRestrictionsByZoneType(zoneType.type)" class="fr-ml-2w fr-my-2w">
         <div class="fr-grid-row fr-grid-row--middle fr-mb-2w">
           <template v-if="r.zoneAlerte">
@@ -37,7 +37,9 @@ const zonesType = [
           <template v-else>
             {{ r.nomGroupementAep }}
           </template>
-          <NiveauGraviteBadge class="fr-ml-2w" :niveauGravite="r.niveauGravite" />          
+          <NiveauGraviteBadge v-if="r.niveauGravite"
+                              class="fr-ml-2w"
+                              :niveauGravite="r.niveauGravite" />          
         </div>
         <DsfrAccordion :title="'Voir les ' + r.usagesArreteRestriction.length + ' usages'" :expanded-id="expandedId" @expand="expandedId = $event">
           <div v-for="usage in r.usagesArreteRestriction">

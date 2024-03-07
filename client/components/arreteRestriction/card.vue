@@ -27,7 +27,7 @@ const arreteRestrictionActions: Ref<any> = ref([
     text: props.arreteRestriction.statut === 'a_valider' ? 'Modifier' : 'Corriger',
     show: canUpdate,
     onclick: () => {
-      askEditArreteRestriction(props.arreteRestriction);
+      utils.askEditArreteRestriction(props.arreteRestriction, modalTitle, modalDescription, modalActions, modalOpened, editArreteRestriction);
     }
   },
   {
@@ -138,32 +138,6 @@ const numeroToDisplay = computed(() => {
   num = num.replace(/_/g, "_<wbr/>");
   return num;
 });
-
-const askEditArreteRestriction = async (arreteRestriction: ArreteRestriction) => {
-  modalActions.value = [
-    {
-      label: "Confirmer",
-      "data-cy": "ConfirmEditFormBtn",
-      onclick: () => {
-        editArreteRestriction(arreteRestriction.id);
-      }
-    },
-    {
-      label: "Annuler",
-      secondary: true,
-      onclick: () => {
-        utils.closeModal(modalOpened);
-      }
-    }
-  ];
-  if (arreteRestriction.statut === "a_valider") {
-    editArreteRestriction(arreteRestriction.id);
-  } else {
-    modalTitle.value = `Modification d’un arrêté de restriction en vigueur`;
-    modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté de restriction.`;
-    modalOpened.value = true;
-  }
-};
 
 const editArreteRestriction = (id: string) => {
   utils.closeModal(modalOpened);

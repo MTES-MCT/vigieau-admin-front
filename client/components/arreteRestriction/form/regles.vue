@@ -32,11 +32,11 @@ const utils = useUtils();
 
 const perimetreArOptions = [
   {
-    label: 'Zones ESO / ESU',
+    label: 'Zones Eaux souterraines (ESO) / Eaux superficielles (ESU)',
     value: 'zones',
   },
   {
-    label: 'Zones AEP',
+    label: 'Zones d\'approvisionnement en eau potable (AEP)',
     value: 'aep',
   },
   {
@@ -103,7 +103,6 @@ watch(
   <form @submit.prevent="">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <h6>Gestion de l'eau potable</h6>
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'perimetreAr')">
           <DsfrRadioButtonSet
             legend="Dans cet arrêté de restriction, sur quels types de ressources comptez-vous appliquer des restrictions ?"
@@ -119,7 +118,7 @@ watch(
           :error-message="utils.showInputError(v$, 'niveauGraviteSpecifiqueEap')"
         >
           <DsfrRadioButtonSet
-            legend="Souhaitez-vous différencier les niveaux de gravité eau potable des niveaux de gravité ESU/ESO ?"
+            legend="Souhaitez-vous différencier les niveaux de gravité eau potable des niveaux de gravité ESU / ESO ?"
             :options="niveauGraviteSpecifiqueEapOptions"
             v-model="arreteRestriction.niveauGraviteSpecifiqueEap"
             name="niveauGraviteSpecifiqueEap"

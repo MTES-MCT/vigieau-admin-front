@@ -1,4 +1,5 @@
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 export const useUtils = () => {
   return {
@@ -77,7 +78,7 @@ export const useUtils = () => {
           label: 'Annuler',
           secondary: true,
           onclick: () => {
-            modalOpened.value = false;
+            this.closeModal(modalOpened);
           },
         },
       ];
@@ -95,6 +96,39 @@ export const useUtils = () => {
         modalTitle.value = `Modification d’un arrêté cadre en vigueur avec au moins un arrêté de restriction associé`;
         modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté cadre.<br/><br/>
 Vous confirmez prendre en compte que les modifications faites à cet arrêté vont être reportées sur le ou les arrêtés de restriction associés.`;
+        modalOpened.value = true;
+      }
+    },
+
+    askEditArreteRestriction(
+      arreteRestriction: ArreteRestriction,
+      modalTitle: Ref<string>,
+      modalDescription: Ref<string>,
+      modalActions: Ref<any>,
+      modalOpened: Ref<boolean>,
+      callBackFunction: any,
+      ) {
+      modalActions.value = [
+        {
+          label: "Confirmer",
+          "data-cy": "ConfirmEditFormBtn",
+          onclick: () => {
+            callBackFunction(arreteRestriction.id);
+          }
+        },
+        {
+          label: "Annuler",
+          secondary: true,
+          onclick: () => {
+            this.closeModal(modalOpened);
+          }
+        }
+      ];
+      if (arreteRestriction.statut === "a_valider") {
+        callBackFunction(arreteRestriction.id);
+      } else {
+        modalTitle.value = `Modification d’un arrêté de restriction en vigueur`;
+        modalDescription.value = `Vous confirmez que les modifications concernent uniquement une erreur de saisie et que cette modification ne nécessite pas la création d’un nouvel arrêté de restriction.`;
         modalOpened.value = true;
       }
     },

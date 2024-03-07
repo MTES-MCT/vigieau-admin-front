@@ -3,6 +3,8 @@ import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import { helpers, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import type { Restriction } from "~/dto/restriction.dto";
+import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
+import type { Ref } from "vue";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -25,17 +27,25 @@ const getRestrictionsByZoneType = (type: string) => {
   return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type);
 };
 
-const getArretesCadreByZone = (zoneId: number) => {
-  if (!zoneId) {
-    return props.arreteRestriction.arretesCadre;
+const getRestrictionsByZoneTypeAndAc = (type: string, acId: number | null) => {
+  if (type === 'AEP' && !acId) {
+    return props.arreteRestriction.restrictions.filter((r) => r.isAep);
   }
-  return props.arreteRestriction.arretesCadre.filter((ac) => ac.zonesAlerte?.some((z) => z.id === zoneId));
+  return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type && r.arreteCadre?.id === acId);
 };
 
+const getArretesCadreByRestriction = (restriction: Restriction) => {
+  if (!restriction.arreteCadre?.id) {
+    return props.arreteRestriction.arretesCadre;
+  }
+  return [props.arreteRestriction.arretesCadre.find((ac) => ac.id === restriction.arreteCadre.id)];
+};
+
+const acFiltered: Ref<ArreteCadre[]> = ref([]);
 const zonesType = [
   { type: 'SUP', label: 'Eaux superficielles' },
   { type: 'SOU', label: 'Eaux souterraines' },
-  { type: 'AEP', label: 'Eaux potable' },
+  { type: 'AEP', label: 'Eau potable' },
 ];
 const isSameNiveauGravite = ref(props.arreteRestriction.restrictions?.every((r, i, arr) => r.niveauGravite === arr[0].niveauGravite));
 const sameNiveauGravite = ref(isSameNiveauGravite.value ? props.arreteRestriction.restrictions[0]?.niveauGravite : null);
@@ -84,6 +94,17 @@ watch(
     }
   }
 );
+
+watch(
+  () => props.arreteRestriction.restrictions,
+  () => {
+    acFiltered.value = props.arreteRestriction.arretesCadre.filter(ac => {
+      return props.arreteRestriction.restrictions.some(r => r.arreteCadre?.id === ac.id);
+    });
+    acFiltered.value.push({ id: null });
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -111,22 +132,25 @@ watch(
           </div>
         </div>
         <h6>Zones d'alerte</h6>
-        <div class="fr-mb-4w" v-for="zoneType of zonesType">
-          <template v-if="getRestrictionsByZoneType(zoneType.type).length > 0">
-            <p>
-              <b>{{ zoneType.label }}</b>
-            </p>
-            <div class="divider" />
-            <div v-for="r in getRestrictionsByZoneType(zoneType.type)" class="divider">
-              <ArreteRestrictionFormRestriction
-                :restriction="r"
-                :type="zoneType"
-                :arretesCadre="getArretesCadreByZone(r.zoneAlerte?.id)"
-                :multipleZones="getRestrictionsByZoneType(zoneType.type).length > 1"
-                @applyToAllRestrictions="applyToAllRestrictions(r, $event)"
-              />
-            </div>
-          </template>
+        <div v-for="ac of acFiltered">
+          <b>{{ ac.numero ? 'Arrêté ' + ac.numero : 'Hors arrêté cadre' }}</b>
+          <div class="fr-mt-2w fr-mb-4w" v-for="zoneType of zonesType">
+            <template v-if="getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id).length > 0">
+              <p>
+                <b>{{ zoneType.label }}</b>
+              </p>
+              <div class="divider" />
+              <div v-for="r in getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id)" class="divider">
+                <ArreteRestrictionFormRestriction
+                  :restriction="r"
+                  :type="zoneType"
+                  :arretesCadre="getArretesCadreByRestriction(r)"
+                  :multipleZones="getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id).length > 1"
+                  @applyToAllRestrictions="applyToAllRestrictions(r, $event)"
+                />
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>

@@ -138,7 +138,7 @@ watch(() => props.restriction.usagesArreteRestriction, () => {
         </DsfrInputGroup>        
       </div>
       <div class="fr-col-12 fr-grid-row">
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteRestriction')">
+        <DsfrInputGroup class="full-width"  :error-message="utils.showInputError(v$, 'usagesArreteRestriction')">
           <DsfrAccordion :title="accordionTitle" :expanded-id="expandedId" @expand="expandedId = $event">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
