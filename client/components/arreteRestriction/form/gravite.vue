@@ -2,6 +2,7 @@
 import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import { helpers, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
+import type { Restriction } from "~/dto/restriction.dto";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -56,6 +57,13 @@ const niveauGraviteOptions = [
     value: 'crise',
   },
 ];
+
+const applyToAllRestrictions = (restriction: Restriction, $event: any) => {
+  const restrictions: Restriction[] = getRestrictionsByZoneType(restriction.isAep ? 'AEP' : restriction.zoneAlerte.type);
+  restrictions.forEach(r => {
+    r.usagesArreteRestriction = r.usagesArreteRestriction.filter(u => u.usage.id !== $event);
+  });
+};
 
 watch(sameNiveauGravite, () => {
   if (!isSameNiveauGravite.value || !sameNiveauGravite.value) {
@@ -114,6 +122,8 @@ watch(
                 :restriction="r"
                 :type="zoneType"
                 :arretesCadre="getArretesCadreByZone(r.zoneAlerte?.id)"
+                :multipleZones="getRestrictionsByZoneType(zoneType.type).length > 1"
+                @applyToAllRestrictions="applyToAllRestrictions(r, $event)"
               />
             </div>
           </template>

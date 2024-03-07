@@ -9,6 +9,11 @@ const props = defineProps<{
   restriction: Restriction;
   arretesCadre: ArreteCadre[];
   type: 'SUP' | 'SOU' | 'AEP';
+  multipleZones: boolean;
+}>();
+
+const emit = defineEmits<{
+  applyToAllRestrictions: any;
 }>();
 
 const rules = computed(() => {
@@ -76,10 +81,39 @@ const accordionTitle = computed(() => {
   return `Afficher les ${props.restriction.usagesArreteRestriction.length}/${allUsages.value.length} usages`;
 });
 
+const modalOpened = ref(false);
+const modalTitle = ref('');
+const usageIdToEmit = ref();
+const modalActions = ref([
+  {
+    label: 'Appliquer à toutes les zones',
+    onclick: () => {
+      emit('applyToAllRestrictions', usageIdToEmit.value);
+      utils.closeModal(modalOpened);
+    },
+  },
+  {
+    label: 'Appliquer seulement à cette zone',
+    secondary: true,
+    onclick: () => {
+      utils.closeModal(modalOpened);
+    },
+  },
+]);
+
 const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
   usagesSelected.value = checked ? [...usagesSelected.value, id] : usagesSelected.value.filter((val) => val !== id);
   props.restriction.usagesArreteRestriction = allUsages.value.filter((u) => usagesSelected.value.includes(u.usage.id));
+  if(!checked && props.multipleZones) {
+    usageIdToEmit.value = id;
+    modalTitle.value = `Souhaitez-vous ${checked ? 'cocher' : 'décocher'} cet usage sur toutes les zones d’alertes de même ressource ?`;
+    modalOpened.value = true;    
+  }
 };
+
+watch(() => props.restriction.usagesArreteRestriction, () => {
+  usagesSelected.value = props.restriction.usagesArreteRestriction.map((u) => u.usage.id);
+});
 </script>
 
 <template>
@@ -140,6 +174,14 @@ const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
       </div>
     </div>
   </form>
+  <DsfrModal
+    :opened="modalOpened"
+    :title="modalTitle"
+    :actions="modalActions"
+    @close="modalOpened = utils.closeModal(modalOpened);"
+  >
+    Vous pouvez choisir d’appliquer ou non votre action à toutes les autres zones d’alertes de même ressource.
+  </DsfrModal>
 </template>
 
 <style lang="scss">
