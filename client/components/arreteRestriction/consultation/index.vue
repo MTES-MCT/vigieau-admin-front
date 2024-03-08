@@ -60,10 +60,16 @@ const modalActions: Ref<any[]> = ref([]);
 <template>
   <template v-if="arreteRestriction">
     <h1>Arrêté de restriction&nbsp;: {{ arreteRestriction.numero }}</h1>
-
-    <ArreteRestrictionConsultationGeneral :arreteRestriction="arreteRestriction" />
-
-    <ArreteRestrictionConsultationZones :arreteRestriction="arreteRestriction" />
+    
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-lg-6">
+        <ArreteRestrictionConsultationGeneral :arreteRestriction="arreteRestriction" />
+        <ArreteRestrictionConsultationZones :arreteRestriction="arreteRestriction" />
+      </div>
+      <div class="fr-col-12 fr-col-lg-6">
+        <ArreteRestrictionCarteRecapitulatif :arreteRestriction="arreteRestriction" />
+      </div>
+    </div>
 
     <DsfrButtonGroup :buttons="consultationButtons"
                      class="fr-mt-2w"
