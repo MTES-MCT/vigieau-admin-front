@@ -4,6 +4,7 @@ import { BaseApi } from '~/api/base-api';
 import { ArreteCadreApi } from "~/api/arrete-cadre";
 import { ArreteRestrictionApi } from "~/api/arrete-restriction";
 import { ParametresApi } from "~/api/parametres";
+import { CommuneApi } from "~/api/commune";
 
 export const useApi = () => {
   return {
@@ -14,7 +15,7 @@ export const useApi = () => {
     departement: new UserApi('departement'),
     usage: new BaseApi('usage'),
     thematique: new BaseApi('thematique'),
-    commune: new BaseApi('commune'),
+    commune: new CommuneApi('commune'),
     parametres: new ParametresApi('parametres'),
   };
 };

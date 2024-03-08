@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
-import type { Ref } from "vue";
-import { Map, NavigationControl, FullscreenControl, LngLatBounds } from "maplibre-gl";
-import type { ZoneAlerte } from "~/dto/zone_alerte.dto";
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import type { Ref } from 'vue';
+import { Map, NavigationControl, FullscreenControl, LngLatBounds } from 'maplibre-gl';
+import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
+import type { Commune } from '~/dto/commune.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -31,19 +32,21 @@ const initialState = [
   [-7.075195, 41.211722],
   [11.403809, 51.248163],
 ];
-const layers = ref(['zoneSup', 'zoneSou']);
+const layers = ref(['zoneSup', 'zoneSou', 'zoneAep']);
 
 onMounted(async () => {
-  await new Promise(r => setTimeout(r, 100));
+  await new Promise((r) => setTimeout(r, 100));
   if (!isMapSupported) {
     return;
   }
 
-  map.value = markRaw(new Map({
-    container: mapContainer.value,
-    style: `https://etalab-tiles.fr/styles/osm-bright/style.json`,
-    bounds: initialState,
-  }));
+  map.value = markRaw(
+    new Map({
+      container: mapContainer.value,
+      style: `https://etalab-tiles.fr/styles/osm-bright/style.json`,
+      bounds: initialState,
+    }),
+  );
 
   // Add zoom and rotation controls to the map.
   map.value?.addControl(new NavigationControl(), 'bottom-right');
@@ -85,8 +88,10 @@ onUnmounted(() => {
 
 const api = useApi();
 const zones: Ref<ZoneAlerte[]> = ref([]);
+const communes: Ref<Commune[]> = ref([]);
 
 const loadGeom = async () => {
+  // ZONES
   const newZones = [];
   const results = await Promise.all(props.arreteRestriction.arretesCadre.map((ac) => api.zoneAlerte.getByArreteCadre(ac.id)));
   results.forEach((r) => {
@@ -99,6 +104,13 @@ const loadGeom = async () => {
     }
   });
   zones.value = newZones;
+
+  // COMMUNES
+  const query = `depCode=${props.arreteRestriction.departement?.code}&withGeom=true`;
+  const { data, error } = await api.commune.listWithGeom(query);
+  if (data.value) {
+    communes.value = data.value;
+  }
   populateSources();
 };
 
@@ -120,8 +132,8 @@ const populateSources = () => {
             type: 'Feature',
             geometry: z.geom,
             properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite
-            }
+              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+            },
           };
         }),
     },
@@ -137,8 +149,25 @@ const populateSources = () => {
             type: 'Feature',
             geometry: z.geom,
             properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite
-            }
+              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+            },
+          };
+        }),
+    },
+  });
+  map.value?.addSource('zoneAep', {
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: communes.value
+        .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some(rc => rc.id === c.id)))
+        .map((c) => {
+          return {
+            type: 'Feature',
+            geometry: c.geom,
+            properties: {
+              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some(rc => rc.id === c.id))?.niveauGravite,
+            },
           };
         }),
     },
@@ -167,7 +196,7 @@ const populateLayers = () => {
           '#fc4e2a',
           'crise',
           '#b10026',
-          /* other */ '#ccc'
+          /* other */ '#ccc',
         ],
         'fill-opacity': 0.6,
         'fill-outline-color': '#000',
@@ -180,35 +209,46 @@ const populateLayers = () => {
 const resetSources = () => {
   try {
     layers.value.forEach((l) => {
-      if(map.value?.getLayer(l)) {
+      if (map.value?.getLayer(l)) {
         map.value?.removeLayer(l);
-        map.value?.removeSource(l);        
+        map.value?.removeSource(l);
       }
     });
   } catch (e) {}
 };
 
 const computeBounds = () => {
-  const coordinates = zones.value.map((z) => {
-    return z.geom.coordinates;
-  }).flat(3);
+  const coordinates = zones.value
+    .map((z) => {
+      return z.geom.coordinates;
+    })
+    .flat(3);
 
-  const bounds = coordinates.reduce(function(bounds, coord) {
-    return bounds.extend(coord);
-  }, new LngLatBounds(coordinates[0], coordinates[0]));
+  const bounds = coordinates.reduce(
+    function (bounds, coord) {
+      return bounds.extend(coord);
+    },
+    new LngLatBounds(coordinates[0], coordinates[0]),
+  );
 
   map.value?.fitBounds(bounds, {
-    padding: 20
+    padding: 20,
   });
-}
+};
 
 const showLayer = () => {
   if (selectedTypeEau.value === 'SUP') {
     map.value.setLayoutProperty('zoneSup', 'visibility', 'visible');
     map.value.setLayoutProperty('zoneSou', 'visibility', 'none');
-  } else {
+    map.value.setLayoutProperty('zoneAep', 'visibility', 'none');
+  } else if ((selectedTypeEau.value === 'SOU')) {
     map.value.setLayoutProperty('zoneSup', 'visibility', 'none');
     map.value.setLayoutProperty('zoneSou', 'visibility', 'visible');
+    map.value.setLayoutProperty('zoneAep', 'visibility', 'none');
+  } else {
+    map.value.setLayoutProperty('zoneSup', 'visibility', 'none');
+    map.value.setLayoutProperty('zoneSou', 'visibility', 'none');
+    map.value.setLayoutProperty('zoneAep', 'visibility', 'visible');
   }
 };
 
@@ -230,7 +270,7 @@ watch(
 );
 
 watch(
-  () => props.arreteRestriction.restrictions.map(r => r.niveauGravite),
+  () => props.arreteRestriction.restrictions.map((r) => r.niveauGravite),
   () => {
     populateSources();
   },
@@ -257,9 +297,9 @@ watch(
     <div style="height: 50vh">
       <div class="map-wrap">
         <div class="map" ref="mapContainer"></div>
-      </div>      
+      </div>
     </div>
-  </div>  
+  </div>
 </template>
 
 <style lang="scss">
