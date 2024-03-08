@@ -9,30 +9,48 @@ const props = defineProps<{
   arreteRestriction: ArreteRestriction;
 }>();
 
+const computeTypeEauTags = () => {
+  const toReturn = [];
+  const toReturnLayers = [];
+  if(props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SUP')) {
+    toReturn.push({
+      label: 'Eau superficielle',
+      value: 'SUP',
+    });
+    toReturnLayers.push('zoneSup');
+  }
+  if(props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SOU')) {
+    toReturn.push({
+      label: 'Eau souterraine',
+      value: 'SOU',
+    })
+    toReturnLayers.push('zoneSou');
+  }
+  if(props.arreteRestriction.restrictions.some(r => r.isAep)) {
+    toReturn.push({
+      label: 'Eau potable',
+      value: 'AEP',
+    })
+    toReturnLayers.push('zoneAep');
+  }
+
+  typeEauTags.value = toReturn;
+  layers.value = toReturnLayers;
+  selectedTypeEau.value = typeEauTags.value[0].value;
+}
+
 const mapContainer = shallowRef(null);
 const map: Ref<any> = shallowRef(null);
 const mapLoaded = ref(false);
 const isMapSupported: boolean = useUtils().isWebglSupported();
-const typeEauTags: Ref<any[]> = ref([
-  {
-    label: 'Eau superficielle',
-    value: 'SUP',
-  },
-  {
-    label: 'Eau souterraine',
-    value: 'SOU',
-  },
-  {
-    label: 'Eau potable',
-    value: 'AEP',
-  },
-]);
-const selectedTypeEau: Ref<string> = ref('SUP');
+const typeEauTags: Ref<any[]> = ref([]);
+const layers: Ref<string[]> = ref([]);
+const selectedTypeEau: Ref<string | undefined> = ref();
+computeTypeEauTags();
 const initialState = [
   [-7.075195, 41.211722],
   [11.403809, 51.248163],
 ];
-const layers = ref(['zoneSup', 'zoneSou', 'zoneAep']);
 
 onMounted(async () => {
   await new Promise((r) => setTimeout(r, 100));
@@ -160,57 +178,28 @@ const populateSources = () => {
     data: {
       type: 'FeatureCollection',
       features: communes.value
-        .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some(rc => rc.id === c.id)))
+        .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some((rc) => rc.id === c.id)))
         .map((c) => {
           return {
             type: 'Feature',
             geometry: c.geom,
             properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some(rc => rc.id === c.id))?.niveauGravite,
+              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some((rc) => rc.id === c.id))?.niveauGravite,
             },
           };
         }),
     },
   });
-  populateLayers();
-};
-
-const populateLayers = () => {
-  layers.value.forEach((layerName: string) => {
-    map.value?.addLayer({
-      id: layerName,
-      type: 'fill',
-      source: layerName,
-      layout: {
-        visibility: 'none',
-      },
-      paint: {
-        'fill-color': [
-          'match',
-          ['get', 'niveauGravite'],
-          'vigilance',
-          '#ffeda0',
-          'alerte',
-          '#feb24c',
-          'alerte_renforcee',
-          '#fc4e2a',
-          'crise',
-          '#b10026',
-          /* other */ '#ccc',
-        ],
-        'fill-opacity': 0.6,
-        'fill-outline-color': '#000',
-      },
-    });
-  });
   showLayer();
 };
 
-const resetSources = () => {
+const resetSources = (onlyLayers = false) => {
   try {
     layers.value.forEach((l) => {
       if (map.value?.getLayer(l)) {
         map.value?.removeLayer(l);
+      }
+      if (map.value?.getSource(l) && !onlyLayers) {
         map.value?.removeSource(l);
       }
     });
@@ -237,19 +226,30 @@ const computeBounds = () => {
 };
 
 const showLayer = () => {
-  if (selectedTypeEau.value === 'SUP') {
-    map.value.setLayoutProperty('zoneSup', 'visibility', 'visible');
-    map.value.setLayoutProperty('zoneSou', 'visibility', 'none');
-    map.value.setLayoutProperty('zoneAep', 'visibility', 'none');
-  } else if ((selectedTypeEau.value === 'SOU')) {
-    map.value.setLayoutProperty('zoneSup', 'visibility', 'none');
-    map.value.setLayoutProperty('zoneSou', 'visibility', 'visible');
-    map.value.setLayoutProperty('zoneAep', 'visibility', 'none');
-  } else {
-    map.value.setLayoutProperty('zoneSup', 'visibility', 'none');
-    map.value.setLayoutProperty('zoneSou', 'visibility', 'none');
-    map.value.setLayoutProperty('zoneAep', 'visibility', 'visible');
-  }
+  resetSources(true);
+  const layerName = selectedTypeEau.value === 'SUP' ? 'zoneSup' : selectedTypeEau.value === 'SOU' ? 'zoneSou' : 'zoneAep';
+  map.value?.addLayer({
+    id: layerName,
+    type: 'fill',
+    source: layerName,
+    paint: {
+      'fill-color': [
+        'match',
+        ['get', 'niveauGravite'],
+        'vigilance',
+        '#ffeda0',
+        'alerte',
+        '#feb24c',
+        'alerte_renforcee',
+        '#fc4e2a',
+        'crise',
+        '#b10026',
+        /* other */ '#ccc',
+      ],
+      'fill-opacity': 0.6,
+      'fill-outline-color': '#000',
+    },
+  });
 };
 
 watch(
