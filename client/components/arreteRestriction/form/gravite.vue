@@ -8,6 +8,8 @@ import type { Ref } from "vue";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
+  communes: any[];
+  selected: boolean;
 }>();
 
 const rules = computed(() => {
@@ -109,7 +111,7 @@ watch(
 
 <template>
   <form @submit.prevent="">
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <div class="fr-grid-row fr-p-2w fr-mb-2w fr-grid-row--bottom fr-notice fr-notice--info">
           <div class="fr-col-10">
@@ -152,6 +154,9 @@ watch(
             </template>
           </div>
         </div>
+      </div>
+      <div class="fr-col-12 fr-col-lg-6">
+        <ArreteRestrictionCarteRecapitulatif v-if="selected" :arreteRestriction="arreteRestriction" />
       </div>
     </div>
   </form>
