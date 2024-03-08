@@ -139,57 +139,63 @@ const populateSources = () => {
   resetSources();
   const zonesSup = zones.value.filter((z) => z.type === 'SUP');
   const zonesSou = zones.value.filter((z) => z.type === 'SOU');
-  map.value?.addSource('zoneSup', {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: zonesSup
-        .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-        .map((z) => {
-          return {
-            type: 'Feature',
-            geometry: z.geom,
-            properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-            },
-          };
-        }),
-    },
-  });
-  map.value?.addSource('zoneSou', {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: zonesSou
-        .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-        .map((z) => {
-          return {
-            type: 'Feature',
-            geometry: z.geom,
-            properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-            },
-          };
-        }),
-    },
-  });
-  map.value?.addSource('zoneAep', {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: communes.value
-        .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some((rc) => rc.id === c.id)))
-        .map((c) => {
-          return {
-            type: 'Feature',
-            geometry: c.geom,
-            properties: {
-              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some((rc) => rc.id === c.id))?.niveauGravite,
-            },
-          };
-        }),
-    },
-  });
+  if(layers.value.includes('zoneSup')) {
+    map.value?.addSource('zoneSup', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: zonesSup
+          .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+          .map((z) => {
+            return {
+              type: 'Feature',
+              geometry: z.geom,
+              properties: {
+                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+              },
+            };
+          }),
+      },
+    });    
+  }
+  if(layers.value.includes('zoneSou')) {
+    map.value?.addSource('zoneSou', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: zonesSou
+          .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+          .map((z) => {
+            return {
+              type: 'Feature',
+              geometry: z.geom,
+              properties: {
+                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+              },
+            };
+          }),
+      },
+    });
+  }
+  if(layers.value.includes('zoneAep')) {
+    map.value?.addSource('zoneAep', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: communes.value
+          .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some((rc) => rc.id === c.id)))
+          .map((c) => {
+            return {
+              type: 'Feature',
+              geometry: c.geom,
+              properties: {
+                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some((rc) => rc.id === c.id))?.niveauGravite,
+              },
+            };
+          }),
+      },
+    });
+  }
   showLayer();
 };
 
