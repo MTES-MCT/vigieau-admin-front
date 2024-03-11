@@ -10,6 +10,7 @@ import { useRefDataStore } from '~/stores/refData';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
+  checkReturn: { errors: string[]; warnings: string[] };
 }>();
 
 const utils = useUtils();
@@ -20,12 +21,12 @@ const arretesCadreTags: Ref<any> = ref([]);
 const acSelected = ref();
 
 const assignDepartement = (force = false) => {
-  if ((!props.arreteRestriction.id  && !props.arreteRestriction.departement) || force) {
+  if ((!props.arreteRestriction.id && !props.arreteRestriction.departement) || force) {
     props.arreteRestriction.departement =
       authStore.user.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) : null;
   }
-  if(props.arreteRestriction.departement) {
-    loadArretes();    
+  if (props.arreteRestriction.departement) {
+    loadArretes();
   }
 };
 
@@ -51,7 +52,7 @@ const arretesCadre: Ref<any> = ref([]);
 
 const loadArretes = async () => {
   const query = `depCode=${props.arreteRestriction.departement.code}`;
-  const {data, error} = await api.arreteCadre.list(query);
+  const { data, error } = await api.arreteCadre.list(query);
   if (data.value) {
     arretesCadre.value = data.value;
     filterArretesCadre();
@@ -60,15 +61,17 @@ const loadArretes = async () => {
 };
 
 const filterArretesCadre = () => {
-  arretesCadreFiltered.value = arretesCadre.value.filter((ac: ArreteCadre) => {
-    return !props.arreteRestriction.arretesCadre.map((arAc) => arAc.id).includes(ac.id);
-  }).map((ac: ArreteCadre) => {
-    return {
-      value: ac.id,
-      text: ac.numero,
-    };
-  });
-  if(arretesCadreFiltered.value.length < 1) {
+  arretesCadreFiltered.value = arretesCadre.value
+    .filter((ac: ArreteCadre) => {
+      return !props.arreteRestriction.arretesCadre.map((arAc) => arAc.id).includes(ac.id);
+    })
+    .map((ac: ArreteCadre) => {
+      return {
+        value: ac.id,
+        text: ac.numero,
+      };
+    });
+  if (arretesCadreFiltered.value.length < 1) {
     arretesCadreFiltered.value = [
       {
         value: null,
@@ -143,7 +146,8 @@ watch(
         <h6>Généralité</h6>
         <DsfrInputGroup
           v-if="arreteRestriction.arreteRestrictionAbroge"
-          :error-message="utils.showInputError(v$, 'arreteRestrictionAbroge')">
+          :error-message="utils.showInputError(v$, 'arreteRestrictionAbroge')"
+        >
           <DsfrInput
             disabled
             :model-value="arreteRestriction.arreteRestrictionAbroge?.numero"
@@ -194,8 +198,11 @@ watch(
         </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-col-lg-6"></div>
-      
-      <ArreteRestrictionFormPublier v-if="arreteRestriction.statut !== 'a_valider'" :arreteRestriction="arreteRestriction" />
+
+      <ArreteRestrictionFormPublier v-if="arreteRestriction.statut !== 'a_valider'"
+                                    :arreteRestriction="arreteRestriction"
+                                    :warnings="checkReturn?.warnings"
+                                    :errors="checkReturn?.errors" />
     </div>
   </form>
 </template>

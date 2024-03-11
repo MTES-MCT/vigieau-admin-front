@@ -28,4 +28,11 @@ export class ArreteRestrictionApi extends BaseApiPagination {
       body: payload,
     });
   };
+
+  check(id: string) {
+    return useCustomFetch(`/${this.resource}/${id}/check`, {
+      method: 'GET',
+      baseURL: '/api',
+    });
+  };
 }

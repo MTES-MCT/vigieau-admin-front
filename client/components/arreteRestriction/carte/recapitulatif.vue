@@ -252,8 +252,10 @@ const showLayer = () => {
         '#b10026',
         /* other */ '#ccc',
       ],
-      'fill-opacity': 0.6,
-      'fill-outline-color': '#000',
+      'fill-opacity': {
+        stops: [[5, 1], [6, 0.8], [7, 0.7], [8, 0.6], [9, 0.5], [10, 0.4], [11, 0.3]]
+      },
+      'fill-outline-color': '#000'
     },
   });
 };

@@ -6,6 +6,8 @@ import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
+  warnings?: string[];
+  errors?: string[];
 }>();
 
 const emit = defineEmits<{
@@ -57,6 +59,19 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
+    <DsfrAlert
+      v-if="warnings && warnings.length > 0"
+      type="warning"
+      class="fr-mb-2w">
+      <div v-html="warnings.join('<br/>')" />
+    </DsfrAlert>
+    <DsfrAlert
+      v-if="errors && errors.length > 0"
+      type="error"
+      class="fr-mb-2w">
+      <div v-html="errors.join('<br/>')" />
+    </DsfrAlert>
+    
     <p>Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin (optionnel)</p>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">

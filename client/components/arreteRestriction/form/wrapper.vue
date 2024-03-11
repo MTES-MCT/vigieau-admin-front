@@ -20,6 +20,7 @@ const utils = useUtils();
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
+const checkReturn: Ref<{errors: string[], warnings: string[]} | undefined> = ref();
 
 const currentStep: Ref<number> = ref(1);
 
@@ -129,6 +130,18 @@ const saveArrete = async (publish: boolean = false) => {
   loading.value = false;
 };
 
+const checkArrete = async (ar: ArreteRestriction) => {
+  if (loading.value) {
+    return;
+  }
+  loading.value = true;
+  const { data, error } = await api.arreteRestriction.check(ar.id?.toString());
+  if (data.value) {
+    checkReturn.value = data.value;
+  }
+  loading.value = false;
+}
+
 const showErrors = (errors, publish) => {
   alertStore.addAlert({
     title: publish ? "Impossible de publier l'arrêté de restriction" : "Impossible d'enregistrer l'arrêté de restriction",
@@ -140,6 +153,7 @@ const showErrors = (errors, publish) => {
 const askPublishArrete = async () => {
   await saveArrete(true);
   if (!v$.value.$error) {
+    await checkArrete(props.arreteRestriction);
     modalPublishOpened.value = true;
   }
 };
@@ -216,6 +230,10 @@ const reglesFormRef = ref(null);
 const restrictionsFormRef = ref(null);
 const restrictionsAepFormRef = ref(null);
 const graviteFormRef = ref(null);
+
+if(props.arreteRestriction.statut !== "a_valider") {
+  await checkArrete(props.arreteRestriction);
+}
 </script>
 
 <template>
@@ -224,7 +242,8 @@ const graviteFormRef = ref(null);
     <DsfrTabContent :selected="currentStep === 1" :asc="asc">
       <ArreteRestrictionFormGeneral
         ref="generalFormRef"
-        :arreteRestriction="arreteRestriction" />
+        :arreteRestriction="arreteRestriction"
+        :checkReturn="checkReturn" />
     </DsfrTabContent>
     <DsfrTabContent :selected="currentStep === 2" :asc="asc">
       <ArreteRestrictionFormRegles
@@ -316,7 +335,11 @@ const graviteFormRef = ref(null);
       </ul>
       <div class="divider"></div>
     </p>
-    <ArreteRestrictionFormPublier ref="publierFormRef" :arreteRestriction="arreteRestriction" @publier="publishArrete($event)" />
+    <ArreteRestrictionFormPublier ref="publierFormRef"
+                                  :arreteRestriction="arreteRestriction"
+                                  :warnings="checkReturn?.warnings"
+                                  :errors="checkReturn?.errors"
+                                  @publier="publishArrete($event)" />
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
