@@ -207,9 +207,9 @@ watch(zonesSelected, () => {
                 >
                   <span v-for="c of r.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
                 </DsfrAccordion>
+                <div class="divider fr-mb-2w" />
               </template>
             </template>
-            <div class="divider fr-mb-2w" />
           </DsfrInputGroup>
         </div>
         <DsfrButton

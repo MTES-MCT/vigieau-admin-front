@@ -21,7 +21,6 @@ const arretesCadreOptions = props.arretesCadre.map((ac) => ({
   text: ac.numero,
   value: ac.id,
 }));
-console.log(arretesCadreOptions);
 const rules = computed(() => {
   return {
     nomGroupementAep: {
@@ -40,6 +39,7 @@ const rules = computed(() => {
   };
 });
 const utils = useUtils();
+const hint = ref('');
 
 const parseCommunes = (communesText: string) => {
   if (!communesText) {
@@ -58,11 +58,13 @@ const parseCommunes = (communesText: string) => {
   codesExtractedWithout0 = codesExtractedWithout0.map((c) => `0${c}`);
   codesExtracted = [...new Set([...codesExtracted, ...codesExtractedWithout0])];
   props.restriction.communes = props.communes.filter((c) => codesExtracted.includes(c.code));
+  const codesNotMatch = codesExtracted.filter((c) => !props.restriction.communes?.find((co) => co.code === c)).join(', ');
+  hint.value = `Les codes suivant ne correspondent pas à des codes INSEE du département : ${codesNotMatch}.`;
 };
 
 const assignArreteCadre = (acId: string) => {
   props.restriction.arreteCadre = props.arretesCadre.find((ac) => ac.id === +acId);
-}
+};
 
 const v$ = useVuelidate(rules, props.restriction, { $scope: false });
 
@@ -78,7 +80,7 @@ defineExpose({
 });
 
 props.restriction.communesText = props.restriction.communes?.map((c) => c.code).join('\n');
-if(props.arretesCadre.length === 1 && !props.restriction.arreteCadre) {
+if (props.arretesCadre.length === 1 && !props.restriction.arreteCadre) {
   props.restriction.arreteCadre = props.arretesCadre[0];
 }
 </script>
@@ -134,9 +136,14 @@ if(props.arretesCadre.length === 1 && !props.restriction.arreteCadre) {
             required
             type="text"
           />
+          <p>
+            {{ props.restriction.communes?.length }} communes associées
+            <br />
+            {{ hint }}
+          </p>
         </DsfrInputGroup>
 
-        {{ props.restriction.communes?.length }} communes associées
+
       </div>
     </div>
   </form>
