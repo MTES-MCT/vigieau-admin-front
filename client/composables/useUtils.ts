@@ -152,5 +152,17 @@ Vous confirmez prendre en compte que les modifications faites à cet arrêté vo
       }
       return false;
     },
+    
+    formatDate(date: string | null): string {
+      if(!date) {
+        return '';
+      }
+      const dateObject = new Date(date);
+      return dateObject ? dateObject.toLocaleDateString('fr') : '';
+    },
+    
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 };

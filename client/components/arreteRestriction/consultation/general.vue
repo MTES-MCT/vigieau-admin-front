@@ -10,9 +10,13 @@ const utils = useUtils();
 
 <template>
   <h2>Généralité</h2>
-  <p>Date de mise en vigueur&nbsp;: {{ arreteRestriction.dateDebut }}</p>
-  <p>Date de fin&nbsp;: {{ arreteRestriction.dateFin }}</p>
-  <p>Date de signature&nbsp;: {{ arreteRestriction.dateSignature }}</p>
+  <p>Date de mise en vigueur&nbsp;: {{ utils.formatDate(arreteRestriction.dateDebut) }}</p>
+  <p>Date de fin&nbsp;: {{ utils.formatDate(arreteRestriction.dateFin) }}</p>
+  <p>Date de signature&nbsp;: {{ utils.formatDate(arreteRestriction.dateSignature) }}</p>
+  <p>Arrêtés cadre associés :</p>
+  <DsfrHighlight>
+    <span v-for="ac of arreteRestriction.arretesCadre">{{ ac.numero }}<br/></span>
+  </DsfrHighlight>
   <DsfrFileDownload
     v-if="arreteRestriction.fichier"
     format="PDF"

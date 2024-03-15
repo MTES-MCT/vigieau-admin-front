@@ -2,6 +2,8 @@
 import type { Ref } from 'vue';
 import { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import { useAuthStore } from '~/stores/auth';
+import { useRefDataStore } from '~/stores/refData';
 
 const props = defineProps<{
   duplicate?: boolean;
@@ -14,6 +16,8 @@ const api = useApi();
 const isNewArreteRestriction = route.params.id === 'nouveau';
 const mounted = ref(false);
 const isInitSticky = ref(false);
+const authStore = useAuthStore();
+const refDataStore = useRefDataStore();
 
 const initSticky = () => {
   window.onscroll = function () {
@@ -54,7 +58,9 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     const { data, error } = await api.arreteCadre.get(route.query.arretecadre.toString());
     if (data.value) {
       newAr.arretesCadre = [data.value];
-      newAr.departement = data.value?.departements[0];
+      newAr.departement = authStore.user.role === 'departement' ?
+        refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) :
+        data.value?.departements[0];
     }
   }
   arreteRestriction.value = newAr;

@@ -239,8 +239,8 @@ const depString = computed(() => {
           <p class="fr-card__detail">
             <VIcon name="ri-calendar-fill" />
             &nbsp;
-            {{ arreteCadre.dateDebut }}
-            <span v-if="arreteCadre.dateFin"> &nbsp;au {{ arreteCadre.dateFin }} </span>
+            {{ utils.formatDate(arreteCadre.dateDebut) }}
+            <span v-if="arreteCadre.dateFin"> &nbsp;au {{ utils.formatDate(arreteCadre.dateFin) }} </span>
           </p>
           <div :id="'action_' + arreteCadre.id" class="fr-card__actions" v-if="arreteCadreActions.some((a: any) => a.show)">
             <DsfrButton

@@ -78,8 +78,8 @@ defineExpose({
 watch(
   () => props.arreteRestriction.perimetreAr,
   () => {
+    props.arreteRestriction.niveauGraviteSpecifiqueEap = null;
     if (props.arreteRestriction.perimetreAr == 'all') {
-      props.arreteRestriction.niveauGraviteSpecifiqueEap = null;
       return;
     } else if (props.arreteRestriction.perimetreAr === 'zones') {
       props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep);

@@ -100,17 +100,12 @@ watch(zonesSelected, () => {
   newZones.forEach((z) => {
     let ac = props.arreteRestriction.arretesCadre
       .find((ac) => ac.id === z.acId);
-    const usagesAc = ac?.usagesArreteCadre
-      .map((u) => {
-        u.id = null;
-        return u;
-      });
     props.arreteRestriction.restrictions.push({
       id: null,
       zoneAlerte: z.zoneAlerte,
       arreteCadre: ac,
       niveauGravite: null,
-      usagesArreteRestriction: usagesAc ? usagesAc : [],
+      usagesArreteRestriction: [],
       isAep: false,
       communes: null,
       nomGroupementAep: null,

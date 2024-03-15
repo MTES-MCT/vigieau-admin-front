@@ -54,7 +54,8 @@ const modalActions: Ref<any[]> = ref([]);
 
 <template>
   <template v-if="arreteCadre">
-    <h1>Arrêté cadre&nbsp;: {{ arreteCadre.numero }}</h1>
+    <h1>Arrêté cadre&nbsp;: {{ arreteCadre.numero }} <MixinsStatutBadge :statut="arreteCadre.statut" /></h1>
+    
     
     <ArreteCadreConsultationGeneral :arreteCadre="arreteCadre" />
       

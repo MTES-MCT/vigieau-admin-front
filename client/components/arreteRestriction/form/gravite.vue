@@ -30,17 +30,14 @@ const getRestrictionsByZoneType = (type: string) => {
 };
 
 const getRestrictionsByZoneTypeAndAc = (type: string, acId: number | null) => {
-  if (type === 'AEP' && !acId) {
-    return props.arreteRestriction.restrictions.filter((r) => r.isAep);
+  if (type === 'AEP') {
+    return props.arreteRestriction.restrictions.filter((r) => r.isAep && r.arreteCadre?.id === acId);
   }
   return props.arreteRestriction.restrictions.filter((r) => r.zoneAlerte?.type === type && r.arreteCadre?.id === acId);
 };
 
-const getArretesCadreByRestriction = (restriction: Restriction) => {
-  if (!restriction.arreteCadre?.id) {
-    return props.arreteRestriction.arretesCadre;
-  }
-  return [props.arreteRestriction.arretesCadre.find((ac) => ac.id === restriction.arreteCadre.id)];
+const getArreteCadreByRestriction = (restriction: Restriction) => {
+  return props.arreteRestriction.arretesCadre.find((ac) => ac.id === restriction.arreteCadre.id);
 };
 
 const acFiltered: Ref<ArreteCadre[]> = ref([]);
@@ -103,7 +100,6 @@ watch(
     acFiltered.value = props.arreteRestriction.arretesCadre.filter(ac => {
       return props.arreteRestriction.restrictions.some(r => r.arreteCadre?.id === ac.id);
     });
-    acFiltered.value.push({ id: null });
   },
   { immediate: true }
 );
@@ -113,7 +109,8 @@ watch(
   <form @submit.prevent="">
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <div class="fr-grid-row fr-p-2w fr-mb-2w fr-grid-row--bottom fr-notice fr-notice--info">
+        <div v-if="arreteRestriction.restrictions.length > 1"
+             class="fr-grid-row fr-p-2w fr-mb-2w fr-grid-row--bottom fr-notice fr-notice--info">
           <div class="fr-col-10">
             <h6>Niveau de gravité commun aux zones d'alerte</h6>
             <p>Appliquer le même niveau de gravité pour toutes les zones d’alerte</p>
@@ -135,7 +132,7 @@ watch(
         </div>
         <h6>Zones d'alerte</h6>
         <div v-for="ac of acFiltered">
-          <b>{{ ac.numero ? 'Arrêté ' + ac.numero : 'Hors arrêté cadre' }}</b>
+          <b>{{ ac.numero }}</b>
           <div class="fr-mt-2w fr-mb-4w" v-for="zoneType of zonesType">
             <template v-if="getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id).length > 0">
               <p>
@@ -145,8 +142,8 @@ watch(
               <div v-for="r in getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id)" class="divider">
                 <ArreteRestrictionFormRestriction
                   :restriction="r"
-                  :type="zoneType"
-                  :arretesCadre="getArretesCadreByRestriction(r)"
+                  :type="zoneType.type"
+                  :arreteCadre="getArreteCadreByRestriction(r)"
                   :multipleZones="getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id).length > 1"
                   @applyToAllRestrictions="applyToAllRestrictions(r, $event)"
                 />
@@ -161,9 +158,3 @@ watch(
     </div>
   </form>
 </template>
-
-<style lang="scss" scoped>
-.fr-notice {
-  color: initial;
-}
-</style>

@@ -92,6 +92,10 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
       flex: none;
     }
   }
+  
+  &--no-shadow:before {
+    box-shadow: none;
+  }
 }
 
 // INPUT GROUP

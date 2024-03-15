@@ -214,10 +214,10 @@ const repealArrete = async (ar: ArreteRestriction) => {
             <div class="fr-grid-row">
               <VIcon name="ri-calendar-fill" />
               &nbsp;
-              {{ arreteRestriction.dateDebut }}
-              <span v-if="arreteRestriction.dateFin"> &nbsp;au {{ arreteRestriction.dateFin }} </span>
+              {{ utils.formatDate(arreteRestriction.dateDebut) }}
+              <span v-if="arreteRestriction.dateFin"> &nbsp;au {{ utils.formatDate(arreteRestriction.dateFin) }} </span>
               <div class="fr-col-12" v-if="arreteRestriction.dateSignature">
-                signé le {{ arreteRestriction.dateSignature }}
+                signé le {{ utils.formatDate(arreteRestriction.dateSignature) }}
               </div>
             </div>
           </p>

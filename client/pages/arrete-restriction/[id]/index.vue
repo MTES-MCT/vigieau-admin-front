@@ -10,7 +10,7 @@ useHead({
 const breadcrumb = [
   {
     to: "/arrete-restriction",
-    text: "Arrêtes de restriction"
+    text: "Retour à la liste"
   }, {
     text: "Consultation"
   }

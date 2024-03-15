@@ -16,11 +16,8 @@ const expandedId = ref();
 
 const rules = computed(() => {
   return {
-    isFullDepartement: {
-      required: helpers.withMessage("La règle de gestion de l'eau potable est obligatoire.", required),
-    },
     restrictions: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte AEP.", () => {
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins une zone d\'alerte AEP.', () => {
         return props.arreteRestriction.restrictions.filter((r) => r.isAep).length > 0;
       }),
       different: helpers.withMessage('Les zones AEP sélectionnées contiennent des doublons de communes.', () => {
@@ -41,19 +38,10 @@ const groupementToEdit: Ref<Restriction | undefined> = ref();
 const groupementCommunesFormRef = ref(null);
 const zonesAep: Ref<Restriction[]> = ref(props.arreteRestriction.restrictions.filter((r) => r.isAep));
 const zonesSelected: Ref<string[]> = ref(zonesAep.value.map((r) => r.nomGroupementAep));
+const indexEdited = ref(null);
 
 const isFullDepartement = ref(null);
 const canComputeFullDepartement = ref(true);
-const fullDepartementOptions = [
-  {
-    label: 'Choisir mon département en entier',
-    value: true,
-  },
-  {
-    label: 'Créer des zones en groupant des communes',
-    value: false,
-  },
-];
 modalActions.value = [
   {
     label: 'Enregistrer',
@@ -77,19 +65,27 @@ const communesAssociated = computed(() => {
     .flat().length;
 });
 
-const createGroupementCommunes = () => {
-  groupementToEdit.value = new Restriction(true);
+const createEditGroupementCommunes = (index = null, isFullDepartement = false) => {
+  const r = index !== null ? JSON.parse(JSON.stringify(props.arreteRestriction.restrictions[index])) : new Restriction(true);
+  if (isFullDepartement) {
+    r.nomGroupementAep === 'Zone AEP départementale';
+    r.communes = communes.value.map((c) => {
+      return { id: c.id };
+    });
+  }
+  groupementToEdit.value = r;
+  indexEdited.value = index;
   modalCommunesOpened.value = true;
 };
 
 const createEditGroupement = async (restriction: Restriction) => {
-  if (!restriction.id) {
-    zonesAep.value.push(restriction);
+  if (indexEdited.value === null) {
+    props.arreteRestriction.restrictions.push(restriction);
     zonesSelected.value = [...zonesSelected.value, restriction.nomGroupementAep];
   } else {
-    const idx = zonesAep.value.findIndex((r) => r.id === restriction.id);
-    zonesAep.value[idx] = restriction;
+    props.arreteRestriction.restrictions[indexEdited.value] = restriction;
   }
+  indexEdited.value = null;
   utils.closeModal(modalCommunesOpened);
 };
 
@@ -103,43 +99,44 @@ defineExpose({
   v$,
 });
 
-watch(isFullDepartement, () => {
-  if (!canComputeFullDepartement.value) {
-    canComputeFullDepartement.value = true;
-    return;
-  }
-  if (isFullDepartement.value) {
-    // On assigne toutes les communes
-    if (!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
-      zonesAep.value.push({
-        id: null,
-        nomGroupementAep: 'Zone AEP départementale',
-        zoneAlerte: null,
-        niveauGravite: null,
-        usagesArreteRestriction: [],
-        isAep: true,
-        communes: communes.value.map((c) => {
-          return { id: c.id };
-        }),
-        communesText: undefined,
-      });
-    } else {
-      zonesAep.value = zonesAep.value.map((r) => {
-        if (r.nomGroupementAep === 'Zone AEP départementale') {
-          r.communes = communes.value.map((c) => {
-            return { id: c.id };
-          });
-        }
-        return r;
-      });
-    }
-    zonesSelected.value = ['Zone AEP départementale'];
-  } else {
-    zonesAep.value = zonesAep.value.filter((r) => r.nomGroupementAep !== 'Zone AEP départementale');
-    // On enlève les restrictions AEP
-    zonesSelected.value = [];
-  }
-});
+// watch(isFullDepartement, () => {
+//   if (!canComputeFullDepartement.value) {
+//     canComputeFullDepartement.value = true;
+//     return;
+//   }
+//   if (isFullDepartement.value) {
+//     // On assigne toutes les communes
+//     if (!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
+//       zonesAep.value.push({
+//         arreteCadre: null,
+//         id: null,
+//         nomGroupementAep: 'Zone AEP départementale',
+//         zoneAlerte: null,
+//         niveauGravite: null,
+//         usagesArreteRestriction: [],
+//         isAep: true,
+//         communes: communes.value.map((c) => {
+//           return { id: c.id };
+//         }),
+//         communesText: undefined,
+//       });
+//     } else {
+//       zonesAep.value = zonesAep.value.map((r) => {
+//         if (r.nomGroupementAep === 'Zone AEP départementale') {
+//           r.communes = communes.value.map((c) => {
+//             return { id: c.id };
+//           });
+//         }
+//         return r;
+//       });
+//     }
+//     zonesSelected.value = ['Zone AEP départementale'];
+//   } else {
+//     zonesAep.value = zonesAep.value.filter((r) => r.nomGroupementAep !== 'Zone AEP départementale');
+//     // On enlève les restrictions AEP
+//     zonesSelected.value = [];
+//   }
+// });
 
 watch(
   () => props.arreteRestriction.departement,
@@ -167,14 +164,6 @@ watch(zonesSelected, () => {
     (z) => !props.arreteRestriction.restrictions.some((r) => r.nomGroupementAep === z.nomGroupementAep),
   );
   newZones.forEach((z) => {
-    let usagesAc = props.arreteRestriction.arretesCadre.map((ac) => ac.usagesArreteCadre).flat();
-    usagesAc = usagesAc
-      .filter((value, index, self) => index === self.findIndex((t) => t.usage.id === value.usage.id))
-      .map((u) => {
-        u.id = null;
-        return u;
-      });
-    z.usagesArreteRestriction = usagesAc;
     props.arreteRestriction.restrictions.push(z);
   });
 });
@@ -186,22 +175,12 @@ watch(zonesSelected, () => {
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Définition des zones AEP</h6>
 
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'isFullDepartement')">
-          <DsfrRadioButtonSet
-            legend="Vous souhaitez :"
-            :options="fullDepartementOptions"
-            v-model="isFullDepartement"
-            name="isFullDepartement"
-            :small="false"
-          />
-        </DsfrInputGroup>
+        <h6>Création de zones AEP avec un groupement de commune</h6>
 
-        <div v-if="isFullDepartement === false">
-          <h6>Création de zones AEP avec un groupement de commune</h6>
-
-          <div class="form-group fr-fieldset fr-mt-2w">
-            <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
-              <template v-for="(r, index) in zonesAep">
+        <div v-if="communes.length > 0" class="form-group fr-fieldset fr-mt-2w">
+          <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
+            <template v-for="(r, index) in arreteRestriction.restrictions">
+              <template v-if="r.isAep">
                 <DsfrCheckbox
                   :id="r.id || r.nomGroupementAep"
                   :name="r.nomGroupementAep"
@@ -210,13 +189,18 @@ watch(zonesSelected, () => {
                   @update:model-value="onChange({ name: r.nomGroupementAep, checked: $event })"
                 >
                   <template #label>
-                    {{ r.nomGroupementAep }}
+                    <DsfrButton
+                      :label="r.nomGroupementAep"
+                      :tertiary="true"
+                      :no-outline="false"
+                      @click.stop="createEditGroupementCommunes(index)"
+                    />
                   </template>
                 </DsfrCheckbox>
 
                 <DsfrAccordion
                   v-if="r.communes"
-                  class="full-width"
+                  class="full-width fr-accordion--no-shadow"
                   :title="'Voir les ' + r.communes.length + ' communes'"
                   :expanded-id="expandedId"
                   @expand="expandedId = $event"
@@ -224,15 +208,22 @@ watch(zonesSelected, () => {
                   <span v-for="c of r.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
                 </DsfrAccordion>
               </template>
-            </DsfrInputGroup>
-          </div>
-          <DsfrButton
-            label="Ajouter un groupement de communes"
-            secondary
-            @click="createGroupementCommunes()"
-            :disabled="communesAssociated >= communes.length"
-          />
+            </template>
+            <div class="divider fr-mb-2w" />
+          </DsfrInputGroup>
         </div>
+        <DsfrButton
+          label="Ajouter un groupement de communes"
+          secondary
+          @click="createEditGroupementCommunes()"
+          :disabled="communesAssociated >= communes.length"
+        />
+        <DsfrButton
+          label="Ajouter toutes les communes du département"
+          secondary
+          @click="createEditGroupementCommunes(null, true)"
+          :disabled="zonesSelected.length > 0"
+        />
       </div>
     </div>
   </form>
@@ -247,6 +238,7 @@ watch(zonesSelected, () => {
       ref="groupementCommunesFormRef"
       :communes="communes"
       :zonesAep="zonesAep"
+      :arretesCadre="arreteRestriction.arretesCadre"
       @createEdit="createEditGroupement($event)"
     />
   </DsfrModal>

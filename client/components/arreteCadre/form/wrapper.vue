@@ -55,11 +55,13 @@ const nextStep = async () => {
     return;
   }
   currentStep.value++;
+  utils.scrollToTop();
 };
 
 const previousStep = () => {
   asc.value = false;
   currentStep.value--;
+  utils.scrollToTop();
 };
 
 const saveArrete = async (publish: boolean = false) => {
@@ -150,7 +152,9 @@ const usagesFormRef = ref(null);
 
 <template>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
+  <DsfrTabs class="tabs-light"
+            v-if="refDataStore.departements.length > 0"
+            @select-tab="utils.scrollToTop()">
     <DsfrTabContent :selected="currentStep === 1" :asc="asc">
       <ArreteCadreFormGeneral
         ref="generalFormRef"

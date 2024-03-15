@@ -14,11 +14,11 @@ export class Restriction {
     this.id = null;
     this.isAep = isAep;
     this.zoneAlerte = isAep ? null : [];
-    this.arreteCadre = isAep ? null : [];
+    this.arreteCadre = null;
     this.communes = isAep ? [] : null;
     this.nomGroupementAep = null;
     this.niveauGravite = null;
-    this.usagesArreteRestriction = [];;
+    this.usagesArreteRestriction = [];
   }
 
 }

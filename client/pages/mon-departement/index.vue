@@ -14,13 +14,14 @@ const tabTitles = [
   {title: 'Utilisateurs'}
 ];
 const selectedTabIndex: Ref<number> = ref(0);
+const utils = useUtils();
 </script>
 
 <template>
   <MixinsAlerts class="fr-mb-2w" />
   <DsfrTabs :tab-titles="tabTitles"
             :initial-selected-index="selectedTabIndex"
-            @select-tab="selectedTabIndex = $event">
+            @select-tab="selectedTabIndex = $event; utils.scrollToTop()">
     <DsfrTabContent
       panel-id="tab-content-0"
       tab-id="tab-0"

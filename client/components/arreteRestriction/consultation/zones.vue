@@ -41,7 +41,11 @@ const zonesType = [
                               class="fr-ml-2w"
                               :niveauGravite="r.niveauGravite" />          
         </div>
-        <DsfrAccordion :title="'Voir les ' + r.usagesArreteRestriction.length + ' usages'" :expanded-id="expandedId" @expand="expandedId = $event">
+        <DsfrAccordion :title="'Voir les ' + r.usagesArreteRestriction.length + ' usages'"
+                       v-if="r.usagesArreteRestriction.length > 0"
+                       class="fr-accordion--no-shadow"
+                       :expanded-id="expandedId"
+                       @expand="expandedId = $event">
           <div v-for="usage in r.usagesArreteRestriction">
                 <b>{{ usage.usage.nom }}</b>
                 <div class="full-width">
@@ -61,6 +65,7 @@ const zonesType = [
             <div class="divider fr-mb-2w" />
           </div>
         </DsfrAccordion>
+        <div class="divider" />
       </p>
     </template>
   </template>

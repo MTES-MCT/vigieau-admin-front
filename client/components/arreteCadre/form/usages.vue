@@ -196,7 +196,10 @@ defineExpose({
   <form @submit.prevent="">
     <div class="usage-wrapper fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <DsfrTabs ref="tabs" :tab-titles="tabTitles" :initial-selected-index="selectedTabIndex" @select-tab="selectTab($event)">
+        <DsfrTabs ref="tabs"
+                  :tab-titles="tabTitles"
+                  :initial-selected-index="selectedTabIndex"
+                  @select-tab="selectTab($event); utils.scrollToTop()">
           <DsfrTabContent panel-id="tab-content-0" tab-id="tab-0" :asc="asc" :selected="selectedTabIndex === 0">
             <p>
               Retrouvez les usages utilisés dans un arrêté  cadre précédent&nbsp;:

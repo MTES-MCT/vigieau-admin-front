@@ -65,11 +65,13 @@ const nextStep = async () => {
     return;
   }
   currentStep.value++;
+  utils.scrollToTop();
 };
 
 const previousStep = () => {
   asc.value = false;
   currentStep.value--;
+  utils.scrollToTop();
 };
 
 const saveArrete = async (publish: boolean = false) => {
@@ -153,7 +155,6 @@ const showErrors = (errors, publish) => {
 const askPublishArrete = async () => {
   await saveArrete(true);
   if (!v$.value.$error) {
-    await checkArrete(props.arreteRestriction);
     modalPublishOpened.value = true;
   }
 };
@@ -197,14 +198,14 @@ const steps = computed(() => {
   if (showRestrictionsForm.value && !showRestrictionsAepForm.value) {
     return [
       "Informations générales",
-      "Restrictions appliquées à l'eau potable",
+      "Ressources concernées par les restrictions",
       "Liste des zones d'alertes",
       "Niveaux de gravité et usages"
     ];
   } else if (showRestrictionsForm.value && showRestrictionsAepForm.value) {
     return [
       "Informations générales",
-      "Restrictions appliquées à l'eau potable",
+      "Ressources concernées par les restrictions",
       "Liste des zones d'alertes AEP",
       "Liste des zones d'alertes",
       "Niveaux de gravité et usages"
@@ -212,7 +213,7 @@ const steps = computed(() => {
   } else {
     return [
       "Informations générales",
-      "Restrictions appliquées à l'eau potable",
+      "Ressources concernées par les restrictions",
       "Liste des zones d'alertes AEP",
       "Niveaux de gravité et usages"
     ];
@@ -232,13 +233,14 @@ const restrictionsAepFormRef = ref(null);
 const graviteFormRef = ref(null);
 
 if(props.arreteRestriction.statut !== "a_valider") {
-  await checkArrete(props.arreteRestriction);
+  // await checkArrete(props.arreteRestriction);
 }
 </script>
 
 <template>
   <DsfrStepper :steps="steps" :currentStep="currentStep" />
-  <DsfrTabs class="tabs-light" v-if="refDataStore.departements.length > 0">
+  <DsfrTabs class="tabs-light"
+            v-if="refDataStore.departements.length > 0">
     <DsfrTabContent :selected="currentStep === 1" :asc="asc">
       <ArreteRestrictionFormGeneral
         ref="generalFormRef"
