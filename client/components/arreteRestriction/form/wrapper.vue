@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { Ref } from "vue";
-import useVuelidate from "@vuelidate/core/dist/index";
-import { useRefDataStore } from "~/stores/refData";
-import { useAlertStore } from "~/stores/alert";
-import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
-import type { UsageArreteCadre } from "~/dto/usage_arrete_cadre.dto";
-import { ArreteCadre } from "~/dto/arrete_cadre.dto";
-import type { Restriction } from "~/dto/restriction.dto";
+import type { Ref } from 'vue';
+import useVuelidate from '@vuelidate/core/dist/index';
+import { useRefDataStore } from '~/stores/refData';
+import { useAlertStore } from '~/stores/alert';
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
+import { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import type { Restriction } from '~/dto/restriction.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -20,7 +20,7 @@ const utils = useUtils();
 const loading = ref(false);
 const componentKey = ref(0);
 const asc = ref(true);
-const checkReturn: Ref<{errors: string[], warnings: string[]} | undefined> = ref();
+const checkReturn: Ref<{ errors: string[], warnings: string[] } | undefined> = ref();
 
 const currentStep: Ref<number> = ref(1);
 
@@ -87,7 +87,7 @@ const saveArrete = async (publish: boolean = false) => {
   const arToSend = JSON.parse(JSON.stringify(props.arreteRestriction));
   arToSend.arretesCadre = arToSend.arretesCadre.map((ac: any) => {
     return {
-      id: ac.id
+      id: ac.id,
     };
   });
   arToSend.restrictions = arToSend.restrictions.map((r: any) => {
@@ -105,13 +105,13 @@ const saveArrete = async (publish: boolean = false) => {
     props.arreteRestriction.id = data.value.id;
     props.arreteRestriction.restrictions.map((restriction: Restriction) => {
       restriction.id = (<ArreteRestriction>data.value).restrictions.find(
-        (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte?.id : r.nomGroupementAep === restriction.nomGroupementAep
+        (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte?.id : r.nomGroupementAep === restriction.nomGroupementAep,
       ).id;
       restriction.usagesArreteRestriction.map((usagesArreteRestriction: UsageArreteCadre) => {
         usagesArreteRestriction.id = (<ArreteRestriction>data.value).restrictions.find(
-          (r: Restriction) => r.id === restriction.id
+          (r: Restriction) => r.id === restriction.id,
         ).usagesArreteRestriction.find(
-          (u: UsageArreteCadre) => u.usage.id === usagesArreteRestriction.usage.id
+          (u: UsageArreteCadre) => u.usage.id === usagesArreteRestriction.usage.id,
         ).id;
         return usagesArreteRestriction;
       });
@@ -119,13 +119,13 @@ const saveArrete = async (publish: boolean = false) => {
     });
     componentKey.value++;
     loading.value = false;
-    if (props.arreteRestriction.statut !== "a_valider") {
+    if (props.arreteRestriction.statut !== 'a_valider') {
       await publishArrete(props.arreteRestriction);
     }
     if (!publish) {
       alertStore.addAlert({
-        description: "Enregistrement réussi",
-        type: "success"
+        description: 'Enregistrement réussi',
+        type: 'success',
       });
     }
   }
@@ -137,18 +137,18 @@ const checkArrete = async (ar: ArreteRestriction) => {
     return;
   }
   loading.value = true;
-  const { data, error } = await api.arreteRestriction.check(ar.id?.toString());
+  const { data, error } = await api.arreteRestriction.check(ar.id?.toString(), ar);
   if (data.value) {
     checkReturn.value = data.value;
   }
   loading.value = false;
-}
+};
 
 const showErrors = (errors, publish) => {
   alertStore.addAlert({
-    title: publish ? "Impossible de publier l'arrêté de restriction" : "Impossible d'enregistrer l'arrêté de restriction",
-    description: errors.map((e: any) => e.$message).join(", "),
-    type: "error"
+    title: publish ? 'Impossible de publier l\'arrêté de restriction' : 'Impossible d\'enregistrer l\'arrêté de restriction',
+    description: errors.map((e: any) => e.$message).join(', '),
+    type: 'error',
   });
 };
 
@@ -163,11 +163,20 @@ const publishArrete = async (ar: ArreteRestriction) => {
   if (loading.value) {
     return;
   }
+  await checkArrete(ar);
+  if (checkReturn.value?.errors?.length > 0) {
+    alertStore.addAlert({
+      title: 'Impossible de publier l\'arrêté de restriction',
+      description: checkReturn.value?.errors.join(', '),
+      type: 'error',
+    });
+    return;
+  }
   loading.value = true;
   const { data, error } = await api.arreteRestriction.publish(ar.id?.toString(), ar);
   if (data.value) {
     utils.closeModal(modalPublishOpened);
-    navigateTo("/arrete-restriction");
+    navigateTo('/arrete-restriction');
     alertStore.addAlert({
       description: 'Publication réussie',
       type: 'success',
@@ -181,12 +190,12 @@ const getRestrictionByNiveauDeGravite = (niveauGravite: string) => {
 };
 
 const showRestrictionsForm = computed(() => {
-  return props.arreteRestriction.perimetreAr !== "aep";
+  return props.arreteRestriction.perimetreAr !== 'aep';
 });
 
 const showRestrictionsAepForm = computed(() => {
-  return props.arreteRestriction.perimetreAr === "aep" ||
-    (props.arreteRestriction.perimetreAr === "all" && props.arreteRestriction.niveauGraviteSpecifiqueEap);
+  return props.arreteRestriction.perimetreAr === 'aep' ||
+    (props.arreteRestriction.perimetreAr === 'all' && props.arreteRestriction.niveauGraviteSpecifiqueEap);
 });
 
 const totalSteps = computed(() => {
@@ -197,32 +206,32 @@ const totalSteps = computed(() => {
 const steps = computed(() => {
   if (showRestrictionsForm.value && !showRestrictionsAepForm.value) {
     return [
-      "Informations générales",
-      "Ressources concernées par les restrictions",
-      "Liste des zones d'alertes",
-      "Niveaux de gravité et usages"
+      'Informations générales',
+      'Ressources concernées par les restrictions',
+      'Liste des zones d\'alertes',
+      'Niveaux de gravité et usages',
     ];
   } else if (showRestrictionsForm.value && showRestrictionsAepForm.value) {
     return [
-      "Informations générales",
-      "Ressources concernées par les restrictions",
-      "Liste des zones d'alertes AEP",
-      "Liste des zones d'alertes",
-      "Niveaux de gravité et usages"
+      'Informations générales',
+      'Ressources concernées par les restrictions',
+      'Liste des zones d\'alertes AEP',
+      'Liste des zones d\'alertes',
+      'Niveaux de gravité et usages',
     ];
   } else {
     return [
-      "Informations générales",
-      "Ressources concernées par les restrictions",
-      "Liste des zones d'alertes AEP",
-      "Niveaux de gravité et usages"
+      'Informations générales',
+      'Ressources concernées par les restrictions',
+      'Liste des zones d\'alertes AEP',
+      'Niveaux de gravité et usages',
     ];
   }
 });
 
 // PUBLISH MODAL
 const modalPublishOpened: Ref<boolean> = ref(false);
-const modalTitle: Ref<string> = ref("Récapitulatif et publication de l’arrêté de restriction");
+const modalTitle: Ref<string> = ref('Récapitulatif et publication de l’arrêté de restriction');
 const publierFormRef = ref(null);
 
 // Forms
@@ -232,7 +241,7 @@ const restrictionsFormRef = ref(null);
 const restrictionsAepFormRef = ref(null);
 const graviteFormRef = ref(null);
 
-if(props.arreteRestriction.statut !== "a_valider") {
+if (props.arreteRestriction.statut !== 'a_valider') {
   // await checkArrete(props.arreteRestriction);
 }
 </script>
@@ -323,16 +332,16 @@ if(props.arreteRestriction.statut !== "a_valider") {
       Cet arrêté de restriction contient&nbsp;:
       <ul>
         <li v-if="getRestrictionByNiveauDeGravite('vigilance').length > 0">
-          {{ getRestrictionByNiveauDeGravite("vigilance").length }} zone(s) en vigilance
+          {{ getRestrictionByNiveauDeGravite('vigilance').length }} zone(s) en vigilance
         </li>
         <li v-if="getRestrictionByNiveauDeGravite('alerte').length > 0">
-          {{ getRestrictionByNiveauDeGravite("alerte").length }} zone(s) en alerte
+          {{ getRestrictionByNiveauDeGravite('alerte').length }} zone(s) en alerte
         </li>
         <li v-if="getRestrictionByNiveauDeGravite('alerte_renforcee').length > 0">
-          {{ getRestrictionByNiveauDeGravite("alerte_renforcee").length }} zone(s) en alerte renforcée
+          {{ getRestrictionByNiveauDeGravite('alerte_renforcee').length }} zone(s) en alerte renforcée
         </li>
         <li v-if="getRestrictionByNiveauDeGravite('crise').length > 0">
-          {{ getRestrictionByNiveauDeGravite("crise").length }} zone(s) en crise
+          {{ getRestrictionByNiveauDeGravite('crise').length }} zone(s) en crise
         </li>
       </ul>
       <div class="divider"></div>

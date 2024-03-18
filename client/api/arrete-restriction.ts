@@ -29,10 +29,12 @@ export class ArreteRestrictionApi extends BaseApiPagination {
     });
   };
 
-  check(id: string) {
+  check(id: string, payload?: any) {
+    payload = payload ? JSON.parse(JSON.stringify(payload)) : null;
     return useCustomFetch(`/${this.resource}/${id}/check`, {
-      method: 'GET',
+      method: 'POST',
       baseURL: '/api',
+      body: payload,
     });
   };
 }

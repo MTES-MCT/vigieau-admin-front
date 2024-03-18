@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
-import { Parametres } from "~/dto/parametres.dto";
+import { Parametres } from '~/dto/parametres.dto';
+import type { Ref } from 'vue';
 
 const props = defineProps<{
   parametres: Parametres
@@ -53,6 +54,19 @@ const regleGestionSuperpositionCommuneOptions = [
   },
 ];
 
+const modalOpened = ref(false);
+const modalTitle: Ref<string> = ref(`Schéma explicatif`);
+const modalImg: Ref<string> = ref('');
+const modalActions: Ref<any[]> = ref([
+  {
+    label: 'Fermer',
+    secondary: true,
+    onClick: () => {
+      utils.closeModal(modalOpened);
+    },
+  },
+]);
+
 const v$ = useVuelidate(rules, props.parametres);
 const expandedId = ref();
 
@@ -63,14 +77,14 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
-    <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-12 fr-col-lg-6">
-        <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
-          <fieldset class="fr-fieldset">
-            <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
-              Si une commune est traversée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
-            </legend>
-            <template v-for="option in regleGestionSuperpositionCommuneOptions">
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
+      <fieldset class="fr-fieldset">
+        <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
+          Si une commune est traversée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
+        </legend>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <template v-for="option in regleGestionSuperpositionCommuneOptions">
+            <div class="fr-col-12 fr-col-lg-6">
               <DsfrRadioButton
                 :value="option.value"
                 name="superpositionCommune"
@@ -78,19 +92,26 @@ defineExpose({
                 :label="option.label"
                 :data-cy="`ArreteCadreFormCommuneRadio${option.value}`"
               />
-              <DsfrAccordion v-if="option.img"
-                             class="fr-mb-2w"
-                             title="Voir le schéma explicatif"
-                             :expanded-id="expandedId"
-                             @expand="expandedId = $event">
-                <img :src="option.img" />
-              </DsfrAccordion>
-            </template>
-          </fieldset>
-        </DsfrInputGroup>
-      </div>
-    </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-6">
+              <DsfrButton v-if="option.img"
+                          class="fr-mb-2w"
+                          label="Voir le schéma explicatif"
+                          @click="modalImg = option.img; modalOpened = true" />
+            </div>
+          </template>
+        </div>
+      </fieldset>
+    </DsfrInputGroup>
   </form>
+
+  <DsfrModal :opened="modalOpened"
+             :title="modalTitle"
+             :actions="modalActions"
+             size="xl"
+             @close="modalOpened = utils.closeModal(modalOpened)">
+    <img :src="modalImg" />
+  </DsfrModal>
 </template>
 
 <style lang="scss" scoped>
