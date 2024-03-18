@@ -27,30 +27,30 @@ const regleGestionSuperpositionCommuneOptions = [
   },
   {
     label:
-      'Non, nous n’harmonisons aucun niveau de gravité à la commune (toutes ressources confondues)',
+      'Non, les restrictions s\'appliquent à la zone d\'alerte pour l\'ESU, l\'ESO et l\'AEP',
     value: 'no_all',
     img: null,
   },
   {
-    label:
-      'Le niveau le plus restrictif s\'applique pour chaque type de ressource à la commune (1 niveau ESU, 1 niveau AEP, 1 niveau ESO)',
-    value: 'yes_distinct',
-    img: '/regles_commune_yes_distinct.png',
+    label: 'Le niveau maximal s\'applique à la commune pour l’AEP mais les niveaux ESU et ESO s\'appliquent à la zone d\'alerte',
+    value: 'yes_only_aep',
+    img: '/regles_commune_yes_only_aep.png',
   },
   {
-    label: 'Le niveau le plus restrictif s\'applique pour toutes les ressources à la commune (1 niveau unique ESU-ESO-AEP)',
+    label: 'Un niveau unique; le plus restrictif parmi ESU, ESO et AEP; s\'applique à la commune pour toutes les ressources (1 niveau unique ESU-ESO-AEP)',
     value: 'yes_all',
     img: '/regles_commune_yes_all.png',
   },
   {
-    label: 'Le niveau le plus restrictif s\'applique pour les milieux naturels à la commune (1 niveau unique ESU-ESO) et le niveau AEP est distinct',
+    label: 'Un niveau unique, le plus restrictif parmi ESU et ESO, s\'applique à la commune pour les milieux naturels (1 niveau unique ESU-ESO) et le niveau AEP est distinct',
     value: 'yes_except_aep',
     img: '/regles_commune_yes_except_aep.png',
   },
   {
-    label: 'Le niveau le plus restrictif s\'applique à la commune pour l’AEP mais les niveaux ESU et ESO sont appliqués à l\'adresse',
-    value: 'yes_only_aep',
-    img: '/regles_commune_yes_only_aep.png',
+    label:
+      'Le niveau maximal s\'applique à la commune pour chaque type de ressource (1 niveau ESU, 1 niveau AEP, 1 niveau ESO)',
+    value: 'yes_distinct',
+    img: '/regles_commune_yes_distinct.png',
   },
 ];
 
@@ -82,6 +82,7 @@ defineExpose({
         <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
           Si une commune est traversée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
         </legend>
+        <p>Ce paramètre détermine le calcul des niveaux de restrictions affiché sur Vigieau pour chaque type de ressource (eaux souterraines, eaux superficielles, eau potable).</p>
         <div class="fr-grid-row fr-grid-row--gutters">
           <template v-for="option in regleGestionSuperpositionCommuneOptions">
             <div class="fr-col-12 fr-col-lg-6">
