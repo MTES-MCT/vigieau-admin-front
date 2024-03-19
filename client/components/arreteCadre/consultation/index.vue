@@ -65,7 +65,7 @@ const modalActions: Ref<any[]> = ref([]);
     <ArreteCadreFormRecapitulatif :arrete-cadre="arreteCadre" :viewOnly="true" />
 
     <DsfrButtonGroup :buttons="consultationButtons"
-                     class="fr-mt-2w"
+                     class="fr-mt-2w fr-btns-group--sticky"
                      align="right"
                      inlineLayoutWhen="always" />
     

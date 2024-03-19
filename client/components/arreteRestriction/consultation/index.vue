@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Ref } from "vue";
-import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
-import { useAuthStore } from "~/stores/auth";
+import type { Ref } from 'vue';
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import { useAuthStore } from '~/stores/auth';
 
 const route = useRoute();
 const api = useApi();
@@ -27,15 +27,15 @@ const isZaOutdated: boolean = arreteRestriction.value.statut !== 'abroge' && arr
 const consultationButtons: Ref<any[]> = ref([
   {
     label: 'Retour',
-    icon: "ri-arrow-left-line",
+    icon: 'ri-arrow-left-line',
     secondary: true,
     onclick: () => {
-      router.go(-1)
+      router.go(-1);
     },
   },
 ]);
 
-if(authStore.isMte || (arreteRestriction.value.statut !== 'abroge' && isArOnDepartementUser && !isZaOutdated)) {
+if (authStore.isMte || (arreteRestriction.value.statut !== 'abroge' && isArOnDepartementUser && !isZaOutdated)) {
   consultationButtons.value.push({
     label: 'Modifier',
     icon: 'ri-edit-2-fill',
@@ -43,7 +43,7 @@ if(authStore.isMte || (arreteRestriction.value.statut !== 'abroge' && isArOnDepa
     onclick: () => {
       utils.askEditArreteRestriction(arreteRestriction.value, modalTitle, modalDescription, modalActions, modalOpened, editArreteRestriction);
     },
-  })
+  });
 }
 
 const editArreteRestriction = (id: string) => {
@@ -59,8 +59,10 @@ const modalActions: Ref<any[]> = ref([]);
 
 <template>
   <template v-if="arreteRestriction">
-    <h1>Arrêté de restriction&nbsp;: {{ arreteRestriction.numero }} <MixinsStatutBadge :statut="arreteRestriction.statut" /></h1>
-    
+    <h1>Arrêté de restriction&nbsp;: {{ arreteRestriction.numero }}
+      <MixinsStatutBadge :statut="arreteRestriction.statut" />
+    </h1>
+
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <ArreteRestrictionConsultationGeneral :arreteRestriction="arreteRestriction" />
@@ -72,7 +74,7 @@ const modalActions: Ref<any[]> = ref([]);
     </div>
 
     <DsfrButtonGroup :buttons="consultationButtons"
-                     class="fr-mt-2w"
+                     class="fr-mt-2w fr-btns-group--sticky"
                      align="right"
                      inlineLayoutWhen="always" />
 

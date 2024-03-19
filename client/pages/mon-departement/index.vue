@@ -19,6 +19,9 @@ const utils = useUtils();
 
 <template>
   <MixinsAlerts class="fr-mb-2w" />
+  <h1 class="fr-mb-2w">
+    Mon département
+  </h1>
   <DsfrTabs :tab-titles="tabTitles"
             :initial-selected-index="selectedTabIndex"
             @select-tab="selectedTabIndex = $event; utils.scrollToTop()">

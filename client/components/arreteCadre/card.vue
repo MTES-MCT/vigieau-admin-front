@@ -36,7 +36,7 @@ const arreteCadreActions: Ref<any> = ref([
     onclick: () => {
       navigateTo(`/arrete-cadre/${props.arreteCadre.id}/duplication`);
     },
-    show: authStore.isMte || isAcOnDepartementUser,
+    show: ['a_valider', 'abroge'].includes(props.arreteCadre.statut) && isAcOnDepartementUser,
   },
   {
     text: 'Créer un arrêté de restriction associé',

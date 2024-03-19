@@ -32,7 +32,7 @@ const utils = useUtils();
 
 const perimetreArOptions = [
   {
-    label: 'Zones Eaux souterraines (ESO) / Eaux superficielles (ESU)',
+    label: 'Zones Eaux souterraines (ESO) et/ou Eaux superficielles (ESU)',
     value: 'zones',
   },
   {
@@ -40,7 +40,7 @@ const perimetreArOptions = [
     value: 'aep',
   },
   {
-    label: 'Les deux',
+    label: 'Les trois',
     value: 'all',
   },
 ];

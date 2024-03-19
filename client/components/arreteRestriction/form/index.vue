@@ -14,43 +14,8 @@ const arreteRestriction: Ref<ArreteRestriction> = ref();
 const route = useRoute();
 const api = useApi();
 const isNewArreteRestriction = route.params.id === 'nouveau';
-const mounted = ref(false);
-const isInitSticky = ref(false);
 const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
-
-const initSticky = () => {
-  window.onscroll = function () {
-    isStickyButtons();
-  };
-  const ro = new ResizeObserver(() => {
-    isStickyButtons();
-  });
-  const tabs = document.querySelector('.fr-tabs');
-  if (tabs) {
-    ro.observe(tabs);
-    isInitSticky.value = true;
-  }
-  let footer = document.getElementsByTagName('footer')[0];
-  const sticky = footer.offsetHeight;
-
-  const isStickyButtons = () => {
-    const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
-    const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
-    if (!buttons || !buttonsShadow) {
-      return;
-    }
-    if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
-      buttonsShadow.classList.remove('visible');
-      buttons.classList.remove('sticky');
-      buttons.style['padding-left'] = 'initial';
-    } else {
-      buttonsShadow.classList.add('visible');
-      buttons.classList.add('sticky');
-      buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
-    }
-  };
-};
 
 if (isNewArreteRestriction && !route.query.arreterestriction) {
   const newAr = new ArreteRestriction();
@@ -116,16 +81,6 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     arreteRestriction.value = ar;
   }
 }
-if (mounted.value && !isInitSticky.value) {
-  initSticky();
-}
-
-onMounted(() => {
-  mounted.value = true;
-  if (arreteRestriction.value && !isInitSticky.value) {
-    initSticky();
-  }
-});
 </script>
 
 <template>
@@ -136,28 +91,3 @@ onMounted(() => {
   </h1>
   <ArreteRestrictionFormWrapper v-if="arreteRestriction" :arreteRestriction="arreteRestriction" />
 </template>
-
-<style lang="scss">
-.fr-btns-group--sticky {
-  &.sticky {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    z-index: 1000;
-    background-color: var(--grey-1000-50);
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    padding-top: 1rem;
-  }
-}
-
-.fr-btns-group--shadow-sticky {
-  display: none;
-  margin-top: 32px;
-  height: 56px;
-
-  &.visible {
-    display: block;
-  }
-}
-</style>

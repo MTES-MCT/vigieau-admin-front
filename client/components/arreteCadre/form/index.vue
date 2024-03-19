@@ -11,41 +11,6 @@ const arreteCadre: Ref<ArreteCadre> = ref();
 const route = useRoute();
 const api = useApi();
 const isNewArreteCadre = route.params.id === 'nouveau';
-const mounted = ref(false);
-const isInitSticky = ref(false);
-
-const initSticky = () => {
-  window.onscroll = function () {
-    isStickyButtons();
-  };
-  const ro = new ResizeObserver(() => {
-    isStickyButtons();
-  });
-  const tabs = document.querySelector('.fr-tabs')
-  if (tabs) {
-    ro.observe(tabs);
-    isInitSticky.value = true;
-  }
-  let footer = document.getElementsByTagName('footer')[0];
-  const sticky = footer.offsetHeight;
-
-  const isStickyButtons = () => {
-    const buttons = document.getElementsByClassName('fr-btns-group--sticky')[0];
-    const buttonsShadow = document.getElementsByClassName('fr-btns-group--shadow-sticky')[0];
-    if (!buttons) {
-      return;
-    }
-    if (document.documentElement.offsetHeight - document.documentElement.clientHeight - window.scrollY < sticky) {
-      buttonsShadow.classList.remove('visible');
-      buttons.classList.remove('sticky');
-      buttons.style['padding-left'] = 'initial';
-    } else {
-      buttonsShadow.classList.add('visible');
-      buttons.classList.add('sticky');
-      buttons.style['padding-left'] = buttonsShadow.getBoundingClientRect().left + 'px';
-    }
-  };
-};
 
 if (isNewArreteCadre && !route.query.arretecadre) {
   arreteCadre.value = new ArreteCadre();
@@ -82,16 +47,6 @@ if (isNewArreteCadre && !route.query.arretecadre) {
     arreteCadre.value = ac;
   }
 }
-if (mounted.value && !isInitSticky.value) {
-  initSticky();
-}
-
-onMounted(() => {
-  mounted.value = true;
-  if (arreteCadre.value && !isInitSticky.value) {
-    initSticky();
-  }
-})
 </script>
 
 <template>
@@ -102,28 +57,3 @@ onMounted(() => {
   </h1>
   <ArreteCadreFormWrapper v-if="arreteCadre" :arreteCadre="arreteCadre" />
 </template>
-
-<style lang="scss">
-.fr-btns-group--sticky {
-  &.sticky {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    z-index: 1000;
-    background-color: var(--grey-1000-50);
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    padding-top: 1rem;
-  }
-}
-
-.fr-btns-group--shadow-sticky {
-  display: none;
-  margin-top: 32px;
-  height: 56px;
-
-  &.visible {
-    display: block;
-  }
-}
-</style>

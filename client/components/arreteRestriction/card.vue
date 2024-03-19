@@ -35,7 +35,7 @@ const arreteRestrictionActions: Ref<any> = ref([
     onclick: () => {
       navigateTo(`/arrete-restriction/${props.arreteRestriction.id}/duplication`);
     },
-    show: authStore.isMte || isArOnDepartementUser,
+    show: ['a_valider', 'abroge'].includes(props.arreteRestriction.statut) && isArOnDepartementUser,
   },
   {
     text: `Abroger l'arrêté et le remplacer`,

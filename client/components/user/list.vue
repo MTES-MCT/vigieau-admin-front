@@ -4,7 +4,6 @@ import type { User } from '~/dto/user.dto';
 import { UserRole } from '~/dto/user.dto';
 import { useAuthStore } from '~/stores/auth';
 
-const title = 'Utilisateurs';
 const headers = ['Nom', 'Prénom', 'Email', 'Rôle', '', ''];
 const noCaption = false;
 const pagination = true;
@@ -165,12 +164,12 @@ const validateEditUserForm = () => {
 
 <template>
   <div class="user-header fr-grid-row fr-grid-row--middle fr-mb-2w">
-    <h1 class="fr-my-0">Les utilisateurs</h1>
+    <h1 class="fr-my-0">Utilisateurs</h1>
     <DsfrButton label="Ajouter un utilisateur"
                 data-cy="UserListAddUserButton"
                 @click="askAddUser()" />
   </div>
-  <DsfrTable :title="title" :headers="headers" :rows="rows" :no-caption="noCaption" :pagination="pagination" :key="componentKey" />
+  <DsfrTable :headers="headers" :rows="rows" :no-caption="noCaption" :pagination="pagination" :key="componentKey" />
   <DsfrModal :opened="modalEditOpened" :title="modalTitle" :icon="modalIcon" :actions="modalActions" @close="closeModal">
     <UserForm ref="userFormRef" :user="userToEdit" :loading="loading" @createEdit="createEditUser($event)" />
   </DsfrModal>

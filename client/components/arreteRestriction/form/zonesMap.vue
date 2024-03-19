@@ -255,7 +255,7 @@ watch(
 </script>
 
 <template>
-  <div style="position: relative" v-if="isMapSupported">
+  <div class="map-sticky" v-if="isMapSupported">
     <div class="map-pre-actions">
       <div class="map-pre-actions-card fr-p-1w fr-m-1w">
         <DsfrRadioButton
@@ -288,6 +288,11 @@ watch(
     width: 100%;
     height: 100%;
   }
+}
+
+.map-sticky {
+  position: sticky;
+  top: 20px;
 }
 
 .maplibregl-map {

@@ -284,7 +284,6 @@ if (props.arreteRestriction.statut !== 'a_valider') {
       />
     </DsfrTabContent>
   </DsfrTabs>
-  <ul class="fr-btns-group--shadow-sticky"></ul>
   <ul
     class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
     <li>
