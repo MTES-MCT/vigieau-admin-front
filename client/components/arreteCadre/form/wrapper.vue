@@ -5,13 +5,14 @@ import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import { useAlertStore } from '~/stores/alert';
-import { useAuthStore } from "~/stores/auth";
+import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
 }>();
 
 const api = useApi();
+const router = useRouter();
 const refDataStore = useRefDataStore();
 const alertStore = useAlertStore();
 const authStore = useAuthStore();
@@ -26,7 +27,7 @@ const usageSelected = ref();
 const currentStep: Ref<number> = ref(!props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 3);
 const steps = [
   'Informations générales',
-  "Liste des zones d'alertes",
+  'Liste des zones d\'alertes',
   'Les usages',
   'Récapitulatif',
 ];
@@ -38,19 +39,19 @@ const nextStep = async () => {
   let errors;
   switch (currentStep.value) {
     case 1:
-      await generalFormRef.value?.v$.$validate()
+      await generalFormRef.value?.v$.$validate();
       errors = generalFormRef.value?.v$.$errors;
       break;
     case 2:
-      await zonesFormRef.value?.v$.$validate()
+      await zonesFormRef.value?.v$.$validate();
       errors = zonesFormRef.value?.v$.$errors;
       break;
     case 3:
-      await usagesFormRef.value?.v$.$validate()
+      await usagesFormRef.value?.v$.$validate();
       errors = usagesFormRef.value?.v$.$errors;
       break;
   }
-  if(errors && errors.length > 0) {
+  if (errors && errors.length > 0) {
     showErrors(v$.value.$errors, null);
     return;
   }
@@ -68,7 +69,7 @@ const saveArrete = async (publish: boolean = false) => {
   if (loading.value) {
     return;
   }
-  publish ? v$.value.$validate() : 
+  publish ? v$.value.$validate() :
     generalFormRef.value?.v$.$validate() && usagesFormRef.value?.arreteCadreUsageListRef.v$.$validate();
   if (publish ? v$.value.$error : generalFormRef.value?.v$.$error || usagesFormRef.value?.arreteCadreUsageListRef.v$.$error) {
     showErrors(v$.value.$errors, publish ? 'Impossible de publier l\'arrêté cadre' : 'Impossible d\'enregistrer l\'arrêté cadre');
@@ -89,7 +90,7 @@ const saveArrete = async (publish: boolean = false) => {
     });
     componentKey.value++;
     loading.value = false;
-    if(props.arreteCadre.statut !== 'a_valider') {
+    if (props.arreteCadre.statut !== 'a_valider') {
       await publishArrete(props.arreteCadre);
     }
     if (!publish) {
@@ -106,14 +107,14 @@ const showErrors = (errors: any, title: string | null) => {
   alertStore.addAlert({
     title: title,
     description: errors.filter((e: any) => e.$message).map((e: any) => {
-      if(Array.isArray(e.$message)) {
+      if (Array.isArray(e.$message)) {
         return e.$message.flat().filter((m: any) => m).join(', ');
       }
       return e.$message;
     }).join(', '),
     type: 'error',
   });
-}
+};
 
 const askPublishArrete = async () => {
   await saveArrete(true);
@@ -186,7 +187,8 @@ const usagesFormRef = ref(null);
       />
     </DsfrTabContent>
   </DsfrTabs>
-  <ul class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
+  <ul
+    class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
     <li>
       <DsfrButton label="Précedent"
                   :secondary="true"
@@ -222,6 +224,14 @@ const usagesFormRef = ref(null);
         @click="askPublishArrete()"
       />
     </li>
+    <li style="margin-left: auto;">
+      <DsfrButton
+        label="Retour à la liste"
+        icon="ri-arrow-left-line"
+        secondary
+        @click="router.push('/arrete-cadre')"
+      />
+    </li>
   </ul>
   <DsfrModal :opened="modalPublishOpened"
              icon="ri-arrow-right-line"
@@ -240,7 +250,8 @@ const usagesFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" :disabled="loading" :secondary="true" @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
+          <DsfrButton label="Annuler" :disabled="loading" :secondary="true"
+                      @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
         </li>
         <li>
           <DsfrButton

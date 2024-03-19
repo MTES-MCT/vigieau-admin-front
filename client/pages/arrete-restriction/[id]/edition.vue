@@ -12,7 +12,7 @@ const route = useRoute();
 const breadcrumb = [
   {
     to: "/arrete-restriction",
-    text: "Retour à la liste"
+    text: "Arrêtés de restriction"
   }, {
     text: route.params.id === 'nouveau' ? 'Création' : 'Edition'
   }

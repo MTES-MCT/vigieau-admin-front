@@ -12,8 +12,8 @@ const props = defineProps<{
   arreteRestriction: ArreteRestriction;
 }>();
 
-const route = useRoute();
 const api = useApi();
+const router = useRouter();
 const refDataStore = useRefDataStore();
 const alertStore = useAlertStore();
 const utils = useUtils();
@@ -320,6 +320,14 @@ if (props.arreteRestriction.statut !== 'a_valider') {
         :iconRight="true"
         data-cy="ArreteRestrictionFormPublishBtn"
         @click="askPublishArrete()"
+      />
+    </li>
+    <li style="margin-left: auto;">
+      <DsfrButton
+        label="Retour à la liste"
+        icon="ri-arrow-left-line"
+        secondary
+        @click="router.push('/arrete-restriction')"
       />
     </li>
   </ul>

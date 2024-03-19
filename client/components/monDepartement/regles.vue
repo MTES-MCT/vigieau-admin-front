@@ -21,7 +21,7 @@ const utils = useUtils();
 const regleGestionSuperpositionCommuneOptions = [
   {
     label:
-      'Nous ne sommes pas concernés car une commune ne peut pas être traversée par plusieurs zones d\'alerte',
+      'Nous ne sommes pas concernés car une commune ne peut pas être concernée par plusieurs zones d\'alerte',
     value: 'no',
     img: null,
   },

@@ -26,11 +26,11 @@ const isZaOutdated: boolean = arreteRestriction.value.statut !== 'abroge' && arr
 
 const consultationButtons: Ref<any[]> = ref([
   {
-    label: 'Retour',
+    label: 'Retour à la liste',
     icon: 'ri-arrow-left-line',
     secondary: true,
     onclick: () => {
-      router.go(-1);
+      router.push('/arrete-restriction');
     },
   },
 ]);
