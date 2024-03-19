@@ -32,7 +32,7 @@ const consultationButtons: Ref<any[]> = ref([
 
 if(authStore.isMte || (arreteCadre.value.statut !== 'abroge' && isAcOnDepartementUser && !isZaOutdated)) {
   consultationButtons.value.push({
-      label: 'Modifier',
+      label: 'Corriger',
       icon: 'ri-edit-2-fill',
       secondary: true,
       onclick: () => {

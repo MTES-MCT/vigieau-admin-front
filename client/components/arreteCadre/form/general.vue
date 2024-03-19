@@ -209,7 +209,7 @@ defineExpose({
           v-if="isAci && isDepPilote"
           type="info"
           title="Arrêté Interdépartemental"
-          description="En choisissant de créer un arrêté cadre interdépartemental, cela induit que votre département est le pilote de cet arrêté. Vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
+          description="En tant que DDT pilote, vous avez la responsabilité de remplir les usages et mesures qui serviront à tous les départements. Les autres départements devront uniquement sélectionner leurs zones d’alerte concernées par cet arrêté cadre."
           class="fr-mb-2w"
         />
 
@@ -237,7 +237,7 @@ defineExpose({
             v-if="isDepPilote"
             type="info"
             title="Email d'information"
-            description="Afin de favoriser une bonne communication, un email sera envoyé aux autres départements afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
+            description="Afin de favoriser une bonne communication, un email sera envoyé aux départements dont les zones d'alerte sont vides afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
             class="fr-mb-2w"
           />
         </div>
