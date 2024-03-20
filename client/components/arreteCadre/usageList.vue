@@ -4,7 +4,7 @@ import { helpers, required } from "@vuelidate/validators/dist";
 import useVuelidate from "@vuelidate/core";
 
 const props = defineProps<{
-  usagesArreteCadre: any[];
+  usages: any[];
 }>();
 
 const emit = defineEmits(['usageSelected', 'usageRemoved']);
@@ -24,15 +24,15 @@ const rules = computed(() => {
   };
 });
 
-const v$ = useVuelidate(rules, props.usagesArreteCadre);
+const v$ = useVuelidate(rules, props.usages);
 
 const generateRows = () => {
   rows.value = [
-    ...props.usagesArreteCadre.map((u: any) => {
+    ...props.usages.map((u: any, index: number) => {
       return [
         {
           component: 'span',
-          text: u.usage.nom,
+          text: u.nom,
           class: u.descriptionCrise ? '' : 'usage-error'
         },
         {
@@ -44,7 +44,7 @@ const generateRows = () => {
               iconOnly: true,
               label: 'Editer',
               onClick: () => {
-                emit('usageSelected', u);
+                emit('usageSelected', index);
               },
             },
             {
@@ -68,7 +68,7 @@ const generateRows = () => {
                     },
                   },
                 ]
-                modalDescription.value = `Voulez vous vraiment supprimer l'usage <b>${u.usage.nom}</b> ?`;
+                modalDescription.value = `Voulez vous vraiment supprimer l'usage <b>${u.nom}</b> ?`;
                 modalOpened.value = true;
               },
             },
@@ -93,8 +93,8 @@ defineExpose({
 </script>
 
 <template>
-  <h6>Usages présents dans l’arrêté</h6>
-  <DsfrTable v-if="usagesArreteCadre.length > 0" 
+  <DsfrTable v-if="usages.length > 0" 
+             title="Liste des usages présents dans l'arrêté"
              :headers="headers"
              :rows="rows"
              :no-caption="false"

@@ -41,13 +41,13 @@ const zonesType = [
                               class="fr-ml-2w"
                               :niveauGravite="r.niveauGravite" />          
         </div>
-        <DsfrAccordion :title="'Voir les ' + r.usagesArreteRestriction.length + ' usages'"
-                       v-if="r.usagesArreteRestriction.length > 0"
+        <DsfrAccordion :title="'Voir les ' + r.usages.length + ' usages'"
+                       v-if="r.usages.length > 0"
                        class="fr-accordion--no-shadow"
                        :expanded-id="expandedId"
                        @expand="expandedId = $event">
-          <div v-for="usage in r.usagesArreteRestriction">
-                <b>{{ usage.usage.nom }}</b>
+          <div v-for="usage in r.usages">
+                <b>{{ usage.nom }}</b>
                 <div class="full-width">
                   <template v-if="r.niveauGravite === 'vigilance'">
                     {{ usage.descriptionVigilance }}

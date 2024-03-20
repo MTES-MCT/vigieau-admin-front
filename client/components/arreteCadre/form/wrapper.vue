@@ -3,9 +3,9 @@ import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
 import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
-import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import { useAlertStore } from '~/stores/alert';
 import { useAuthStore } from '~/stores/auth';
+import type { Usage } from '~/dto/usage.dto';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -28,7 +28,7 @@ const currentStep: Ref<number> = ref(!props.arreteCadre.departementPilote || isD
 const steps = [
   'Informations générales',
   'Liste des zones d\'alertes',
-  'Les usages',
+  'Mesures de restriction',
   'Récapitulatif',
 ];
 
@@ -82,9 +82,9 @@ const saveArrete = async (publish: boolean = false) => {
   if (data.value) {
     // Mise à jour des ids des objets nouvellement crées
     props.arreteCadre.id = data.value.id;
-    props.arreteCadre.usagesArreteCadre.map((usageArreteCadre: UsageArreteCadre) => {
-      usageArreteCadre.id = (<ArreteCadre>data.value).usagesArreteCadre.find(
-        (uac: UsageArreteCadre) => uac.usage.id === usageArreteCadre.usage.id,
+    props.arreteCadre.usages.map((usageArreteCadre: Usage) => {
+      usageArreteCadre.id = (<ArreteCadre>data.value).usages.find(
+        (uac: Usage) => uac.nom === usageArreteCadre.nom,
       ).id;
       return usageArreteCadre;
     });
@@ -242,7 +242,7 @@ const usagesFormRef = ref(null);
       <ul>
         <li v-if="arreteCadre.departements.length > 1">{{ arreteCadre.departements.length }} départements</li>
         <li>{{ arreteCadre.zonesAlerte.length }} zones d'alerte</li>
-        <li>{{ arreteCadre.usagesArreteCadre.length }} usages</li>
+        <li>{{ arreteCadre.usages.length }} usages</li>
       </ul>
       <div class="divider"></div>
     </p>

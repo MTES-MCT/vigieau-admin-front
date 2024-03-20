@@ -1,8 +1,11 @@
 import type { Usage } from '~/dto/usage.dto';
+import type { Thematique } from '~/dto/thematique.dto';
 
 export class UsageArreteCadre {
   id: number | null;
   usage: Usage;
+  nom: string;
+  thematique: Thematique | null;
   concerneParticulier: boolean;
   concerneEntreprise: boolean;
   concerneCollectivite: boolean;
@@ -18,6 +21,8 @@ export class UsageArreteCadre {
   constructor(usage: Usage) {
     this.id = null;
     this.usage = usage;
+    this.nom = '';
+    this.thematique = null;
     this.concerneParticulier = usage.concerneParticulier;
     this.concerneEntreprise = usage.concerneEntreprise;
     this.concerneCollectivite = usage.concerneCollectivite;

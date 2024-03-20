@@ -10,7 +10,7 @@ export class ArreteCadre {
   departements: any[];
   departementPilote: any;
   zonesAlerte: ZoneAlerte[];
-  usagesArreteCadre: any[];
+  usages: any[];
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
   arretesRestriction: ArreteRestriction[];
   arreteCadreAbroge: ArreteCadre | null;
@@ -33,7 +33,7 @@ export class ArreteCadre {
     this.statut = 'a_valider';
     this.departements = [];
     this.zonesAlerte = [];
-    this.usagesArreteCadre = [];
+    this.usages = [];
     this.communeNiveauGraviteMax = null;
     this.niveauGraviteSpecifiqueEap = null;
     this.ressourceEapCommunique = null;

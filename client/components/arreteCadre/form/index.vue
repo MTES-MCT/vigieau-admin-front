@@ -32,7 +32,7 @@ if (isNewArreteCadre && !route.query.arretecadre) {
       ac.dateDebut = null;
       ac.dateFin = null;
       ac.fichier = null;
-      ac.usagesArreteCadre.map((u) => {
+      ac.usages.map((u) => {
         u.id = null;
         return u;
       });

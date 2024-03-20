@@ -3,7 +3,6 @@ import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import type { Ref } from 'vue';
-import { requiredIf } from '@vuelidate/validators';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';

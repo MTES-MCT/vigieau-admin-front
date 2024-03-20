@@ -3,7 +3,7 @@ import { helpers, required } from '@vuelidate/validators/dist';
 import useVuelidate from '@vuelidate/core';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
-import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
+import type { Usage } from '~/dto/usage.dto';
 
 const props = defineProps<{
   viewOnly: boolean;
@@ -24,18 +24,18 @@ const rules = computed(() => {
   };
 });
 
-const editUsage = (u: UsageArreteCadre) => {
+const editUsage = (u: Usage) => {
   emit('usageSelected', u);
 };
 
 const generateRows = () => {
   rows.value = [
-    ...props.arreteCadre.usagesArreteCadre.map((u: UsageArreteCadre) => {
+    ...props.arreteCadre.usages.map((u: Usage) => {
       return [
         {
           component: arreteCadreRecapitulatifCell,
           viewOnly: props.viewOnly,
-          html: `<b>${u.usage.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.usage.thematique?.nom}</b>`,
+          html: `<b>${u.nom}</b><br/><br/>Thématique&nbsp;: <b>${u.thematique?.nom}</b>`,
           onClickEdit: () => editUsage(u)
         },
         {
@@ -80,7 +80,7 @@ const generateRows = () => {
   componentKey.value += 1;
 };
 
-const generateUsagers = (u: UsageArreteCadre) => {
+const generateUsagers = (u: Usage) => {
   let toReturn = [];
   u.concerneParticulier ? toReturn.push('Particulier') : '';
   u.concerneEntreprise ? toReturn.push('Entreprise') : '';
@@ -89,7 +89,7 @@ const generateUsagers = (u: UsageArreteCadre) => {
   return toReturn.join(', ');
 };
 
-const generateRessources = (u: UsageArreteCadre) => {
+const generateRessources = (u: Usage) => {
   let toReturn = [];
   u.concerneEso ? toReturn.push('ESO') : '';
   u.concerneEsu ? toReturn.push('ESU') : '';
@@ -101,7 +101,7 @@ generateRows();
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 
-watch(() => props.arreteCadre.usagesArreteCadre, () => {
+watch(() => props.arreteCadre.usages, () => {
   generateRows();
 });
 </script>

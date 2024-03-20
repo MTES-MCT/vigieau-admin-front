@@ -5,9 +5,8 @@ import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
-import { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
 import deburr from 'lodash.deburr';
-import { useAlertStore } from "~/stores/alert";
+import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -26,13 +25,31 @@ const refDataStore = useRefDataStore();
 const utils = useUtils();
 const api = useApi();
 const alertStore = useAlertStore();
-const usageArreteCadreToEdit: Ref<UsageArreteCadre | null> = ref(null);
-const tabs = ref();
+const usageArreteCadreToEdit: Ref<Usage | null> = ref(null);
+
+const createEditUsageFormRef = ref();
+const modalOpened = ref(false);
+const modalActions = ref([
+  {
+    label: 'Enregistrer',
+    onclick: () => {
+      createEditUsageFormRef.value?.submitForm();
+    },
+  },
+  {
+    label: 'Annuler',
+    secondary: true,
+    onclick: () => {
+      utils.closeModal(modalOpened);
+    },
+  }
+]);
+const indexEdited: Ref<number | null> = ref(null);
 
 const rules = computed(() => {
   return {
-    usagesArreteCadre: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins un usage", required),
+    usages: {
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins un usage', required),
     },
   };
 });
@@ -47,13 +64,13 @@ const filterUsages = () => {
     const queryWords = deburr(query.value)
       .replace(/[\-\_]/g, '')
       .split(' ')
-      .map(s => s.replace(/^/,"(").replace(/$/,")"))
+      .map(s => s.replace(/^/, '(').replace(/$/, ')'))
       .join('*');
     const regex = new RegExp(`${queryWords}`, 'gi');
     return nom.match(regex);
   }) : refDataStore.usages;
   tmp = tmp.filter((u) => {
-    return props.arreteCadre.usagesArreteCadre.findIndex((uac) => uac.usage.id === u.id) < 0
+    return props.arreteCadre.usages.findIndex((uac) => uac.nom === u.nom) < 0;
   });
   // tmp.push({
   //   id: null,
@@ -62,73 +79,57 @@ const filterUsages = () => {
   usagesFiltered.value = tmp;
 };
 
-const selectUsage = (usage: Usage | UsageArreteCadre | string, isUsageArreteCadre: boolean = false) => {
+const selectUsage = (usage: Usage | string, isUsageArreteCadre: boolean = false) => {
   if (typeof usage === 'string') {
     return;
   }
   query.value = '';
   if (!usage.id && !isUsageArreteCadre) {
-    tabs.value.selectIndex(1);
     return;
   }
   componentKey.value += 1;
   if (!isUsageArreteCadre) {
-    let usageArreteCadre = props.arreteCadre.usagesArreteCadre.find((uac) => uac.usage.id === (<Usage>usage).id);
+    let usageArreteCadre = props.arreteCadre.usages.find((uac) => uac.nom === (<Usage>usage).nom);
     if (!usageArreteCadre) {
-      usageArreteCadre = new UsageArreteCadre(<Usage>usage);
+      usageArreteCadre = new Usage(<Usage>usage);
     }
-    usageArreteCadreToEdit.value = usageArreteCadre;
+    askCreateEditUsage(null, usageArreteCadre);
   } else {
-    usageArreteCadreToEdit.value = <UsageArreteCadre>usage;
+    askCreateEditUsage(props.arreteCadre.usages.findIndex(u => u.nom === usage.nom));
   }
 };
 
-const deleteUsage = (usage: UsageArreteCadre) => {
-  props.arreteCadre.usagesArreteCadre = props.arreteCadre.usagesArreteCadre.filter((uac) => uac.usage.id !== usage.usage.id);
+const deleteUsage = (usage: Usage) => {
+  props.arreteCadre.usages = props.arreteCadre.usages.filter((uac) => uac.nom !== usage.nom);
   componentKey.value += 1;
 };
 
-const validateUsageForm = () => {
-  usageFormRef.value?.submitForm();
+const askCreateEditUsage = (index: number | null = null, usage?: Usage) => {
+  const u = index !== null ? JSON.parse(JSON.stringify(props.arreteCadre.usages[index])) : new Usage(usage);
+  usageToEdit.value = u;
+  indexEdited.value = index;
+  setTimeout(() => {
+    modalOpened.value = true;    
+  })
 };
-
-const hideNewUsage = () => {
-  usageFormRef.value?.v$.$reset();
-  tabs.value.selectIndex(0);
-  usageToEdit.value = new Usage();
-  componentKey.value += 1;
-};
-
-const usageFormButtons: Ref<any[]> = ref([
-  {
-    label: 'Annuler',
-    secondary: true,
-    onclick: hideNewUsage,
-  },
-  {
-    label: 'Enregistrer le nouvel usage',
-    'data-cy': 'UsageFormSaveBtn',
-    onclick: validateUsageForm,
-  },
-]);
 
 const createEditUsage = async (usage: Usage) => {
-  loading.value = true;
-  const { data, error } = await api.usage.create(usage);
-  loading.value = false;
-  hideNewUsage();
-  if (data.value) {
-    refDataStore.setUsages([...refDataStore.usages, data.value]);
-    selectUsage(data.value);
+  if (indexEdited.value === null) {
+    props.arreteCadre.usages.push(usage);
+  } else {
+    props.arreteCadre.usages[indexEdited.value] = usage;
   }
+  componentKey.value += 1;
+  indexEdited.value = null;
+  utils.closeModal(modalOpened);
 };
 
 const addEditUsageArreteCadre = () => {
-  const idx = props.arreteCadre.usagesArreteCadre.findIndex((u: UsageArreteCadre) => u.usage.id === usageArreteCadreToEdit.value?.usage.id);
+  const idx = props.arreteCadre.usages.findIndex((u: Usage) => u.nom === usageArreteCadreToEdit.value?.nom);
   if (idx > -1) {
-    props.arreteCadre.usagesArreteCadre[idx] = usageArreteCadreToEdit.value;
+    props.arreteCadre.usages[idx] = usageArreteCadreToEdit.value;
   } else {
-    props.arreteCadre.usagesArreteCadre.push(usageArreteCadreToEdit.value);
+    props.arreteCadre.usages.push(usageArreteCadreToEdit.value);
   }
   componentKey.value += 1;
   usageArreteCadreToEdit.value = null;
@@ -156,20 +157,12 @@ const usageArreteCadreFormButtons: Ref<any[]> = ref([
   },
 ]);
 
-const tabTitles = [{ title: 'Recherche' }, { title: 'Créer un nouvel usage' }];
-const selectedTabIndex: Ref<number> = ref(0);
-const asc = ref(true);
-const selectTab = (idx: number) => {
-  asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
-};
-
 watch(
   query,
   useUtils().debounce(async () => {
     filterUsages();
   }, 300),
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -194,81 +187,64 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
-    <div class="usage-wrapper fr-grid-row fr-grid-row--gutters">
+    <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
-        <DsfrTabs ref="tabs"
-                  :tab-titles="tabTitles"
-                  :initial-selected-index="selectedTabIndex"
-                  @select-tab="selectTab($event); utils.scrollToTop()">
-          <DsfrTabContent panel-id="tab-content-0" tab-id="tab-0" :asc="asc" :selected="selectedTabIndex === 0">
-            <p>
-              Retrouvez les usages utilisés dans un arrêté  cadre précédent&nbsp;:
-            </p>
-            <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
-              <MixinsAutoComplete
-                class="show-label"
-                data-cy="ArreteCadreFormUsagesAutocomplete"
-                placeholder="Taper le nom d'un usage"
-                buttonText="Ajouter"
-                display-key="nom"
-                v-model="query"
-                :options="usagesFiltered"
-                @update:modelValue="selectUsage($event)"
-              />
-            </DsfrInputGroup>
-            <div v-if="usageArreteCadreToEdit" class="usage-form-wrapper fr-p-2w fr-mt-2w">
-              <UsageArreteCadreForm
-                :usageArreteCadre="usageArreteCadreToEdit"
-                :key="componentKey"
-                :loading="loading"
-                @createEdit="addEditUsageArreteCadre()"
-                ref="usageArreteCadreFormRef"
-              />
-              <DsfrButtonGroup :buttons="usageArreteCadreFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
-            </div>
-          </DsfrTabContent>
-          <DsfrTabContent panel-id="tab-content-1" tab-id="tab-1" :asc="asc" :selected="selectedTabIndex === 1">
-            <UsageForm ref="usageFormRef"
-                       :key="componentKey"
-                       :loading="loading"
-                       :usage="usageToEdit"
-                       @createEdit="createEditUsage($event)" />
-            <DsfrButtonGroup :buttons="usageFormButtons" class="fr-mt-2w" align="right" inlineLayoutWhen="always" />
-          </DsfrTabContent>
-        </DsfrTabs>
+        <ArreteCadreUsageList
+          ref="arreteCadreUsageListRef"
+          :usages="arreteCadre.usages"
+          @usage-selected="askCreateEditUsage($event)"
+          @usage-removed="deleteUsage($event)"
+          :key="componentKey"
+        />
       </div>
       <div class="fr-col-12 fr-col-lg-6">
-        <div class="arrete-cadre-usage-list fr-p-2w">
-          <ArreteCadreUsageList
-            ref="arreteCadreUsageListRef"
-            :usagesArreteCadre="arreteCadre.usagesArreteCadre"
-            @usage-selected="selectUsage($event, true)"
-            @usage-removed="deleteUsage($event)"
-            :key="componentKey"
-          />
+        <div class="usage-card">
+          <h4>Il manque un usage dans votre liste ?</h4>
+          <p>
+            Retrouvez les usages utilisés dans un arrêté précédent&nbsp;:
+          </p>
+          <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
+            <MixinsAutoComplete
+              class="show-label"
+              data-cy="ArreteCadreFormUsagesAutocomplete"
+              placeholder="Saisir le nom d'un usage"
+              buttonText="Chercher"
+              display-key="nom"
+              v-model="query"
+              :options="usagesFiltered"
+              @update:modelValue="selectUsage($event)"
+            />
+          </DsfrInputGroup>
+          <div class="fr-grid-row fr-grid-row--middle fr-mb-2w">
+            <div style="flex: 1;" class="divider" />
+            <span class="fr-mx-4w">ou</span>
+            <div style="flex: 1;" class="divider" />
+          </div>
+          <div class="fr-grid-row fr-grid-row--middle fr-grid-row--space-between">
+            <span>L'usage n'existe pas</span>
+            <DsfrButton label="Créer un nouvel usage"
+                        @click="askCreateEditUsage()"/>
+          </div>          
         </div>
       </div>
     </div>
   </form>
+  <DsfrModal
+    :opened="modalOpened"
+    title="Création / édition d'un usage"
+    :actions="modalActions"
+    @close="modalOpened = utils.closeModal(modalOpened);">
+    <ArreteCadreFormCreateEditUsage ref="createEditUsageFormRef"
+                                    @createEdit="createEditUsage($event)"
+                                    :usage="usageToEdit"
+                                    :other-usages="arreteCadre.usages"
+    />
+  </DsfrModal>
 </template>
 
 <style lang="scss">
-.usage-wrapper {
-  .fr-tabs {
-    overflow: visible;
-
-    &:before {
-      height: calc(100% - 40px);
-    }
-  }
-}
-
 .usage-form-wrapper {
   border: 1px solid var(--grey-925-125);
-}
-
-.arrete-cadre-usage-list {
-  background: var(--grey-975-75);
 }
 
 .select-option-usage {
@@ -279,5 +255,10 @@ defineExpose({
   .select-option-usage {
     color: white;
   }
+}
+
+.usage-card {
+  border: 1px solid var(--border-active-blue-france);
+  padding: 1rem;
 }
 </style>

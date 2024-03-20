@@ -105,7 +105,7 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'zonesAlerte')">
           <template v-for="(d, index) in departementsFiletered">
             <div class="divider fr-mb-2w"></div>
-            <div class="fr-grid-row zone-line full-width">
+            <div class="fr-grid-row fr-grid-row--space-between zone-line full-width">
               <h6>{{ d.nom }}</h6>
               <DsfrCheckbox
                 label="Tout sélectionner"
@@ -177,7 +177,6 @@ defineExpose({
 
 <style lang="scss">
 .zone-line {
-  justify-content: space-between;
   align-items: center;
   
   h6 {
@@ -249,14 +248,6 @@ defineExpose({
           width: 100%;
         }
       }
-    }
-  }
-  
-  &__a-completer {
-    justify-content: space-between;
-    
-    & > div:not(:first-child) {
-      color: var(--blue-france-sun-113-625);
     }
   }
 }

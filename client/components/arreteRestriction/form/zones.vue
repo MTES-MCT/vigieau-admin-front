@@ -105,7 +105,7 @@ watch(zonesSelected, () => {
       zoneAlerte: z.zoneAlerte,
       arreteCadre: ac,
       niveauGravite: null,
-      usagesArreteRestriction: [],
+      usages: [],
       isAep: false,
       communes: null,
       nomGroupementAep: null,

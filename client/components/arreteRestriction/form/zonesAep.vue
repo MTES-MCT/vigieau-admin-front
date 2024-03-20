@@ -99,45 +99,6 @@ defineExpose({
   v$,
 });
 
-// watch(isFullDepartement, () => {
-//   if (!canComputeFullDepartement.value) {
-//     canComputeFullDepartement.value = true;
-//     return;
-//   }
-//   if (isFullDepartement.value) {
-//     // On assigne toutes les communes
-//     if (!zonesAep.value.some((r) => r.nomGroupementAep === 'Zone AEP départementale')) {
-//       zonesAep.value.push({
-//         arreteCadre: null,
-//         id: null,
-//         nomGroupementAep: 'Zone AEP départementale',
-//         zoneAlerte: null,
-//         niveauGravite: null,
-//         usagesArreteRestriction: [],
-//         isAep: true,
-//         communes: communes.value.map((c) => {
-//           return { id: c.id };
-//         }),
-//         communesText: undefined,
-//       });
-//     } else {
-//       zonesAep.value = zonesAep.value.map((r) => {
-//         if (r.nomGroupementAep === 'Zone AEP départementale') {
-//           r.communes = communes.value.map((c) => {
-//             return { id: c.id };
-//           });
-//         }
-//         return r;
-//       });
-//     }
-//     zonesSelected.value = ['Zone AEP départementale'];
-//   } else {
-//     zonesAep.value = zonesAep.value.filter((r) => r.nomGroupementAep !== 'Zone AEP départementale');
-//     // On enlève les restrictions AEP
-//     zonesSelected.value = [];
-//   }
-// });
-
 watch(
   () => props.arreteRestriction.departement,
   async () => {
@@ -175,8 +136,6 @@ watch(zonesSelected, () => {
       <div class="fr-col-12 fr-col-lg-6">
         <h6>Définition des zones AEP</h6>
 
-        <h6>Création de zones AEP avec un groupement de commune</h6>
-
         <div v-if="communes.length > 0" class="form-group fr-fieldset fr-mt-2w">
           <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
             <template v-for="(r, index) in arreteRestriction.restrictions">
@@ -212,24 +171,30 @@ watch(zonesSelected, () => {
             </template>
           </DsfrInputGroup>
         </div>
-        <DsfrButton
-          label="Ajouter un groupement de communes"
-          secondary
-          @click="createEditGroupementCommunes()"
-          :disabled="communesAssociated >= communes.length"
-        />
-        <DsfrButton
-          label="Ajouter toutes les communes du département"
-          secondary
-          @click="createEditGroupementCommunes(null, true)"
-          :disabled="zonesSelected.length > 0"
-        />
+        <ul class="fr-btns-group">
+          <li>
+            <DsfrButton
+              label="Ajouter un groupement de communes"
+              secondary
+              @click="createEditGroupementCommunes()"
+              :disabled="communesAssociated >= communes.length"
+            />            
+          </li>
+          <li>
+            <DsfrButton
+              label="Ajouter toutes les communes du département"
+              secondary
+              @click="createEditGroupementCommunes(null, true)"
+              :disabled="zonesSelected.length > 0"
+            />
+          </li>
+        </ul>
       </div>
     </div>
   </form>
   <DsfrModal
     :opened="modalCommunesOpened"
-    title="Nouveau groupement de communes"
+    title="Création / édition d'un groupement de communes"
     :actions="modalActions"
     @close="modalCommunesOpened = utils.closeModal(modalCommunesOpened);"
   >

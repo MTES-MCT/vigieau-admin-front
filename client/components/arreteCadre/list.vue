@@ -103,7 +103,7 @@ watch(
 </script>
 
 <template>
-  <div class="arrete-cadre-header fr-grid-row fr-grid-row--middle fr-mb-2w" data-cy="ArreteCadreListHeader">
+  <div class="fr-grid-row fr-grid-row--space-between fr-grid-row--middle fr-mb-2w" data-cy="ArreteCadreListHeader">
     <DsfrAlert
       v-if="showZaAlert"
       class="fr-mb-2w full-width"
@@ -151,9 +151,3 @@ watch(
     </div>
   </template>
 </template>
-
-<style lang="scss" scoped>
-.arrete-cadre-header {
-  justify-content: space-between;
-}
-</style>

@@ -71,7 +71,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       });
       ar.restrictions.map((r) => {
         r.id = null;
-        r.usagesArreteRestriction.map((u) => {
+        r.usages.map((u) => {
           u.id = null;
           return u;
         });

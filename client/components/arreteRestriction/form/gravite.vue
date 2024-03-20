@@ -70,7 +70,7 @@ const niveauGraviteOptions = [
 const applyToAllRestrictions = (restriction: Restriction, $event: any) => {
   const restrictions: Restriction[] = getRestrictionsByZoneType(restriction.isAep ? 'AEP' : restriction.zoneAlerte.type);
   restrictions.forEach(r => {
-    r.usagesArreteRestriction = r.usagesArreteRestriction.filter(u => u.usage.id !== $event);
+    r.usages = r.usages.filter(u => u.nom !== $event);
   });
 };
 

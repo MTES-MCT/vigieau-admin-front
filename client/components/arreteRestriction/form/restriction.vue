@@ -27,19 +27,19 @@ const rules = computed(() => {
     // },
   };
 });
-const usagesSelected: Ref<number[]> = ref(props.restriction.usagesArreteRestriction.map((u) => u.usage.id));
+const usagesSelected: Ref<string[]> = ref(props.restriction.usages.map((u) => u.nom));
 const allUsages: Ref<any[]> = ref([]);
 if(!props.arreteCadre) {
-  allUsages.value = props.restriction.usagesArreteRestriction;
+  allUsages.value = props.restriction.usages;
 } else {
-  let usagesAc = props.arreteCadre.usagesArreteCadre;
+  let usagesAc = props.arreteCadre.usages;
   usagesAc = usagesAc.filter((value, index, self) =>
       index === self.findIndex((t) => (
-        t.usage.id === value.usage.id
+        t.nom === value.nom
       ))
   );
-  allUsages.value = props.restriction.usagesArreteRestriction.concat(usagesAc
-    .filter((u) => !usagesSelected.value.includes(u.usage.id))
+  allUsages.value = props.restriction.usages.concat(usagesAc
+    .filter((u) => !usagesSelected.value.includes(u.nom))
     .map((u) => {
       u.id = null;
       return u;
@@ -55,10 +55,10 @@ if(!props.arreteCadre) {
   });
 }
 allUsages.value = allUsages.value.sort((a, b) => {
-  if (a.usage.nom < b.usage.nom) {
+  if (a.nom < b.nom) {
     return -1;
   }
-  if (a.usage.nom > b.usage.nom) {
+  if (a.nom > b.nom) {
     return 1;
   }
   return 0;
@@ -91,17 +91,17 @@ const accordionTitle = computed(() => {
   const allUsagesLength = props.restriction.niveauGravite ? 
     allUsages.value.filter((u) => getNiveauGravite(u) !== null && getNiveauGravite(u) !== '').length : 
     allUsages.value.length;
-  return `Afficher les ${props.restriction.usagesArreteRestriction.length}/${allUsagesLength} usages`;
+  return `Afficher les ${props.restriction.usages.length}/${allUsagesLength} usages`;
 });
 
 const modalOpened = ref(false);
 const modalTitle = ref('');
-const usageIdToEmit = ref();
+const usageNameToEmit = ref();
 const modalActions = ref([
   {
     label: 'Appliquer à toutes les zones',
     onclick: () => {
-      emit('applyToAllRestrictions', usageIdToEmit.value);
+      emit('applyToAllRestrictions', usageNameToEmit.value);
       utils.closeModal(modalOpened);
     },
   },
@@ -114,11 +114,11 @@ const modalActions = ref([
   },
 ]);
 
-const onChange = ({ id, checked }: { id: number; checked: boolean }) => {
-  usagesSelected.value = checked ? [...usagesSelected.value, id] : usagesSelected.value.filter((val) => val !== id);
-  props.restriction.usagesArreteRestriction = allUsages.value.filter((u) => usagesSelected.value.includes(u.usage.id));
+const onChange = ({ nom, checked }: { nom: string; checked: boolean }) => {
+  usagesSelected.value = checked ? [...usagesSelected.value, nom] : usagesSelected.value.filter((val) => val !== nom);
+  props.restriction.usages = allUsages.value.filter((u) => usagesSelected.value.includes(u.nom));
   if(!checked && props.multipleZones) {
-    usageIdToEmit.value = id;
+    usageNameToEmit.value = nom;
     modalTitle.value = `Souhaitez-vous ${checked ? 'cocher' : 'décocher'} cet usage sur toutes les zones d’alertes de même ressource ?`;
     modalOpened.value = true;    
   }
@@ -139,26 +139,26 @@ const getNiveauGravite = (usageArreteCadre: UsageArreteCadre, niveauGravite?: st
   }
 };
 
-watch(() => props.restriction.usagesArreteRestriction, () => {
-  usagesSelected.value = props.restriction.usagesArreteRestriction.map((u) => u.usage.id);
+watch(() => props.restriction.usages, () => {
+  usagesSelected.value = props.restriction.usages.map((u) => u.nom);
 });
 
 watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
   const selectedUsage = allUsages.value.filter(usage => {
-    return usagesSelected.value.includes(usage.usage.id) && getNiveauGravite(usage) !== null && getNiveauGravite(usage) !== '';
-  }).map(u => u.usage.id);
+    return usagesSelected.value.includes(usage.nom) && getNiveauGravite(usage) !== null && getNiveauGravite(usage) !== '';
+  }).map(u => u.nom);
   const oldUsagesDisabledEnabled = allUsages.value.filter(usage => {
     return (getNiveauGravite(usage, oldValue ? oldValue : 'new') === null || getNiveauGravite(usage, oldValue ? oldValue : 'new') === '') &&
       getNiveauGravite(usage) !== null && getNiveauGravite(usage) !== '';
-  }).map(u => u.usage.id);
+  }).map(u => u.nom);
   usagesSelected.value = [...new Set([selectedUsage, oldUsagesDisabledEnabled].flat())];
-  props.restriction.usagesArreteRestriction = allUsages.value.filter((u) => usagesSelected.value.includes(u.usage.id));
+  props.restriction.usages = allUsages.value.filter((u) => usagesSelected.value.includes(u.nom));
 });
 </script>
 
 <template>
   <form @submit.prevent="">
-    <div class="fr-grid-row restriction-line">
+    <div class="fr-grid-row fr-grid-row--space-between restriction-line">
       <div class="fr-col-8">
         <template v-if="restriction.isAep">
           {{ restriction.nomGroupementAep }}
@@ -186,16 +186,16 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
                          class="fr-accordion--no-shadow">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.usage.id"
-                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.usage.id || usageArreteCadre.name"
-                :name="usageArreteCadre.usage.nom"
-                :model-value="usagesSelected.includes(usageArreteCadre.usage.id)"
+                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id"
+                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id || usageArreteCadre.nom"
+                :name="usageArreteCadre.nom"
+                :model-value="usagesSelected.includes(usageArreteCadre.nom)"
                 :small="false"
                 :disabled="getNiveauGravite(usageArreteCadre) === null || getNiveauGravite(usageArreteCadre) === ''"
-                @update:model-value="onChange({ id: usageArreteCadre.usage.id, checked: $event })"
+                @update:model-value="onChange({ nom: usageArreteCadre.nom, checked: $event })"
               >
                 <template #label>
-                  <b>{{ usageArreteCadre.usage.nom }}</b>
+                  <b>{{ usageArreteCadre.nom }}</b>
                   <div class="full-width">
                     {{ getNiveauGravite(usageArreteCadre) }}
                   </div>
@@ -220,7 +220,6 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
 
 <style lang="scss">
 .restriction-line {
-  justify-content: space-between;
   align-items: center;
 
   .fr-select-group {

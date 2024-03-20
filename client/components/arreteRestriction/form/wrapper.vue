@@ -4,9 +4,8 @@ import useVuelidate from '@vuelidate/core/dist/index';
 import { useRefDataStore } from '~/stores/refData';
 import { useAlertStore } from '~/stores/alert';
 import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
-import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Restriction } from '~/dto/restriction.dto';
+import type { Usage } from '~/dto/usage.dto';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -107,11 +106,11 @@ const saveArrete = async (publish: boolean = false) => {
       restriction.id = (<ArreteRestriction>data.value).restrictions.find(
         (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte?.id : r.nomGroupementAep === restriction.nomGroupementAep,
       ).id;
-      restriction.usagesArreteRestriction.map((usagesArreteRestriction: UsageArreteCadre) => {
+      restriction.usages.map((usagesArreteRestriction: Usage) => {
         usagesArreteRestriction.id = (<ArreteRestriction>data.value).restrictions.find(
           (r: Restriction) => r.id === restriction.id,
-        ).usagesArreteRestriction.find(
-          (u: UsageArreteCadre) => u.usage.id === usagesArreteRestriction.usage.id,
+        ).usages.find(
+          (u: Usage) => u.nom === usagesArreteRestriction.nom,
         ).id;
         return usagesArreteRestriction;
       });

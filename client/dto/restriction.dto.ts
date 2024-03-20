@@ -6,7 +6,7 @@ export class Restriction {
   communes: any[] | null;
   nomGroupementAep: string | null;
   niveauGravite: 'vigilance' | 'alerte' | 'alerte_renforcee' | 'crise' | null;
-  usagesArreteRestriction: any[];
+  usages: any[];
   
   communesText: string | undefined;
 
@@ -18,7 +18,7 @@ export class Restriction {
     this.communes = isAep ? [] : null;
     this.nomGroupementAep = null;
     this.niveauGravite = null;
-    this.usagesArreteRestriction = [];
+    this.usages = [];
   }
 
 }

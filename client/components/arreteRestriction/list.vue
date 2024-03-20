@@ -104,7 +104,7 @@ watch(
 </script>
 
 <template>
-  <div class="arrete-restriction-header fr-grid-row fr-grid-row--middle fr-mb-2w">
+  <div class="fr-grid-row fr-grid-row--space-between fr-grid-row--middle fr-mb-2w">
     <DsfrAlert
       v-if="showZaAlert"
       class="fr-mb-2w full-width"
@@ -163,9 +163,3 @@ watch(
     </div>
   </template>
 </template>
-
-<style lang="scss" scoped>
-.arrete-restriction-header {
-  justify-content: space-between;
-}
-</style>
