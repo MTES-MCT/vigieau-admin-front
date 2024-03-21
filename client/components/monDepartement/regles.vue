@@ -78,10 +78,10 @@ defineExpose({
 <template>
   <form @submit.prevent="">
     <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
+      <p>Ce paramètre détermine le calcul des niveaux de restrictions affiché sur Vigieau pour chaque type de ressource (eaux souterraines, eaux superficielles, eau potable).</p>
       <fieldset class="fr-fieldset">
-        <p>Ce paramètre détermine le calcul des niveaux de restrictions affiché sur Vigieau pour chaque type de ressource (eaux souterraines, eaux superficielles, eau potable).</p>
         <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
-          Si une commune est traversée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
+          Si une commune est concernée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
         </legend>
         <div class="fr-grid-row fr-grid-row--gutters">
           <template v-for="option in regleGestionSuperpositionCommuneOptions">

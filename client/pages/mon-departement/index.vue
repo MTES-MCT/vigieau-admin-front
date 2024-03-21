@@ -19,7 +19,7 @@ const utils = useUtils();
 
 <template>
   <MixinsAlerts class="fr-mb-2w" />
-  <h1 class="fr-mb-2w">
+  <h1 class="fr-mb-4w">
     Mon département
   </h1>
   <DsfrTabs :tab-titles="tabTitles"
