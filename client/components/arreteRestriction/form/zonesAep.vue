@@ -38,7 +38,7 @@ const groupementToEdit: Ref<Restriction | undefined> = ref();
 const groupementCommunesFormRef = ref(null);
 const zonesAep: Ref<Restriction[]> = ref(props.arreteRestriction.restrictions.filter((r) => r.isAep));
 const zonesSelected: Ref<string[]> = ref(zonesAep.value.map((r) => r.nomGroupementAep));
-const indexEdited = ref(null);
+const groupemenantNameEdited: Ref<string | null> = ref(null);
 
 const isFullDepartement = ref(null);
 const canComputeFullDepartement = ref(true);
@@ -65,32 +65,49 @@ const communesAssociated = computed(() => {
     .flat().length;
 });
 
-const createEditGroupementCommunes = (index = null, isFullDepartement = false) => {
-  const r = index !== null ? JSON.parse(JSON.stringify(props.arreteRestriction.restrictions[index])) : new Restriction(true);
+const createEditGroupementCommunes = (restriction = null, isFullDepartement = false) => {
+  const r = restriction !== null ? JSON.parse(JSON.stringify(restriction)) : new Restriction(true);
   if (isFullDepartement) {
-    r.nomGroupementAep === 'Zone AEP départementale';
+    r.nomGroupementAep = 'Zone AEP départementale';
     r.communes = communes.value.map((c) => {
-      return { id: c.id };
+      return { id: c.id, code: c.code, nom: c.nom };
     });
   }
   groupementToEdit.value = r;
-  indexEdited.value = index;
+  groupemenantNameEdited.value = restriction ? r.nomGroupementAep : null;
   modalCommunesOpened.value = true;
 };
 
 const createEditGroupement = async (restriction: Restriction) => {
-  if (indexEdited.value === null) {
+  if (groupemenantNameEdited.value === null) {
     props.arreteRestriction.restrictions.push(restriction);
+    zonesAep.value.push(restriction);
     zonesSelected.value = [...zonesSelected.value, restriction.nomGroupementAep];
   } else {
-    props.arreteRestriction.restrictions[indexEdited.value] = restriction;
+    const idx = props.arreteRestriction.restrictions.findIndex(r => r.isAep && r.nomGroupementAep === groupemenantNameEdited.value);
+    props.arreteRestriction.restrictions[idx] = restriction;
+    const idxBis = zonesAep.value.findIndex(r => r.isAep && r.nomGroupementAep === groupemenantNameEdited.value);
+    zonesAep.value[idxBis] = restriction;
   }
-  indexEdited.value = null;
+  sortRestrictions();
+  groupemenantNameEdited.value = null;
   utils.closeModal(modalCommunesOpened);
 };
 
 const onChange = ({ name, checked }: { name: string; checked: boolean }) => {
   zonesSelected.value = checked ? [...zonesSelected.value, name] : zonesSelected.value.filter((val) => val !== name);
+};
+
+const sortRestrictions = () => {
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.sort((a, b) => {
+    if (a.nomGroupementAep < b.nomGroupementAep) {
+      return -1;
+    }
+    if (a.nomGroupementAep > b.nomGroupementAep) {
+      return 1;
+    }
+    return 0;
+  });
 };
 
 const v$ = useVuelidate(rules, { isFullDepartement });
@@ -127,6 +144,7 @@ watch(zonesSelected, () => {
   newZones.forEach((z) => {
     props.arreteRestriction.restrictions.push(z);
   });
+  sortRestrictions();
 });
 </script>
 
@@ -138,36 +156,34 @@ watch(zonesSelected, () => {
 
         <div v-if="communes.length > 0" class="form-group fr-fieldset fr-mt-2w">
           <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
-            <template v-for="(r, index) in arreteRestriction.restrictions">
-              <template v-if="r.isAep">
-                <DsfrCheckbox
-                  :id="r.id || r.nomGroupementAep"
-                  :name="r.nomGroupementAep"
-                  :model-value="zonesSelected.includes(r.nomGroupementAep)"
-                  :small="false"
-                  @update:model-value="onChange({ name: r.nomGroupementAep, checked: $event })"
-                >
-                  <template #label>
-                    <DsfrButton
-                      :label="r.nomGroupementAep"
-                      :tertiary="true"
-                      :no-outline="false"
-                      @click.stop="createEditGroupementCommunes(index)"
-                    />
-                  </template>
-                </DsfrCheckbox>
+            <template v-for="(r) in zonesAep">
+              <DsfrCheckbox
+                :id="r.id || r.nomGroupementAep"
+                :name="r.nomGroupementAep"
+                :model-value="zonesSelected.includes(r.nomGroupementAep)"
+                :small="false"
+                @update:model-value="onChange({ name: r.nomGroupementAep, checked: $event })"
+              >
+                <template #label>
+                  <DsfrButton
+                    :label="r.nomGroupementAep"
+                    :tertiary="true"
+                    :no-outline="false"
+                    @click.stop="createEditGroupementCommunes(r)"
+                  />
+                </template>
+              </DsfrCheckbox>
 
-                <DsfrAccordion
-                  v-if="r.communes"
-                  class="full-width fr-accordion--no-shadow"
-                  :title="'Voir les ' + r.communes.length + ' communes'"
-                  :expanded-id="expandedId"
-                  @expand="expandedId = $event"
-                >
-                  <span v-for="c of r.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
-                </DsfrAccordion>
-                <div class="divider fr-mb-2w" />
-              </template>
+              <DsfrAccordion
+                v-if="r.communes"
+                class="full-width fr-accordion--no-shadow"
+                :title="'Voir les ' + r.communes.length + ' communes'"
+                :expanded-id="expandedId"
+                @expand="expandedId = $event"
+              >
+                <span v-for="c of r.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
+              </DsfrAccordion>
+              <div class="divider fr-mb-2w" />
             </template>
           </DsfrInputGroup>
         </div>
@@ -178,7 +194,7 @@ watch(zonesSelected, () => {
               secondary
               @click="createEditGroupementCommunes()"
               :disabled="communesAssociated >= communes.length"
-            />            
+            />
           </li>
           <li>
             <DsfrButton

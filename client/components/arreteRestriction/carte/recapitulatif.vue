@@ -307,6 +307,12 @@ watch(
         <div class="map" ref="mapContainer"></div>
       </div>
     </div>
+    
+    <DsfrAlert
+      type="info"
+      class="fr-mt-2w"
+      description="La règle de gestion de votre département n'est pas prise en compte sur cette carte mais sera prise en compte lors de l'affichage de Vigieau"
+    />
   </div>
 </template>
 

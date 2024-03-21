@@ -74,8 +74,17 @@ const arreteCadreActions: Ref<any> = ref([
   },
 ]);
 
-const arEnVigueur = computed(() => {
-  return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_venir', 'publie'].includes(ar.statut));
+const arEnVigueurSameDepartement = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter(
+    (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
+      (authStore.user?.role === 'mte' || ar.departement.code === authStore.user?.roleDepartement)
+  );
+});
+const arEnVigueurOtherDepartement = computed(() => {
+  return props.arreteCadre.arretesRestriction?.filter(
+    (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
+      authStore.user?.role !== 'mte' && ar.departement.code !== authStore.user?.roleDepartement
+  );
 });
 const arBrouillon = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_valider'].includes(ar.statut));
@@ -276,10 +285,17 @@ const depString = computed(() => {
       <div class="fr-card__footer fr-grid-row" v-if="arreteCadre.arretesRestriction.length > 0">
         <NuxtLink
           :to="'/arrete-restriction?query=' + arreteCadre.numero"
-          v-if="arEnVigueur.length > 0"
+          v-if="arEnVigueurSameDepartement.length > 0"
           class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
         >
-          {{ arEnVigueur.length }} arrêté(s) de restriction en vigueur
+          {{ arEnVigueurSameDepartement.length }} arrêté(s) de restriction en vigueur
+        </NuxtLink>
+        <NuxtLink
+          disabled
+          v-if="arEnVigueurOtherDepartement.length > 0"
+          class="fr-link"
+        >
+          {{ arEnVigueurOtherDepartement.length }} arrêté(s) de restriction en vigueur sur d'autres départements
         </NuxtLink>
 <!--        <NuxtLink-->
 <!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->

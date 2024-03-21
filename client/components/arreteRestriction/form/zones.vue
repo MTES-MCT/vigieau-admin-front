@@ -112,6 +112,15 @@ watch(zonesSelected, () => {
       communesText: undefined,
     });
   });
+  props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.sort((a, b) => {
+    if (a.zoneAlerte?.code < b.zoneAlerte?.code) {
+      return -1;
+    }
+    if (a.zoneAlerte?.code > b.zoneAlerte?.code) {
+      return 1;
+    }
+    return 0;
+  });
   computeZonesSelected();
 });
 

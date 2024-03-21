@@ -46,7 +46,7 @@ const parseCommunes = (communesText: string) => {
     return;
   }
   const inseeRegex = new RegExp('(0[1-9]|[1-9][ABab\\d])\\d{3}', 'gim');
-  const inseeRegexWithout0 = new RegExp('([1-9])\\d{3}', 'gim');
+  const inseeRegexWithout0 = new RegExp('(?:\\s|^)([1-9])\\d{3}(?:\\s|$)', 'gim');
   let codesExtracted = communesText.match(inseeRegex);
   let codesExtractedWithout0 = communesText.match(inseeRegexWithout0);
   if (!codesExtracted && !codesExtractedWithout0) {
@@ -55,11 +55,11 @@ const parseCommunes = (communesText: string) => {
   // On récupère les séries de 4 chiffres au cas où certains mettent des codes INSEE sans le 0 devant
   codesExtracted = codesExtracted ? codesExtracted : [];
   codesExtractedWithout0 = codesExtractedWithout0 ? codesExtractedWithout0 : [];
-  codesExtractedWithout0 = codesExtractedWithout0.map((c) => `0${c}`);
+  codesExtractedWithout0 = codesExtractedWithout0.map((c) => `0${c.trim()}`);
   codesExtracted = [...new Set([...codesExtracted, ...codesExtractedWithout0])];
   props.restriction.communes = props.communes.filter((c) => codesExtracted.includes(c.code));
   const codesNotMatch = codesExtracted.filter((c) => !props.restriction.communes?.find((co) => co.code === c)).join(', ');
-  hint.value = `Les codes suivant ne correspondent pas à des codes INSEE du département : ${codesNotMatch}.`;
+  hint.value = codesNotMatch ? `Les codes suivant ne correspondent pas à des codes INSEE du département : ${codesNotMatch}.` : null;
 };
 
 const assignArreteCadre = (acId: string) => {

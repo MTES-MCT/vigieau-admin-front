@@ -60,12 +60,6 @@ defineExpose({
 <template>
   <form @submit.prevent="">
     <DsfrAlert
-      v-if="warnings && warnings.length > 0"
-      type="warning"
-      class="fr-mb-2w">
-      <div v-html="warnings.join('<br/>')" />
-    </DsfrAlert>
-    <DsfrAlert
       v-if="errors && errors.length > 0"
       type="error"
       class="fr-mb-2w">
