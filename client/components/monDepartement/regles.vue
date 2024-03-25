@@ -11,7 +11,7 @@ const props = defineProps<{
 const rules = computed(() => {
   return {
     superpositionCommune: {
-      required: helpers.withMessage('La règle de gestion au niveau communale est obligatoire.', required),
+      required: helpers.withMessage('La règle de gestion à l\'échelle communale est obligatoire.', required),
     },
   };
 });
@@ -77,11 +77,12 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
+    <h6>Règle de gestion des niveaux de restrictions</h6>
     <DsfrInputGroup :error-message="utils.showInputError(v$, 'superpositionCommune')">
       <p>Ce paramètre détermine le calcul des niveaux de restrictions affiché sur Vigieau pour chaque type de ressource (eaux souterraines, eaux superficielles, eau potable).</p>
       <fieldset class="fr-fieldset">
         <legend class="fr-fieldset__legend fr-fieldset__legend--regular">
-          Si une commune est concernée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal au niveau de la commune ? *
+          Si une commune est concernée par plusieurs zones d’alerte, appliquez-vous le niveau de gravité maximal à l'échelle de la commune ? *
         </legend>
         <div class="fr-grid-row fr-grid-row--gutters">
           <template v-for="option in regleGestionSuperpositionCommuneOptions">

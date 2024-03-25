@@ -49,15 +49,15 @@ const concernes = [
 const resssources = [
   {
     attribute: 'concerneEso',
-    name: 'ESO',
+    name: 'ESO (Eaux souterraines)',
   },
   {
     attribute: 'concerneEsu',
-    name: 'ESU',
+    name: 'ESU (Eaux superficielles)',
   },
   {
     attribute: 'concerneAep',
-    name: 'AEP',
+    name: 'AEP (Eau potable)',
   },
 ];
 
@@ -122,17 +122,17 @@ const rules = computed(() => {
       }),
     },
     descriptionVigilance: {
-      maxLength: helpers.withMessage('La description ne doit pas dépasser 1000 caractères.', maxLength(1000)),
+      maxLength: helpers.withMessage('La description ne doit pas dépasser 500 caractères.', maxLength(500)),
     },
     descriptionAlerte: {
-      maxLength: helpers.withMessage('La description ne doit pas dépasser 1000 caractères.', maxLength(1000)),
+      maxLength: helpers.withMessage('La description ne doit pas dépasser 500 caractères.', maxLength(500)),
     },
     descriptionAlerteRenforcee: {
-      maxLength: helpers.withMessage('La description ne doit pas dépasser 1000 caractères.', maxLength(1000)),
+      maxLength: helpers.withMessage('La description ne doit pas dépasser 500 caractères.', maxLength(500)),
     },
     descriptionCrise: {
       required: helpers.withMessage('Au moins une mesure en cas de crise est obligatoire.', required),
-      maxLength: helpers.withMessage('La description ne doit pas dépasser 1000 caractères.', maxLength(1000)),
+      maxLength: helpers.withMessage('La description ne doit pas dépasser 500 caractères.', maxLength(500)),
     },
   };
 });
@@ -240,7 +240,7 @@ defineExpose({
           :required="niveau.required"
         />
         <span class="fr-input-group__sub-hint">
-          {{ usage[niveau.attribute] ? usage[niveau.attribute].length : 0 }}/1000
+          {{ usage[niveau.attribute] ? usage[niveau.attribute].length : 0 }}/500
         </span>
       </DsfrInputGroup>
     </template>

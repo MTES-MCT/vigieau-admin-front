@@ -199,7 +199,7 @@ defineExpose({
       </div>
       <div class="fr-col-12 fr-col-lg-6">
         <div class="usage-card">
-          <h4>Il manque un usage dans votre liste ?</h4>
+          <h6>Il manque un usage dans votre liste ?</h6>
           <p>
             Retrouvez les usages utilisés dans un arrêté précédent&nbsp;:
           </p>

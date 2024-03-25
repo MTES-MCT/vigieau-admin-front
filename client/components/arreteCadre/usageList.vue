@@ -93,8 +93,8 @@ defineExpose({
 </script>
 
 <template>
-  <DsfrTable v-if="usages.length > 0" 
-             title="Liste des usages présents dans l'arrêté"
+  <h6 class="fr-mt-2w">Liste des usages présents dans l'arrêté</h6>
+  <DsfrTable v-if="usages.length > 0"
              :headers="headers"
              :rows="rows"
              :no-caption="false"

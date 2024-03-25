@@ -6,8 +6,8 @@ import { useRefDataStore } from '~/stores/refData';
 import type { Departement } from '~/dto/departement.dto';
 import type { Ref } from 'vue';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
-import { required } from "@vuelidate/validators";
-import { useAuthStore } from "~/stores/auth";
+import { required } from '@vuelidate/validators';
+import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -23,7 +23,7 @@ const expandedDepCode: Ref<string | null> = ref(authStore.user?.roleDepartement 
 const rules = computed(() => {
   return {
     zonesAlerte: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", required),
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins une zone d\'alerte', required),
     },
   };
 });
@@ -66,7 +66,7 @@ const onChange = ({ name, checked }: { name: number; checked: boolean }) => {
 
 const onAccordionClick = (depCode: string) => {
   expandedDepCode.value = depCode !== expandedDepCode.value ? depCode : null;
-}
+};
 
 watch(zonesSelected, () => {
   props.arreteCadre.zonesAlerte = refDataStore.zonesAlerte.filter((z) => zonesSelected.value.includes(z.id));
@@ -85,7 +85,7 @@ watch(
     );
     computeDepSelected();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 computeDepSelected();
@@ -97,7 +97,7 @@ defineExpose({
 
 <template>
   <form @submit.prevent="">
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-lg-6">
         <p>
           Sélectionner les zones d’alerte concernées par cet arrêté
@@ -171,6 +171,19 @@ defineExpose({
           </template>
         </DsfrInputGroup>
       </div>
+      <div class="fr-col-12 fr-col-lg-6">
+        <DsfrAlert type="info">
+          Pour mettre à jour vos zones d'alerte, veuillez produire des fichiers conformes à cette doctrine de production et les transmettre
+          aux adresses zones.alerte.secheresse@oieau.fr et secheresse@beta.gouv.fr
+          <br />
+          <a class="fr-link"
+             target="_blank"
+             rel="noopener external"
+             href="https://docs.google.com/document/d/1MfgyyiC2cQG8zYgACjzqgSEiFGpW8N16xbfe8YTHHV4">
+            Voir la doctrine
+          </a>
+        </DsfrAlert>
+      </div>
     </div>
   </form>
 </template>
@@ -178,7 +191,7 @@ defineExpose({
 <style lang="scss">
 .zone-line {
   align-items: center;
-  
+
   h6 {
     margin-bottom: 0;
   }
