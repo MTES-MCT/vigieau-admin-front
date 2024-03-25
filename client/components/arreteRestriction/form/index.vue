@@ -49,8 +49,12 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       ar.perimetreAr = 'all';
     } else if (ar.restrictions.some((r) => r.isAep)) {
       ar.perimetreAr = 'aep';
+      ar.niveauGraviteSpecifiqueEap = null;
+      ar.ressourceEapCommunique = null;
     } else {
       ar.perimetreAr = 'zones';
+      ar.niveauGraviteSpecifiqueEap = null;
+      ar.ressourceEapCommunique = null;
     }
     if (route.query.arreterestriction) {
       ar.arreteRestrictionAbroge = <ArreteRestriction>{

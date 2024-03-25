@@ -24,7 +24,7 @@ const isDepPilote: Ref<boolean | null> = ref(authStore.user?.role === 'mte' || a
 
 const usageSelected = ref();
 
-const currentStep: Ref<number> = ref(!props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 3);
+const currentStep: Ref<number> = ref(!props.arreteCadre.id || !props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 2);
 const steps = [
   'Informations générales',
   'Liste des zones d\'alertes',

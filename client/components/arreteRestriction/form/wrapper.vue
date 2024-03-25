@@ -239,10 +239,6 @@ const reglesFormRef = ref(null);
 const restrictionsFormRef = ref(null);
 const restrictionsAepFormRef = ref(null);
 const graviteFormRef = ref(null);
-
-if (props.arreteRestriction.statut !== 'a_valider') {
-  // await checkArrete(props.arreteRestriction);
-}
 </script>
 
 <template>

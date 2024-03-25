@@ -20,12 +20,14 @@ const rules = computed(() => {
       required: helpers.withMessage('L\'arrêté doit être lié à au moins une zone d\'alerte AEP.', () => {
         return props.arreteRestriction.restrictions.filter((r) => r.isAep).length > 0;
       }),
-      different: helpers.withMessage('Les zones AEP sélectionnées contiennent des doublons de communes.', () => {
+      different: helpers.withMessage(`Les zones AEP sélectionnées contiennent des doublons de communes.`, () => {
         const communesId = props.arreteRestriction.restrictions
           .filter((r) => r.isAep)
           .map((r) => r.communes.map((c) => c.id))
           .flat();
-        return new Set(communesId).size === communesId.length;
+        const doublons = communesId.filter((item, index) => communesId.indexOf(item) !== index);
+        doublonCommunes.value = communes.value.filter((c) => doublons.includes(c.id));
+        return doublons.length < 1;
       }),
     },
   };
@@ -34,6 +36,7 @@ const rules = computed(() => {
 const utils = useUtils();
 const api = useApi();
 const communes: Ref<Commune[]> = ref([]);
+const doublonCommunes: Ref<Commune[]> = ref([]);
 const groupementToEdit: Ref<Restriction | undefined> = ref();
 const groupementCommunesFormRef = ref(null);
 const zonesAep: Ref<Restriction[]> = ref(props.arreteRestriction.restrictions.filter((r) => r.isAep));
@@ -110,6 +113,14 @@ const sortRestrictions = () => {
   });
 };
 
+const showErrorMessage = computed(() => {
+  let errorMessage = utils.showInputError(v$.value, 'restrictions');
+  if(doublonCommunes.value.length > 0) {
+    errorMessage += ` Les communes suivantes sont présentes dans plusieurs zones AEP : ${doublonCommunes.value.map(c => c.code + ' ' + c.nom).join(', ')}`;
+  }
+  return errorMessage;
+});
+
 const v$ = useVuelidate(rules, { isFullDepartement });
 
 defineExpose({
@@ -155,7 +166,8 @@ watch(zonesSelected, () => {
         <h6>Définition des zones AEP</h6>
 
         <div v-if="communes.length > 0" class="form-group fr-fieldset fr-mt-2w">
-          <DsfrInputGroup class="full-width" :error-message="utils.showInputError(v$, 'restrictions')">
+          <DsfrInputGroup class="full-width"
+                          :error-message="showErrorMessage">
             <template v-for="(r) in zonesAep">
               <DsfrCheckbox
                 :id="r.id || r.nomGroupementAep"
@@ -169,6 +181,8 @@ watch(zonesSelected, () => {
                     :label="r.nomGroupementAep"
                     :tertiary="true"
                     :no-outline="false"
+                    icon="ri-edit-2-fill"
+                    icon-right
                     @click.stop="createEditGroupementCommunes(r)"
                   />
                 </template>

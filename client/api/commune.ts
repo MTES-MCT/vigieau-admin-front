@@ -3,7 +3,7 @@ import { useCustomFetch } from "~/composables/useCustomFetch";
 
 export class CommuneApi extends BaseApi {
   listWithGeom(queryParams?: string) {
-    return useCustomFetch(`/${this.resource}?wiithGeom=true${queryParams ? '&' + queryParams : ''}`, {
+    return useCustomFetch(`/${this.resource}?withGeom=true${queryParams ? '&' + queryParams : ''}`, {
       method: 'GET',
       baseURL: '/api',
     }).then((res) => {
