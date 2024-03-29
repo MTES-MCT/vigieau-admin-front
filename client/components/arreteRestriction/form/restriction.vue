@@ -5,12 +5,16 @@ import type { Restriction } from '~/dto/restriction.dto';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { Ref } from 'vue';
 import type { UsageArreteCadre } from '~/dto/usage_arrete_cadre.dto';
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import { Parametres } from '~/dto/parametres.dto';
 
 const props = defineProps<{
   restriction: Restriction;
   arreteCadre: ArreteCadre;
+  arreteRestriction: ArreteRestriction;
   type: 'SUP' | 'SOU' | 'AEP';
   multipleZones: boolean;
+  departementParametres: Parametres;
 }>();
 
 const emit = defineEmits<{
@@ -20,49 +24,58 @@ const emit = defineEmits<{
 const rules = computed(() => {
   return {
     niveauGravite: {
-      required: helpers.withMessage("La zone d'alerte doit avoir un niveau de gravité.", required),
+      required: helpers.withMessage('La zone d\'alerte doit avoir un niveau de gravité.', required),
     },
     // usagesArreteRestriction: {
     //   required: helpers.withMessage("La zone d'alerte doit être liée à au moins un usage.", required),
     // },
   };
 });
+
+const typesToShow = computed(() => {
+  switch (props.departementParametres?.superpositionCommune) {
+    case 'no':
+    case 'no_all':
+    case 'yes_only_aep':
+    case 'yes_distinct':
+      if (props.arreteRestriction.ressourceEapCommunique === 'max') {
+        if (props.type === 'SUP') {
+          return ['SUP', 'AEP'];
+        } else if (props.type === 'SOU') {
+          return ['SOU', 'AEP'];
+        }
+      }
+      if (props.arreteRestriction.ressourceEapCommunique === 'esu' && props.type === 'SUP') {
+        return ['SUP', 'AEP'];
+      }
+      if (props.arreteRestriction.ressourceEapCommunique === 'eso' && props.type === 'SOU') {
+        return ['SOU', 'AEP'];
+      }
+      break;
+    case 'yes_all':
+      return ['SUP', 'SOU', 'AEP'];
+    case 'yes_except_aep':
+      if (props.type === 'SUP' || props.type === 'SOU') {
+        if (props.arreteRestriction.ressourceEapCommunique === 'max' ||
+          (props.arreteRestriction.ressourceEapCommunique === 'esu' && props.type === 'SUP') ||
+          (props.arreteRestriction.ressourceEapCommunique === 'eso' && props.type === 'SOU')) {
+          return ['SUP', 'SOU', 'AEP'];
+        }
+        return ['SUP', 'SOU'];
+      }
+      break;
+  }
+  if (props.type === 'SUP') {
+    return ['SUP'];
+  } else if (props.type === 'SOU') {
+    return ['SOU'];
+  } else {
+    return ['AEP'];
+  }
+});
 const usagesSelected: Ref<string[]> = ref(props.restriction.usages.map((u) => u.nom));
 const allUsages: Ref<any[]> = ref([]);
-if(!props.arreteCadre) {
-  allUsages.value = props.restriction.usages;
-} else {
-  let usagesAc = props.arreteCadre.usages;
-  usagesAc = usagesAc.filter((value, index, self) =>
-      index === self.findIndex((t) => (
-        t.nom === value.nom
-      ))
-  );
-  allUsages.value = props.restriction.usages.concat(usagesAc
-    .filter((u) => !usagesSelected.value.includes(u.nom))
-    .map((u) => {
-      u.id = null;
-      return u;
-    }),
-  ).filter(u => {
-    if(props.type === 'SUP') {
-      return u.concerneEsu;
-    } else  if (props.type === 'SOU') {
-      return u.concerneEso;
-    } else {
-      return u.concerneAep;
-    }
-  });
-}
-allUsages.value = allUsages.value.sort((a, b) => {
-  if (a.nom < b.nom) {
-    return -1;
-  }
-  if (a.nom > b.nom) {
-    return 1;
-  }
-  return 0;
-});
+const api = useApi();
 const utils = useUtils();
 
 const v$ = useVuelidate(rules, props.restriction);
@@ -88,8 +101,8 @@ const niveauGraviteOptions = [
 const expandedId = ref();
 
 const accordionTitle = computed(() => {
-  const allUsagesLength = props.restriction.niveauGravite ? 
-    allUsages.value.filter((u) => getNiveauGravite(u) !== null && getNiveauGravite(u) !== '').length : 
+  const allUsagesLength = props.restriction.niveauGravite ?
+    allUsages.value.filter((u) => getNiveauGravite(u) !== null && getNiveauGravite(u) !== '').length :
     allUsages.value.length;
   return `Afficher les ${props.restriction.usages.length}/${allUsagesLength} usages`;
 });
@@ -117,10 +130,10 @@ const modalActions = ref([
 const onChange = ({ nom, checked }: { nom: string; checked: boolean }) => {
   usagesSelected.value = checked ? [...usagesSelected.value, nom] : usagesSelected.value.filter((val) => val !== nom);
   props.restriction.usages = allUsages.value.filter((u) => usagesSelected.value.includes(u.nom));
-  if(!checked && props.multipleZones) {
+  if (!checked && props.multipleZones) {
     usageNameToEmit.value = nom;
     modalTitle.value = `Souhaitez-vous ${checked ? 'cocher' : 'décocher'} cet usage sur toutes les zones d’alertes de même ressource ?`;
-    modalOpened.value = true;    
+    modalOpened.value = true;
   }
 };
 
@@ -138,6 +151,47 @@ const getNiveauGravite = (usageArreteCadre: UsageArreteCadre, niveauGravite?: st
       return null;
   }
 };
+
+const computeAllUsages = () => {
+  if (!props.arreteCadre) {
+    allUsages.value = props.restriction.usages;
+  } else {
+    let usagesAc = props.arreteCadre.usages;
+    usagesAc = usagesAc.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+          t.nom === value.nom
+        )),
+    );
+    allUsages.value = props.restriction.usages.concat(usagesAc
+      .filter((u) => !usagesSelected.value.includes(u.nom))
+      .map((u) => {
+        u.id = null;
+        return u;
+      }),
+    ).filter(u => {
+      let bool = false;
+      if (typesToShow.value.includes('SUP')) {
+        bool = bool || u.concerneEsu;
+      } else if (typesToShow.value.includes('SOU')) {
+        bool = bool || u.concerneEso;
+      } else if (typesToShow.value.includes('AEP')) {
+        bool = bool || u.concerneAep;
+      }
+      return bool;
+    });
+  }
+  allUsages.value = allUsages.value.sort((a, b) => {
+    if (a.nom < b.nom) {
+      return -1;
+    }
+    if (a.nom > b.nom) {
+      return 1;
+    }
+    return 0;
+  });
+};
+
+computeAllUsages();
 
 watch(() => props.restriction.usages, () => {
   usagesSelected.value = props.restriction.usages.map((u) => u.nom);
@@ -163,7 +217,7 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
         <template v-if="restriction.isAep">
           {{ restriction.nomGroupementAep }}
         </template>
-        <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }} </template>        
+        <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}</template>
       </div>
       <div class="fr-col-4">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
@@ -175,7 +229,7 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
             type="text"
             name="niveauGravite"
           />
-        </DsfrInputGroup>        
+        </DsfrInputGroup>
       </div>
       <div class="fr-col-12 fr-grid-row">
         <DsfrInputGroup class="full-width"

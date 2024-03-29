@@ -21,6 +21,8 @@ const rules = computed(() => {
 });
 
 const v$ = useVuelidate(rules, props.arreteRestriction);
+const api = useApi();
+const departementParametres: Ref<any> = ref(null);
 
 const getRestrictionsByZoneType = (type: string) => {
   if (type === 'AEP') {
@@ -103,6 +105,15 @@ watch(
   },
   { immediate: true }
 );
+
+watch(() => props.arreteRestriction.departement, async () => {
+  if (props.arreteRestriction.departement) {
+    const { data, error } = await api.parametres.get(props.arreteRestriction.departement.code);
+    if (data.value) {
+      departementParametres.value = data.value;
+    }
+  }
+}, { immediate: true });
 </script>
 
 <template>
@@ -141,11 +152,14 @@ watch(
               <div class="divider" />
               <div v-for="r in getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id)" class="divider">
                 <ArreteRestrictionFormRestriction
+                  v-if="departementParametres"
                   :restriction="r"
                   :type="zoneType.type"
                   :arreteCadre="getArreteCadreByRestriction(r)"
+                  :arreteRestriction="arreteRestriction"
                   :multipleZones="getRestrictionsByZoneTypeAndAc(zoneType.type, ac.id).length > 1"
                   @applyToAllRestrictions="applyToAllRestrictions(r, $event)"
+                  :departementParametres="departementParametres"
                 />
               </div>
             </template>

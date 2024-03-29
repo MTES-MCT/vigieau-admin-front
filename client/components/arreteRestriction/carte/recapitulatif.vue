@@ -124,7 +124,7 @@ const loadGeom = async () => {
   zones.value = newZones;
 
   // COMMUNES
-  const query = `depCode=${props.arreteRestriction.departement?.code}&withGeom=true`;
+  const query = `depCode=${props.arreteRestriction.departement?.code}`;
   const { data, error } = await api.commune.listWithGeom(query);
   if (data.value) {
     communes.value = data.value;
