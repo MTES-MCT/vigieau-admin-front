@@ -94,6 +94,20 @@ onMounted(async () => {
         'line-width': 1,
       },
     });
+    map.value?.addLayer({
+      id: 'communes-data',
+      type: 'line',
+      source: 'cadastre',
+      'source-layer': 'communes',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint: {
+        'line-color': '#557ad9',
+        'line-width': 1,
+      },
+    });
     mapLoaded.value = true;
     populateSources();
     computeBounds();
