@@ -6,6 +6,27 @@ const props = defineProps<{
 }>();
 
 const utils = useUtils();
+
+const ressourcesConcernes = computed(() => {
+  if(props.arreteRestriction.restrictions.filter((r) => !r.isAep).length < 1) {
+    return 'Eau potable';
+  } else if (props.arreteRestriction.restrictions.filter((r) => r.isAep).length < 1 && !props.arreteRestriction.ressourceEapCommunique) {
+    return 'Eaux superficielles et/ou souterraines';
+  } else {
+    return 'Eaux superficielles, eaux souterraines et eau potable';
+  }
+})
+
+const ressourceEapCommunique = computed(() => {
+  switch (props.arreteRestriction.ressourceEapCommunique) {
+    case 'esu':
+      return 'ESU';
+    case 'eso':
+      return 'ESO';
+    case 'max':
+      return 'Niveau maximal';
+  }
+})
 </script>
 
 <template>
@@ -26,4 +47,6 @@ const utils = useUtils();
     :title="arreteRestriction.fichier.nom"
   />
   <div v-if="arreteRestriction.fichier" class="fr-mb-2w"></div>
+  <p>Ressources concernées par les restrictions&nbsp;: {{ ressourcesConcernes }}</p>
+  <p v-if="arreteRestriction.ressourceEapCommunique">Niveau de gravité qui s'applique à l'eau potable&nbsp;: {{ ressourceEapCommunique }}</p>
 </template>

@@ -76,6 +76,10 @@ const applyToAllRestrictions = (restriction: Restriction, $event: any) => {
   });
 };
 
+defineExpose({
+  v$,
+});
+
 watch(sameNiveauGravite, () => {
   if (!isSameNiveauGravite.value || !sameNiveauGravite.value) {
     return;

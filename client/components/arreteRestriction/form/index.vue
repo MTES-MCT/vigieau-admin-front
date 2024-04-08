@@ -45,7 +45,8 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     // Format périmètre AR
     if (ar.restrictions.length < 1) {
       ar.perimetreAr = null;
-    } else if (ar.restrictions.some((r) => r.isAep) && ar.restrictions.some((r) => !r.isAep)) {
+    } else if (ar.restrictions.some((r) => r.isAep) && ar.restrictions.some((r) => !r.isAep) ||
+      ar.ressourceEapCommunique) {
       ar.perimetreAr = 'all';
     } else if (ar.restrictions.some((r) => r.isAep)) {
       ar.perimetreAr = 'aep';
