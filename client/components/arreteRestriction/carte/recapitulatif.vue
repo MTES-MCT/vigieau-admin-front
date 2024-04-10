@@ -154,33 +154,33 @@ const populateSources = () => {
   const zonesSup = zones.value.filter((z) => z.type === 'SUP');
   const zonesSou = zones.value.filter((z) => z.type === 'SOU');
   const featuresSup = zonesSup
-      .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-      .map((z) => {
-        return {
-          type: 'Feature',
-          geometry: z.geom,
-          properties: {
-            niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-          },
-        };
-      });
+    .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+    .map((z) => {
+      return {
+        type: 'Feature',
+        geometry: z.geom,
+        properties: {
+          niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+        },
+      };
+    });
   const featuresSou = zonesSou
-      .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-      .map((z) => {
-        return {
-          type: 'Feature',
-          geometry: z.geom,
-          properties: {
-            niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-          },
-        };
-      });
+    .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+    .map((z) => {
+      return {
+        type: 'Feature',
+        geometry: z.geom,
+        properties: {
+          niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+        },
+      };
+    });
   if (layers.value.includes('zoneSup')) {
     map.value?.addSource('zoneSup', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: featuresSup
+        features: featuresSup,
       },
     });
   }
@@ -189,7 +189,7 @@ const populateSources = () => {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: featuresSou
+        features: featuresSou,
       },
     });
   }
@@ -198,13 +198,13 @@ const populateSources = () => {
     if (props.arreteRestriction.ressourceEapCommunique) {
       switch (props.arreteRestriction.ressourceEapCommunique) {
         case 'eso':
-          features = featuresSou
+          features = featuresSou;
           break;
         case 'esu':
-          features = featuresSup
+          features = featuresSup;
           break;
         case 'max':
-          features = featuresSou.concat(featuresSup)
+          features = featuresSou.concat(featuresSup);
           break;
       }
     } else {
