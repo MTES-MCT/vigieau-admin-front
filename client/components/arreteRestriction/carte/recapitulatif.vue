@@ -147,6 +147,7 @@ const loadGeom = async () => {
 };
 
 const populateSources = () => {
+  console.log('POPULATE SOURCE');
   if (!map.value || !mapLoaded.value) {
     return;
   }
@@ -195,7 +196,7 @@ const populateSources = () => {
   }
   if (layers.value.includes('zoneAep')) {
     let features: any[] = [];
-    if (props.arreteRestriction.ressourceEapCommunique) {
+    if (!props.arreteRestriction.niveauGraviteSpecifiqueEap && props.arreteRestriction.ressourceEapCommunique) {
       switch (props.arreteRestriction.ressourceEapCommunique) {
         case 'eso':
           features = featuresSou;

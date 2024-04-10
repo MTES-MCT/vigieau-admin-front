@@ -209,7 +209,8 @@ watch(zonesSelected, () => {
             <DsfrButton
               label="Ajouter un groupement de communes"
               secondary
-              :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : ''"
+              :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
+              :iconRight="true"
               @click="createEditGroupementCommunes()"
               :disabled="communesAssociated >= communes.length"
             />

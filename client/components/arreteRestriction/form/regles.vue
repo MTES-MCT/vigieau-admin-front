@@ -94,6 +94,8 @@ watch(
   () => {
     if (props.arreteRestriction.niveauGraviteSpecifiqueEap === false) {
       props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter((r) => !r.isAep);
+    } else {
+      props.arreteRestriction.ressourceEapCommunique = null;
     }
   },
 );
