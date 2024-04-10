@@ -13,6 +13,7 @@ const props = defineProps<{
 const modalCommunesOpened = ref(false);
 const modalActions = ref();
 const expandedId = ref();
+const loading = ref(false);
 
 const rules = computed(() => {
   return {
@@ -131,6 +132,7 @@ watch(
   () => props.arreteRestriction.departement,
   async () => {
     const query = `depCode=${props.arreteRestriction.departement?.code}`;
+    loading.value = true;
     const { data, error } = await api.commune.list(query);
     if (data.value) {
       communes.value = data.value;
@@ -140,6 +142,7 @@ watch(
         isFullDepartement.value = restrictionsAep.length < 2 && communesAssociated.value === communes.value.length;
       }
     }
+    loading.value = false;
   },
   { immediate: true },
 );
@@ -206,6 +209,7 @@ watch(zonesSelected, () => {
             <DsfrButton
               label="Ajouter un groupement de communes"
               secondary
+              :icon="loading ? { name: 'ri-settings-3-line', animation: 'spin' } : ''"
               @click="createEditGroupementCommunes()"
               :disabled="communesAssociated >= communes.length"
             />
