@@ -147,7 +147,6 @@ const loadGeom = async () => {
 };
 
 const populateSources = () => {
-  console.log('POPULATE SOURCE');
   if (!map.value || !mapLoaded.value) {
     return;
   }
