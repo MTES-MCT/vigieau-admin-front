@@ -111,8 +111,10 @@ const computeArretesCadreTags = () => {
 };
 
 const departementChange = (depId: string) => {
+  console.log(depId);
   const departement = refDataStore.departements.find((d) => d.id === Number(depId));
   props.arreteRestriction.departement = departement;
+  props.arreteRestriction.arretesCadre = [];
   loadArretes();
 };
 

@@ -128,6 +128,7 @@ const modalActions = ref([
 ]);
 
 const onChange = ({ nom, checked }: { nom: string; checked: boolean }) => {
+  console.log('ON CHANGE', nom, checked);
   usagesSelected.value = checked ? [...usagesSelected.value, nom] : usagesSelected.value.filter((val) => val !== nom);
   props.restriction.usages = allUsages.value.filter((u) => usagesSelected.value.includes(u.nom));
   if (!checked && props.multipleZones) {
@@ -240,8 +241,8 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
                          class="fr-accordion--no-shadow">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id"
-                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id || usageArreteCadre.nom"
+                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.nom"
+                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.nom"
                 :name="usageArreteCadre.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.nom)"
                 :small="false"

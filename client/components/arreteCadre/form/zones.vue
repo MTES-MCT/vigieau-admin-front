@@ -44,7 +44,7 @@ const zonesOptionsCheckBox = (dep: Departement, type: string) => {
 };
 
 const selectAll = (d: any) => {
-  if (d.nbZonesSelected === d.zonesAlerte.length) {
+  if (d.nbZonesSelected >= d.zonesAlerte.length) {
     zonesSelected.value = zonesSelected.value.filter((z) => !d.zonesAlerte.map((za: ZoneAlerte) => za.id).includes(z));
   } else {
     zonesSelected.value = useUtils().mergeArrays(

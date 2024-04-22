@@ -101,10 +101,6 @@ const mandatoryLinks: any[] = [
     label: 'Données personnelles',
     to: '/donnees-personnelles',
   },
-  {
-    label: 'Cookies',
-    to: '/cookies',
-  },
 ];
 const ecosystemLinks: any[] = [
   {

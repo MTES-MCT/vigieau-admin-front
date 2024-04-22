@@ -94,6 +94,7 @@ const createEditGroupement = async (restriction: Restriction) => {
     zonesAep.value[idxBis] = restriction;
   }
   sortRestrictions();
+  sortCommunes();
   groupemenantNameEdited.value = null;
   utils.closeModal(modalCommunesOpened);
 };
@@ -111,6 +112,22 @@ const sortRestrictions = () => {
       return 1;
     }
     return 0;
+  });
+};
+
+const sortCommunes = () => {
+  props.arreteRestriction.restrictions
+    .filter(r => r.communes)
+    .forEach(r => {
+    r.communes = r.communes?.sort((a, b) => {
+      if (a.code < b.code) {
+        return -1;
+      }
+      if (a.code > b.code) {
+        return 1;
+      }
+      return 0;
+    });
   });
 };
 
@@ -159,6 +176,7 @@ watch(zonesSelected, () => {
     props.arreteRestriction.restrictions.push(z);
   });
   sortRestrictions();
+  sortCommunes();
 });
 </script>
 
