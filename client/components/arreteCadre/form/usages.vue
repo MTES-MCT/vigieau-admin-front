@@ -42,7 +42,7 @@ const modalActions = ref([
     onclick: () => {
       utils.closeModal(modalOpened);
     },
-  }
+  },
 ]);
 const indexEdited: Ref<number | null> = ref(null);
 
@@ -109,8 +109,8 @@ const askCreateEditUsage = (index: number | null = null, usage?: Usage) => {
   usageToEdit.value = u;
   indexEdited.value = index;
   setTimeout(() => {
-    modalOpened.value = true;    
-  })
+    modalOpened.value = true;
+  });
 };
 
 const createEditUsage = async (usage: Usage) => {
@@ -223,8 +223,8 @@ defineExpose({
           <div class="fr-grid-row fr-grid-row--middle fr-grid-row--space-between">
             <span>L'usage n'existe pas</span>
             <DsfrButton label="Créer un nouvel usage"
-                        @click="askCreateEditUsage()"/>
-          </div>          
+                        @click="askCreateEditUsage()" />
+          </div>
         </div>
       </div>
     </div>
@@ -234,10 +234,12 @@ defineExpose({
     title="Création / édition d'un usage"
     :actions="modalActions"
     @close="modalOpened = utils.closeModal(modalOpened);">
-    <ArreteCadreFormCreateEditUsage ref="createEditUsageFormRef"
-                                    @createEdit="createEditUsage($event)"
-                                    :usage="usageToEdit"
-                                    :other-usages="arreteCadre.usages"
+    <ArreteCadreFormCreateEditUsage
+      v-if="modalOpened"
+      ref="createEditUsageFormRef"
+      @createEdit="createEditUsage($event)"
+      :usage="usageToEdit"
+      :other-usages="arreteCadre.usages"
     />
   </DsfrModal>
 </template>
