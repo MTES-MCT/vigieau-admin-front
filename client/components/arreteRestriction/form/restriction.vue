@@ -128,7 +128,6 @@ const modalActions = ref([
 ]);
 
 const onChange = ({ nom, checked }: { nom: string; checked: boolean }) => {
-  console.log('ON CHANGE', nom, checked);
   usagesSelected.value = checked ? [...usagesSelected.value, nom] : usagesSelected.value.filter((val) => val !== nom);
   props.restriction.usages = allUsages.value.filter((u) => usagesSelected.value.includes(u.nom));
   if (!checked && props.multipleZones) {
