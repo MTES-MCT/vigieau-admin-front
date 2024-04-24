@@ -7,7 +7,7 @@ import type { Departement } from '~/dto/departement.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
 import deburr from 'lodash.deburr';
-import { requiredIf } from "@vuelidate/validators";
+import { maxLength, requiredIf } from '@vuelidate/validators';
 import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
 
 const props = defineProps<{
@@ -38,6 +38,7 @@ const rules = computed(() => {
   return {
     numero: {
       required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
+      maxLength: helpers.withMessage('Le numéro de l\'arrêté ne doit pas dépasser 50 caractères.', maxLength(50)),
     },
     departements: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins un département", required),
@@ -189,6 +190,7 @@ defineExpose({
             name="numero"
             :required="true"
           />
+          <span class="fr-input-group__sub-hint">{{ arreteCadre.numero ? arreteCadre.numero.length : 0 }}/50</span>
         </DsfrInputGroup>
 
         <DsfrRadioButtonSet legend="Cet arrêté est :" :options="aciOptions" v-model="isAci" name="isAci" :small="false" />

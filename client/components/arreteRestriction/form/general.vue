@@ -6,6 +6,7 @@ import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
+import { maxLength } from '@vuelidate/validators';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -36,6 +37,7 @@ const rules = computed(() => {
     },
     numero: {
       required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
+      maxLength: helpers.withMessage('Le numéro de l\'arrêté ne doit pas dépasser 50 caractères.', maxLength(50)),
     },
     arretesCadre: {
       required: helpers.withMessage("L'arrêté doit être lié à au moins un arrêté cadre", required),
@@ -169,6 +171,7 @@ watch(
             name="numero"
             :required="true"
           />
+          <span class="fr-input-group__sub-hint">{{ arreteRestriction.numero ? arreteRestriction.numero.length : 0 }}/50</span>
         </DsfrInputGroup>
 
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'departement')">
