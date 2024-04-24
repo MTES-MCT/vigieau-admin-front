@@ -99,7 +99,7 @@ const saveArrete = async (publish: boolean = false) => {
   const { data, error } = props.arreteRestriction.id
     ? await api.arreteRestriction.update(props.arreteRestriction.id.toString(), arToSend)
     : await api.arreteRestriction.create({ ...arToSend });
-  if (data.value) {
+  if (data.value?.id) {
     // Mise à jour des ids des objets nouvellement crées
     props.arreteRestriction.id = data.value.id;
     props.arreteRestriction.restrictions.map((restriction: Restriction) => {
@@ -270,7 +270,8 @@ const graviteFormRef = ref(null);
         :selected="currentStep === 3"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === totalSteps" :asc="asc">
+    <DsfrTabContent :selected="currentStep === totalSteps"
+                    :asc="asc">
       <ArreteRestrictionFormGravite
         ref="graviteFormRef"
         :key="currentStep"

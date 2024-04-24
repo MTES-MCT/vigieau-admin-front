@@ -193,6 +193,10 @@ const computeAllUsages = () => {
 
 computeAllUsages();
 
+defineExpose({
+  v$,
+});
+
 watch(() => props.restriction.usages, () => {
   usagesSelected.value = props.restriction.usages.map((u) => u.nom);
 });
