@@ -139,6 +139,8 @@ const checkArrete = async (ar: ArreteRestriction) => {
   const { data, error } = await api.arreteRestriction.check(ar.id?.toString(), ar);
   if (data.value) {
     checkReturn.value = data.value;
+  } else {
+    checkReturn.value = null;
   }
   loading.value = false;
 };
