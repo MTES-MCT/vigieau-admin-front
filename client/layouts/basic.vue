@@ -190,8 +190,8 @@ onUnmounted(() => {
     :service-title="serviceTitle"
     :logo-text="logoText"
     :quickLinks="quickLinks"
-    :show-beta="runTimeConfig.domainName !== 'regleau.beta.gouv.fr'"
-    home-to="/arrete-cadre"
+    :show-beta="!+runTimeConfig.isProd"
+    home-to="/"
   >
     <template #mainnav>
       <DsfrNavigation
