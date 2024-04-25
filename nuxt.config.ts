@@ -53,6 +53,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appName,
+      isProd: process.env.IS_PROD,
       domainName: process.env.DOMAIN_NAME,
       apiUrl: process.env.API_URL,
       email: 'contact.vigieau@beta.gouv.fr',
