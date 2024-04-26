@@ -13,6 +13,7 @@ const props = defineProps<{
 const modalCommunesOpened = ref(false);
 const modalActions = ref();
 const expandedId = ref();
+const loading = ref(false);
 
 const rules = computed(() => {
   return {
@@ -93,6 +94,7 @@ const createEditGroupement = async (restriction: Restriction) => {
     zonesAep.value[idxBis] = restriction;
   }
   sortRestrictions();
+  sortCommunes();
   groupemenantNameEdited.value = null;
   utils.closeModal(modalCommunesOpened);
 };
@@ -110,6 +112,22 @@ const sortRestrictions = () => {
       return 1;
     }
     return 0;
+  });
+};
+
+const sortCommunes = () => {
+  props.arreteRestriction.restrictions
+    .filter(r => r.communes)
+    .forEach(r => {
+    r.communes = r.communes?.sort((a, b) => {
+      if (a.code < b.code) {
+        return -1;
+      }
+      if (a.code > b.code) {
+        return 1;
+      }
+      return 0;
+    });
   });
 };
 
@@ -131,6 +149,7 @@ watch(
   () => props.arreteRestriction.departement,
   async () => {
     const query = `depCode=${props.arreteRestriction.departement?.code}`;
+    loading.value = true;
     const { data, error } = await api.commune.list(query);
     if (data.value) {
       communes.value = data.value;
@@ -140,6 +159,7 @@ watch(
         isFullDepartement.value = restrictionsAep.length < 2 && communesAssociated.value === communes.value.length;
       }
     }
+    loading.value = false;
   },
   { immediate: true },
 );
@@ -156,6 +176,7 @@ watch(zonesSelected, () => {
     props.arreteRestriction.restrictions.push(z);
   });
   sortRestrictions();
+  sortCommunes();
 });
 </script>
 
@@ -206,6 +227,8 @@ watch(zonesSelected, () => {
             <DsfrButton
               label="Ajouter un groupement de communes"
               secondary
+              :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
+              :iconRight="true"
               @click="createEditGroupementCommunes()"
               :disabled="communesAssociated >= communes.length"
             />

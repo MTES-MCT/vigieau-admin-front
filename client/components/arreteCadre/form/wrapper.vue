@@ -79,7 +79,7 @@ const saveArrete = async (publish: boolean = false) => {
   const { data, error } = props.arreteCadre.id
     ? await api.arreteCadre.update(props.arreteCadre.id.toString(), props.arreteCadre)
     : await api.arreteCadre.create({ ...props.arreteCadre });
-  if (data.value) {
+  if (data.value?.id) {
     // Mise à jour des ids des objets nouvellement crées
     props.arreteCadre.id = data.value.id;
     props.arreteCadre.usages.map((usageArreteCadre: Usage) => {

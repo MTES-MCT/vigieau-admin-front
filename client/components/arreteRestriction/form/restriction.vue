@@ -193,6 +193,10 @@ const computeAllUsages = () => {
 
 computeAllUsages();
 
+defineExpose({
+  v$,
+});
+
 watch(() => props.restriction.usages, () => {
   usagesSelected.value = props.restriction.usages.map((u) => u.nom);
 });
@@ -240,8 +244,8 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
                          class="fr-accordion--no-shadow">
             <div v-for="usageArreteCadre in allUsages">
               <DsfrCheckbox
-                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id"
-                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.id || usageArreteCadre.nom"
+                :id="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.nom"
+                :key="'' + restriction.zoneAlerte?.id + restriction.nomGroupementAep + usageArreteCadre.nom"
                 :name="usageArreteCadre.nom"
                 :model-value="usagesSelected.includes(usageArreteCadre.nom)"
                 :small="false"

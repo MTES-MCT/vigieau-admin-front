@@ -14,13 +14,13 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
-          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`,
+          content: `Plateforme d'administration ${appName}`,
         },
         { name: 'format-detection', content: 'telephone=no' },
         { property: 'og:title', content: appName },
         {
           property: 'og:description',
-          content: `Avec ${process.env.DOMAIN_NAME}, restez informés sur la situation locale de la sécheresse et adoptez les gestes les plus appropriés.`,
+          content: `Plateforme d'administration ${appName}`,
         },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: `https://${process.env.DOMAIN_NAME}` },
@@ -53,6 +53,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appName,
+      isProd: process.env.IS_PROD,
+      domainName: process.env.DOMAIN_NAME,
       apiUrl: process.env.API_URL,
       email: 'contact.vigieau@beta.gouv.fr',
     },

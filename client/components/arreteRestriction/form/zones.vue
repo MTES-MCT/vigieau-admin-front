@@ -38,25 +38,26 @@ const v$ = useVuelidate(rules, props.arreteRestriction);
 
 const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
   const arsAssociated = ac.arretesRestriction.filter((ar) => ar.id !== props.arreteRestriction.id);
-  return ac.zonesAlerte
-    .filter((z) => z.type === type)
+  //@ts-ignore
+  return ac.zonesAlerteFiltered
+    ?.filter((z) => z.type === type)
     .map((z) => {
       return {
         id: z.id,
         name: z.id,
-        label: `${z.code} ${z.nom}`,
+        label: `${z.code} ${z.nom ? z.nom : ''}`,
         isArAssociated: arsAssociated.some((ar) => ar.restrictions?.some((r) => r.zoneAlerte?.id === z.id)),
       };
     });
 };
 
 const selectAll = (ac: any) => {
-  if (ac.nbZonesSelected === ac.zonesAlerte.length) {
-    zonesSelected.value = zonesSelected.value.filter((z) => !(ac.zonesAlerte.some((za: any) => za.id === z.zoneId) && z.acId === ac.id));
+  if (ac.nbZonesSelected >= ac.zonesAlerteFiltered?.length) {
+    zonesSelected.value = zonesSelected.value.filter((z) => !(ac.zonesAlerteFiltered?.some((za: any) => za.id === z.zoneId) && z.acId === ac.id));
   } else {
     zonesSelected.value = useUtils().mergeArrays(
       zonesSelected.value,
-      ac.zonesAlerte.map((za: ZoneAlerte) => {
+      ac.zonesAlerteFiltered?.map((za: ZoneAlerte) => {
         return {
           zoneId: za.id,
           acId: ac.id,
@@ -69,7 +70,7 @@ const selectAll = (ac: any) => {
 const computeZonesSelected = () => {
   acFiltered.value.forEach((ac) => {
     ac.nbZonesSelected = zonesSelected.value.filter(
-      (z) => ac.zonesAlerte.some((za: ZoneAlerte) => za.id === z.zoneId) && ac.id === z.acId,
+      (z) => ac.zonesAlerteFiltered?.some((za: ZoneAlerte) => za.id === z.zoneId) && ac.id === z.acId,
     ).length;
   });
 };
@@ -80,13 +81,32 @@ const onChange = ({ zoneId, checked, acId }: { zoneId: number; checked: boolean;
     : zonesSelected.value.filter((z) => !(z.zoneId === zoneId && z.acId === acId));
 };
 
+const loadZones = () => {
+  if (!props.arreteRestriction) {
+    return;
+  }
+  // On récupère le tableau de départements des arrêtés cadres
+  const departement = props.arreteRestriction.departement;
+  acFiltered.value = props.arreteRestriction.arretesCadre.map((ac) => {
+    return {
+      ...ac,
+      zonesAlerteFiltered: ac.zonesAlerte.filter((z) => z.departement.id === departement?.id),
+    };
+  });
+
+  zonesSelected.value = zonesSelected.value.filter((z) =>
+    acFiltered.value.some((ac) => ac.id === z.acId && ac.zonesAlerteFiltered.some((za) => za.id === z.zoneId)),
+  );
+  computeZonesSelected();
+}
+
 watch(zonesSelected, () => {
   props.arreteRestriction.restrictions = props.arreteRestriction.restrictions.filter(
     (r) => r.isAep || zonesSelected.value.some((zs) => zs.zoneId === r.zoneAlerte.id && zs.acId === r.arreteCadre.id)
   );
   const allZones = acFiltered.value
     .map((ac) => {
-      return ac.zonesAlerte.map((za) => {
+      return ac.zonesAlerteFiltered?.map((za) => {
         return { zoneAlerte: za, acId: ac.id };
       });
     })
@@ -127,22 +147,15 @@ watch(zonesSelected, () => {
 watch(
   () => props.arreteRestriction.arretesCadre,
   () => {
-    if (!props.arreteRestriction) {
-      return;
-    }
-    // On récupère le tableau de départements des arrêtés cadres
-    const departement = props.arreteRestriction.departement;
-    acFiltered.value = props.arreteRestriction.arretesCadre.map((ac) => {
-      return {
-        ...ac,
-        zonesAlerte: ac.zonesAlerte.filter((z) => z.departement.id === departement?.id),
-      };
-    });
+    loadZones();
+  },
+  { immediate: true },
+);
 
-    zonesSelected.value = zonesSelected.value.filter((z) =>
-      acFiltered.value.some((ac) => ac.id === z.acId && ac.zonesAlerte.some((za) => za.id === z.zoneId)),
-    );
-    computeZonesSelected();
+watch(
+  () => props.arreteRestriction.departement,
+  () => {
+    loadZones();
   },
   { immediate: true },
 );
@@ -161,13 +174,13 @@ defineExpose({
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'restrictions')">
           <div v-for="ac of acFiltered">
             <div class="zone-alerte__title">
-              <h6>Zones d'alerte de l'arrêté {{ ac.numero }} ({{ ac.nbZonesSelected }}/{{ ac.zonesAlerte.length }})</h6>
+              <h6>Zones d'alerte de l'arrêté {{ ac.numero }} ({{ ac.nbZonesSelected }}/{{ ac.zonesAlerteFiltered?.length }})</h6>
               <div>
                 Tout sélectionner
                 <DsfrCheckbox
                   :onUpdate:modelValue="() => selectAll(ac)"
-                  :disabled="ac.zonesAlerte.length < 1 || zonesSelected.some((z) => ac.zonesAlerte.some(za => za.id === z.zoneId) && z.acId !== ac.id)"
-                  :checked="ac.nbZonesSelected === ac.zonesAlerte.length"
+                  :disabled="ac.zonesAlerteFiltered?.length < 1 || zonesSelected.some((z) => ac.zonesAlerteFiltered?.some(za => za.id === z.zoneId) && z.acId !== ac.id)"
+                  :checked="ac.nbZonesSelected === ac.zonesAlerteFiltered?.length"
                 />
               </div>
             </div>

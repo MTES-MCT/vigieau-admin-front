@@ -19,7 +19,7 @@ const rules = computed(() => {
       required: helpers.withMessage("La date de fin de l'arrêté est obligatoire.", required),
       minValue: helpers.withMessage("La date de fin de l'arrêté doit être supérieure à la date de début.", (val: string) => {
         if (ac.value.dateDebut && val) {
-          return new Date(val) > new Date(ac.value.dateDebut);
+          return new Date(val) >= new Date(ac.value.dateDebut);
         }
         return true;
       }),

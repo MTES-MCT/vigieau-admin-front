@@ -58,7 +58,8 @@ const loginDev = () => {
               >
             </p>
           </div>
-          <div class="fr-mb-6v">
+          <div class="fr-mb-6v" 
+               v-if="!+runTimeConfig.isProd">
             <h2>Se connecter (DEV Only)</h2>
             <DsfrSelect v-model="userSelected" :options="userList" />
             <DsfrButton label="Se connecter" data-cy="LoginDevBtn" @click="loginDev()" :disabled="!userSelected" />

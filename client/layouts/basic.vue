@@ -101,10 +101,6 @@ const mandatoryLinks: any[] = [
     label: 'Données personnelles',
     to: '/donnees-personnelles',
   },
-  {
-    label: 'Cookies',
-    to: '/cookies',
-  },
 ];
 const ecosystemLinks: any[] = [
   {
@@ -194,8 +190,8 @@ onUnmounted(() => {
     :service-title="serviceTitle"
     :logo-text="logoText"
     :quickLinks="quickLinks"
-    :show-beta="runTimeConfig.domainName !== 'regleau.beta.gouv.fr'"
-    home-to="/arrete-cadre"
+    :show-beta="!+runTimeConfig.isProd"
+    home-to="/"
   >
     <template #mainnav>
       <DsfrNavigation

@@ -12,32 +12,32 @@ const props = defineProps<{
 const computeTypeEauTags = () => {
   const toReturn = [];
   const toReturnLayers = [];
-  if(props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SUP')) {
+  if (props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SUP')) {
     toReturn.push({
       label: 'Eau superficielle',
       value: 'SUP',
     });
     toReturnLayers.push('zoneSup');
   }
-  if(props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SOU')) {
+  if (props.arreteRestriction.restrictions.some(r => r.zoneAlerte?.type === 'SOU')) {
     toReturn.push({
       label: 'Eau souterraine',
       value: 'SOU',
-    })
+    });
     toReturnLayers.push('zoneSou');
   }
-  if(props.arreteRestriction.restrictions.some(r => r.isAep)) {
+  if (props.arreteRestriction.restrictions.some(r => r.isAep) || props.arreteRestriction.ressourceEapCommunique) {
     toReturn.push({
       label: 'Eau potable',
       value: 'AEP',
-    })
+    });
     toReturnLayers.push('zoneAep');
   }
 
   typeEauTags.value = toReturn;
   layers.value = toReturnLayers;
   selectedTypeEau.value = typeEauTags.value[0].value;
-}
+};
 
 const mapContainer = shallowRef(null);
 const map: Ref<any> = shallowRef(null);
@@ -94,6 +94,20 @@ onMounted(async () => {
         'line-width': 1,
       },
     });
+    map.value?.addLayer({
+      id: 'communes-data',
+      type: 'line',
+      source: 'cadastre',
+      'source-layer': 'communes',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint: {
+        'line-color': '#557ad9',
+        'line-width': 1,
+      },
+    });
     mapLoaded.value = true;
     populateSources();
     computeBounds();
@@ -139,60 +153,78 @@ const populateSources = () => {
   resetSources();
   const zonesSup = zones.value.filter((z) => z.type === 'SUP');
   const zonesSou = zones.value.filter((z) => z.type === 'SOU');
-  if(layers.value.includes('zoneSup')) {
+  const featuresSup = zonesSup
+    .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+    .map((z) => {
+      return {
+        type: 'Feature',
+        geometry: z.geom,
+        properties: {
+          niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+        },
+      };
+    });
+  const featuresSou = zonesSou
+    .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
+    .map((z) => {
+      return {
+        type: 'Feature',
+        geometry: z.geom,
+        properties: {
+          niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
+        },
+      };
+    });
+  if (layers.value.includes('zoneSup')) {
     map.value?.addSource('zoneSup', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: zonesSup
-          .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-          .map((z) => {
-            return {
-              type: 'Feature',
-              geometry: z.geom,
-              properties: {
-                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-              },
-            };
-          }),
+        features: featuresSup,
       },
-    });    
+    });
   }
-  if(layers.value.includes('zoneSou')) {
+  if (layers.value.includes('zoneSou')) {
     map.value?.addSource('zoneSou', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: zonesSou
-          .filter((z) => props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.id === z.id))
-          .map((z) => {
-            return {
-              type: 'Feature',
-              geometry: z.geom,
-              properties: {
-                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.zoneAlerte?.id === z.id)?.niveauGravite,
-              },
-            };
-          }),
+        features: featuresSou,
       },
     });
   }
-  if(layers.value.includes('zoneAep')) {
+  if (layers.value.includes('zoneAep')) {
+    let features: any[] = [];
+    if (!props.arreteRestriction.niveauGraviteSpecifiqueEap && props.arreteRestriction.ressourceEapCommunique) {
+      switch (props.arreteRestriction.ressourceEapCommunique) {
+        case 'eso':
+          features = featuresSou;
+          break;
+        case 'esu':
+          features = featuresSup;
+          break;
+        case 'max':
+          features = featuresSou.concat(featuresSup);
+          break;
+      }
+    } else {
+      features = communes.value
+        .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some((rc) => rc.id === c.id)))
+        .map((c) => {
+          return {
+            type: 'Feature',
+            geometry: c.geom,
+            properties: {
+              niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some((rc) => rc.id === c.id))?.niveauGravite,
+            },
+          };
+        });
+    }
     map.value?.addSource('zoneAep', {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
-        features: communes.value
-          .filter((c) => props.arreteRestriction.restrictions.some((r) => r.communes?.some((rc) => rc.id === c.id)))
-          .map((c) => {
-            return {
-              type: 'Feature',
-              geometry: c.geom,
-              properties: {
-                niveauGravite: props.arreteRestriction.restrictions.find((r) => r.communes?.some((rc) => rc.id === c.id))?.niveauGravite,
-              },
-            };
-          }),
+        features: features,
       },
     });
   }
@@ -209,7 +241,8 @@ const resetSources = (onlyLayers = false) => {
         map.value?.removeSource(l);
       }
     });
-  } catch (e) {}
+  } catch (e) {
+  }
 };
 
 const computeBounds = () => {
@@ -220,7 +253,7 @@ const computeBounds = () => {
     .flat(3);
 
   const bounds = coordinates.reduce(
-    function (bounds, coord) {
+    function(bounds, coord) {
       return bounds.extend(coord);
     },
     new LngLatBounds(coordinates[0], coordinates[0]),
@@ -253,9 +286,9 @@ const showLayer = () => {
         /* other */ '#ccc',
       ],
       'fill-opacity': {
-        stops: [[5, 1], [6, 0.8], [7, 0.7], [8, 0.6], [9, 0.5], [10, 0.4], [11, 0.3]]
+        stops: [[5, 1], [6, 0.8], [7, 0.7], [8, 0.6], [9, 0.5], [10, 0.4], [11, 0.3]],
       },
-      'fill-outline-color': '#000'
+      'fill-outline-color': '#000',
     },
   });
 };
@@ -307,7 +340,7 @@ watch(
         <div class="map" ref="mapContainer"></div>
       </div>
     </div>
-    
+
     <DsfrAlert
       type="info"
       class="fr-mt-2w"
