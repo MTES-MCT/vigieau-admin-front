@@ -4,6 +4,7 @@ import type { Ref } from 'vue';
 import { Map, NavigationControl, FullscreenControl, LngLatBounds } from 'maplibre-gl';
 import type { ZoneAlerte } from '~/dto/zone_alerte.dto';
 import type { Commune } from '~/dto/commune.dto';
+import NiveauGraviteBadge from '~/components/mixins/NiveauGraviteBadge.vue';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -339,6 +340,13 @@ watch(
       <div class="map-wrap">
         <div class="map" ref="mapContainer"></div>
       </div>
+    </div>
+    
+    <div class="fr-mt-1w">
+      <NiveauGraviteBadge niveau-gravite="vigilance" class="fr-mr-1w" />
+      <NiveauGraviteBadge niveau-gravite="alerte" class="fr-mr-1w"  />
+      <NiveauGraviteBadge niveau-gravite="alerte_renforcee" class="fr-mr-1w" />
+      <NiveauGraviteBadge niveau-gravite="crise"  />
     </div>
 
     <DsfrAlert

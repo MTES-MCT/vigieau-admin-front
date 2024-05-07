@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const initialName = props.usage.nom;
+const focusActive = ref(false);
 
 const utils = useUtils();
 const refDataStore = useRefDataStore();
@@ -160,10 +161,16 @@ defineExpose({
   submitForm,
   v$,
 });
+
+onMounted(() => {
+  setTimeout(() => {
+    focusActive.value = true;
+  }, 500);
+})
 </script>
 
 <template>
-  <focus-trap>
+  <focus-trap v-model:active="focusActive">
     <form @submit.prevent="">
       <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
         <DsfrInput
@@ -237,6 +244,7 @@ defineExpose({
             label="Ajouter un texte libre"
             label-visible
             type="text"
+            rows="4"
             :data-cy="'UsageArreteCadreForm' + niveau.attribute + 'Input'"
             :name="niveau.attribute"
             :required="niveau.required"

@@ -124,3 +124,26 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
 .fr-breadcrumb {
   margin-bottom: 0.5rem;
 }
+
+// BADGE
+.fr-badge {
+  &--vigilance {
+    background-color: #ffeda0;
+    color: var(--grey-50-1000);
+  }
+
+  &--alerte {
+    background-color: #feb24c;
+    color: var(--grey-1000-50);
+  }
+
+  &--alerte_renforcee {
+    background-color: #fc4e2a;
+    color: var(--grey-1000-50);
+  }
+
+  &--crise {
+    background-color: #b10026;
+    color: var(--grey-1000-50);
+  }
+}
