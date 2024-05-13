@@ -6,21 +6,8 @@ const props = defineProps<{
 }>();
 
 const restrictionNiveauGraviteFr = RestrictionNiveauGraviteFr;
-
-const badgeType = computed(() => {
-  switch (props.niveauGravite) {
-    case 'vigilance':
-      return 'info';
-    case 'alerte':
-      return 'new';
-    case 'alerte_renforcee':
-      return 'warning';
-    case 'crise':
-      return 'error';
-  }
-})
 </script>
 
 <template>
-  <DsfrBadge :label="restrictionNiveauGraviteFr[niveauGravite]" :type="badgeType" />
+  <DsfrBadge :label="restrictionNiveauGraviteFr[niveauGravite]" :type="niveauGravite" />
 </template>
