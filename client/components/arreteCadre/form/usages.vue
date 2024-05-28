@@ -6,7 +6,6 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import deburr from 'lodash.deburr';
-import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -14,18 +13,12 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['resetUsageSelected']);
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
-const usageFormRef = ref(null);
-const usageArreteCadreFormRef = ref(null);
-const loading: Ref<boolean> = ref(false);
 const componentKey = ref(0);
 
 const query: Ref<string> = ref('');
 const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
 const utils = useUtils();
-const api = useApi();
-const alertStore = useAlertStore();
-const usageArreteCadreToEdit: Ref<Usage | null> = ref(null);
 
 const createEditUsageFormRef = ref();
 const modalOpened = ref(false);
@@ -124,39 +117,6 @@ const createEditUsage = async (usage: Usage) => {
   utils.closeModal(modalOpened);
 };
 
-const addEditUsageArreteCadre = () => {
-  const idx = props.arreteCadre.usages.findIndex((u: Usage) => u.nom === usageArreteCadreToEdit.value?.nom);
-  if (idx > -1) {
-    props.arreteCadre.usages[idx] = usageArreteCadreToEdit.value;
-  } else {
-    props.arreteCadre.usages.push(usageArreteCadreToEdit.value);
-  }
-  componentKey.value += 1;
-  usageArreteCadreToEdit.value = null;
-  alertStore.addAlert({
-    description: 'Usage enregistré',
-    type: 'success',
-  });
-};
-
-const usageArreteCadreFormButtons: Ref<any[]> = ref([
-  {
-    label: 'Annuler',
-    secondary: true,
-    onclick: () => {
-      usageArreteCadreToEdit.value = null;
-      usageToEdit.value = new Usage();
-    },
-  },
-  {
-    label: 'Enregistrer',
-    'data-cy': 'ArreteCadreFormUsagesSaveBtn',
-    onclick: () => {
-      usageArreteCadreFormRef.value?.submitForm();
-    },
-  },
-]);
-
 watch(
   query,
   useUtils().debounce(async () => {
@@ -229,19 +189,21 @@ defineExpose({
       </div>
     </div>
   </form>
-  <DsfrModal
-    :opened="modalOpened"
-    title="Création / édition d'un usage"
-    :actions="modalActions"
-    @close="modalOpened = utils.closeModal(modalOpened);">
-    <ArreteCadreFormCreateEditUsage
-      v-if="modalOpened"
-      ref="createEditUsageFormRef"
-      @createEdit="createEditUsage($event)"
-      :usage="usageToEdit"
-      :other-usages="arreteCadre.usages"
-    />
-  </DsfrModal>
+  <Teleport to="body">
+    <DsfrModal
+      :opened="modalOpened"
+      title="Création / édition d'un usage"
+      :actions="modalActions"
+      @close="modalOpened = utils.closeModal(modalOpened);">
+      <ArreteCadreFormCreateEditUsage
+        v-if="modalOpened"
+        ref="createEditUsageFormRef"
+        @createEdit="createEditUsage($event)"
+        :usage="usageToEdit"
+        :other-usages="arreteCadre.usages"
+      />
+    </DsfrModal>
+  </Teleport>
 </template>
 
 <style lang="scss">
