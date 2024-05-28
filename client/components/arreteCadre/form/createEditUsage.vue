@@ -20,7 +20,6 @@ const initialName = props.usage.nom;
 
 const utils = useUtils();
 const refDataStore = useRefDataStore();
-const usageFormNameInput = ref<any>();
 const thematiquesOptions = refDataStore.thematiques.map((t) => {
   return {
     value: t.id,
@@ -159,13 +158,6 @@ const thematiqueDescription = computed(() => {
 defineExpose({
   submitForm,
   v$,
-});
-
-onMounted(() => {
-  setTimeout(() => {
-    document.activeElement?.blur();
-    usageFormNameInput.value?.focus();
-  }, 500);
 });
 </script>
 

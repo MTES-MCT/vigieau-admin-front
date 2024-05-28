@@ -189,19 +189,21 @@ defineExpose({
       </div>
     </div>
   </form>
-  <DsfrModal
-    :opened="modalOpened"
-    title="Création / édition d'un usage"
-    :actions="modalActions"
-    @close="modalOpened = utils.closeModal(modalOpened);">
-    <ArreteCadreFormCreateEditUsage
-      v-if="modalOpened"
-      ref="createEditUsageFormRef"
-      @createEdit="createEditUsage($event)"
-      :usage="usageToEdit"
-      :other-usages="arreteCadre.usages"
-    />
-  </DsfrModal>
+  <Teleport to="body">
+    <DsfrModal
+      :opened="modalOpened"
+      title="Création / édition d'un usage"
+      :actions="modalActions"
+      @close="modalOpened = utils.closeModal(modalOpened);">
+      <ArreteCadreFormCreateEditUsage
+        v-if="modalOpened"
+        ref="createEditUsageFormRef"
+        @createEdit="createEditUsage($event)"
+        :usage="usageToEdit"
+        :other-usages="arreteCadre.usages"
+      />
+    </DsfrModal>
+  </Teleport>
 </template>
 
 <style lang="scss">
