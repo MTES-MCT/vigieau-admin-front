@@ -5,7 +5,6 @@ import { helpers, maxLength, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import { ThematiqueExamples } from '~/dto/thematique.dto';
 import type { Usage } from '~/dto/usage.dto';
-import { FocusTrap } from 'focus-trap-vue';
 
 const props = defineProps<{
   usage: Usage;
@@ -18,10 +17,10 @@ const emit = defineEmits<{
 }>();
 
 const initialName = props.usage.nom;
-const focusActive = ref(false);
 
 const utils = useUtils();
 const refDataStore = useRefDataStore();
+const usageFormNameInput = ref<any>();
 const thematiquesOptions = refDataStore.thematiques.map((t) => {
   return {
     value: t.id,
@@ -164,96 +163,95 @@ defineExpose({
 
 onMounted(() => {
   setTimeout(() => {
-    focusActive.value = true;
+    document.activeElement?.blur();
+    usageFormNameInput.value?.focus();
   }, 500);
-})
+});
 </script>
 
 <template>
-  <focus-trap v-model:active="focusActive">
-    <form @submit.prevent="">
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
+  <form @submit.prevent="">
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'nom')">
+      <DsfrInput
+        id="usage_nom"
+        v-model="usage.nom"
+        label="Nom de l'usage"
+        label-visible
+        type="text"
+        data-cy="UsageFormNameInput"
+        name="usage_nom"
+        :required="true"
+        ref="usageFormNameInput"
+      />
+      <span class="fr-input-group__sub-hint">{{ usage.nom ? usage.nom.length : 0 }}/150</span>
+    </DsfrInputGroup>
+
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'thematique')">
+      <DsfrSelect
+        :required="true"
+        label="Choisir une thématique pour l'affichage dans VigiEau"
+        data-cy="UsageFormThematiqueSelect"
+        :options="thematiquesOptions"
+        :model-value="usage.thematique?.id"
+        @update:modelValue="thematiqueSelected"
+      />
+    </DsfrInputGroup>
+    <DsfrAlert v-if="usage.thematique" type="warning" title="Vérifier la thématique" class="fr-mb-2w">
+      <div v-html="thematiqueDescription" />
+    </DsfrAlert>
+
+    <div class="fr-my-2w">Usagers</div>
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'concerne')">
+      <DsfrCheckbox
+        v-for="concerne of concernes"
+        :label="concerne.name"
+        :name="concerne.attribute"
+        :data-cy="'UsageForm' + concerne.attribute + 'Checkbox'"
+        v-model="usage[concerne.attribute]"
+      />
+    </DsfrInputGroup>
+
+    <div class="fr-my-2w">À quelle(s) ressource(s) cet usage est-il associé ?</div>
+    <DsfrInputGroup :error-message="utils.showInputError(v$, 'ressource')">
+      <DsfrCheckbox
+        v-for="ressource of resssources"
+        :label="ressource.name"
+        :name="ressource.attribute"
+        :data-cy="'UsageForm' + ressource.attribute + 'Checkbox'"
+        v-model="usage[ressource.attribute]"
+      />
+    </DsfrInputGroup>
+
+    <div class="fr-my-2w divider" />
+    <h6>Niveau de restriction</h6>
+    <DsfrAlert type="warning" title="Rédaction des mesures" class="fr-mb-2w">
+      Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;:
+      <b>
+        <br />-&nbsp;éviter les acronymes <br />-&nbsp;simplifier au maximum les tournures de phrases <br />-&nbsp;ajouter “voir
+        exceptions
+        listées dans l’arrêté préfectoral” lorsque le texte est trop long
+      </b>
+    </DsfrAlert>
+    <template v-for="(niveau, index) of niveauxRestriction">
+      <div v-if="index !== 0" class="fr-mb-2w divider" />
+      <DsfrBadge :label="niveau.name" :type="niveau.badgeType" />
+      <DsfrInputGroup :error-message="utils.showInputError(v$, niveau.attribute)">
         <DsfrInput
-          id="usage_nom"
-          v-model="usage.nom"
-          label="Nom de l'usage"
+          :id="niveau.attribute"
+          v-model="usage[niveau.attribute]"
+          :is-textarea="true"
+          label="Ajouter un texte libre"
           label-visible
           type="text"
-          data-cy="UsageFormNameInput"
-          name="usage_nom"
-          :required="true"
-          autofocus
+          rows="4"
+          :data-cy="'UsageArreteCadreForm' + niveau.attribute + 'Input'"
+          :name="niveau.attribute"
+          :required="niveau.required"
         />
-        <span class="fr-input-group__sub-hint">{{ usage.nom ? usage.nom.length : 0 }}/150</span>
-      </DsfrInputGroup>
-
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'thematique')">
-        <DsfrSelect
-          :required="true"
-          label="Choisir une thématique pour l'affichage dans VigiEau"
-          data-cy="UsageFormThematiqueSelect"
-          :options="thematiquesOptions"
-          :model-value="usage.thematique?.id"
-          @update:modelValue="thematiqueSelected"
-        />
-      </DsfrInputGroup>
-      <DsfrAlert v-if="usage.thematique" type="warning" title="Vérifier la thématique" class="fr-mb-2w">
-        <div v-html="thematiqueDescription" />
-      </DsfrAlert>
-
-      <div class="fr-my-2w">Usagers</div>
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'concerne')">
-        <DsfrCheckbox
-          v-for="concerne of concernes"
-          :label="concerne.name"
-          :name="concerne.attribute"
-          :data-cy="'UsageForm' + concerne.attribute + 'Checkbox'"
-          v-model="usage[concerne.attribute]"
-        />
-      </DsfrInputGroup>
-
-      <div class="fr-my-2w">À quelle(s) ressource(s) cet usage est-il associé ?</div>
-      <DsfrInputGroup :error-message="utils.showInputError(v$, 'ressource')">
-        <DsfrCheckbox
-          v-for="ressource of resssources"
-          :label="ressource.name"
-          :name="ressource.attribute"
-          :data-cy="'UsageForm' + ressource.attribute + 'Checkbox'"
-          v-model="usage[ressource.attribute]"
-        />
-      </DsfrInputGroup>
-
-      <div class="fr-my-2w divider" />
-      <h6>Niveau de restriction</h6>
-      <DsfrAlert type="warning" title="Rédaction des mesures" class="fr-mb-2w">
-        Pour permettre aux usagers de VigiEau une bonne compréhension des mesures&nbsp;:
-        <b>
-          <br />-&nbsp;éviter les acronymes <br />-&nbsp;simplifier au maximum les tournures de phrases <br />-&nbsp;ajouter “voir
-          exceptions
-          listées dans l’arrêté préfectoral” lorsque le texte est trop long
-        </b>
-      </DsfrAlert>
-      <template v-for="(niveau, index) of niveauxRestriction">
-        <div v-if="index !== 0" class="fr-mb-2w divider" />
-        <DsfrBadge :label="niveau.name" :type="niveau.badgeType" />
-        <DsfrInputGroup :error-message="utils.showInputError(v$, niveau.attribute)">
-          <DsfrInput
-            :id="niveau.attribute"
-            v-model="usage[niveau.attribute]"
-            :is-textarea="true"
-            label="Ajouter un texte libre"
-            label-visible
-            type="text"
-            rows="4"
-            :data-cy="'UsageArreteCadreForm' + niveau.attribute + 'Input'"
-            :name="niveau.attribute"
-            :required="niveau.required"
-          />
-          <span class="fr-input-group__sub-hint">
+        <span class="fr-input-group__sub-hint">
           {{ usage[niveau.attribute] ? usage[niveau.attribute].length : 0 }}/500
         </span>
-        </DsfrInputGroup>
-      </template>
-    </form>
-  </focus-trap>
+      </DsfrInputGroup>
+    </template>
+  </form>
 </template>
