@@ -18,11 +18,13 @@ const statusOptions = ref([
   {
     label: 'En cours',
     value: 'publie',
+    icon: 'ri-checkbox-circle-fill',
     'data-cy': 'ArreteRestrictionListFilterPublie',
   },
   {
     label: 'Abrogé',
     value: 'abroge',
+    icon: 'ri-close-circle-fill',
     'data-cy': 'ArreteRestrictionListFilterAbroge',
   },
 ]);

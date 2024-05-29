@@ -17,11 +17,13 @@ const statusOptions = ref([
   {
     label: 'En cours',
     value: 'publie',
+    icon: 'ri-checkbox-circle-fill',
     'data-cy': 'ArreteCadreListFilterPublie',
   },
   {
     label: 'Abrogé',
     value: 'abroge',
+    icon: 'ri-close-circle-fill',
     'data-cy': 'ArreteCadreListFilterAbroge',
   },
 ]);
@@ -124,7 +126,9 @@ watch(
     </NuxtLink>
     <div class="fr-col-12 fr-grid-row fr-grid-row--bottom fr-grid-row--gutters fr-mt-2w">
       <div class="fr-col-12 fr-col-md-6 fr-mb-2w">
-        <DsfrSegmentedSet v-model="statusFilter" :inline="true" :options="statusOptions" />
+        <DsfrSegmentedSet v-model="statusFilter"
+                          :inline="true"
+                          :options="statusOptions" />
       </div>
       <div class="fr-col-12 fr-col-md-3 fr-mb-2w">
         <DsfrSearchBar :labelVisible="false" v-model="query" data-cy="ArreteCadreListSearchBar" />
