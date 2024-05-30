@@ -10,6 +10,6 @@ const iframeSrc = departementCode ? `https://${useRuntimeConfig().public.domainN
 
 <template>
   <div class="fr-card fr-pt-2w">
-    <iframe width="100%" height="600px" :src="iframeSrc"></iframe>
+    <iframe width="100%" height="700px" :src="iframeSrc"></iframe>
   </div>
 </template>
