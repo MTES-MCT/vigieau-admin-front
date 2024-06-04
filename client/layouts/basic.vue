@@ -221,6 +221,13 @@ onUnmounted(() => {
   </div>
   <main>
     <div class="fr-container fr-my-4w">
+      <div class="fr-container" v-if="runTimeConfig.appEnv !== 'prod'">
+        <DsfrAlert description="Plateforme de développement, les données sont fictives. Si vous souhaitez accéder à la plateforme de production, allez sur https://admin.vigieau.beta.gouv.fr"
+                   type="warning"
+                   class="fr-my-2w"
+                   :closeable="false"
+        />
+      </div>
       <slot />
     </div>
   </main>
