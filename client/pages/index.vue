@@ -37,7 +37,7 @@ if (data.value) {
           <AccueilStatsConsultation :statisticDepartement="statDep" />
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-<!--          <AccueilStatsFeedback />-->
+          <AccueilStatsFeedback />
         </div>
       </div>
     </div>
