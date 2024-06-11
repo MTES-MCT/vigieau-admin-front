@@ -62,14 +62,6 @@ if (data.value) {
     z-index: -1;
   }
 
-  .fr-grid-row .fr-card {
-    height: auto;
-  }
-
-  .fr-card__img-no-ratio img {
-    aspect-ratio: auto;
-  }
-
   h2 {
     font-size: 1rem;
     line-height: 1.2rem;

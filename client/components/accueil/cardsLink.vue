@@ -1,6 +1,16 @@
 <script setup lang="ts">
 const cartes = [
   {
+    title: 'Prenez facilement l’outil en main',
+    description: 'Accéder aux contenus de formation',
+    img: '/accueil_1.png',
+    link: {
+      label: 'Accéder au pas à pas',
+      href: 'https://aide.vigieau.beta.gouv.fr',
+      external: true,
+    },
+  },
+  {
     title: 'Gestion des arrêtés cadre',
     description: 'Créer, modifier et abroger les arrêtés cadre départementaux et interdépartementaux',
     img: '/accueil_2.png',
@@ -23,45 +33,29 @@ const cartes = [
 
 <template>
   <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-12 fr-col-lg-7">
-      <div class="fr-card fr-enlarge-link fr-card--sm">
+    <div class="fr-col-12 fr-col-lg-4" v-for="carte of cartes">
+      <div class="fr-card fr-card--horizontal fr-enlarge-link fr-card--sm">
         <div class="fr-card__body">
           <div class="fr-card__content">
             <h3 class="fr-card__title">
-              <a href="https://aide.vigieau.beta.gouv.fr" target="_blank">Prenez facilement l’outil en main</a>
+              <template v-if="carte.link.external">
+                <a :href="carte.link.href" target="_blank">{{ carte.title }}</a>
+              </template>
+              <template v-else>
+                <nuxt-link :to="carte.link.to">{{ carte.title }}</nuxt-link>
+              </template>
             </h3>
             <p class="fr-card__desc">
-              Accéder au pas à pas
+              {{ carte.description }}
             </p>
           </div>
         </div>
         <div class="fr-card__header">
-          <div class="fr-card__img fr-card__img-no-ratio">
-            <img class="fr-responsive-img" src="/accueil_1.png" alt="Image d'illustration" />
+          <div class="fr-card__img">
+            <img class="fr-responsive-img" :src="carte.img" alt="Image d'illustration" />
           </div>
         </div>
       </div>
-    </div>
-    <div class="fr-col-12 fr-col-lg-5">
-      <template v-for="carte of cartes">
-        <div class="fr-card fr-enlarge-link fr-card--horizontal fr-card--sm fr-mb-2w">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">
-                <nuxt-link :to="carte.link.to">{{ carte.title }}</nuxt-link>
-              </h3>
-              <p class="fr-card__desc">
-                {{ carte.description }}
-              </p>
-            </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" :src="carte.img" alt="Image d'illustration" />
-            </div>
-          </div>
-        </div>
-      </template>
     </div>
   </div>
 </template>
