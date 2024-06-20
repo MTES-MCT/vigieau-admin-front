@@ -2,9 +2,9 @@
 import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 import { helpers, required } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
-import type { Restriction } from "~/dto/restriction.dto";
-import type { ArreteCadre } from "~/dto/arrete_cadre.dto";
-import type { Ref } from "vue";
+import type { Restriction } from '~/dto/restriction.dto';
+import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
+import type { Ref } from 'vue';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -12,10 +12,14 @@ const props = defineProps<{
   selected: boolean;
 }>();
 
+const emit = defineEmits<{
+  editUsages: any;
+}>();
+
 const rules = computed(() => {
   return {
     restrictions: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins une zone d'alerte", required),
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins une zone d\'alerte', required),
     },
   };
 });
@@ -97,7 +101,7 @@ watch(
     if (!isSameNiveauGravite.value) {
       sameNiveauGravite.value = null;
     }
-  }
+  },
 );
 
 watch(
@@ -107,7 +111,7 @@ watch(
       return props.arreteRestriction.restrictions.some(r => r.arreteCadre?.id === ac.id);
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(() => props.arreteRestriction.departement, async () => {
@@ -171,8 +175,29 @@ watch(() => props.arreteRestriction.departement, async () => {
         </div>
       </div>
       <div class="fr-col-12 fr-col-lg-6">
+        <div class="fr-card fr-mb-2w fr-p-2w">
+          <h3 class="fr-h6">
+            Vous souhaitez ajouter ou modifier un usage&nbsp;?
+          </h3>
+          
+          <div class="fr-grid-row fr-grid-row--right">
+            <DsfrButton
+              label="Modifier les usages"
+              icon="ri-edit-2-fill"
+              :secondary="true"
+              @click="emit('editUsages')"
+            />
+          </div>
+        </div>
+
         <ArreteRestrictionCarteRecapitulatif v-if="selected" :arreteRestriction="arreteRestriction" />
       </div>
     </div>
   </form>
 </template>
+
+<style lang="scss">
+.fr-grid-row .fr-card {
+  height: auto;
+}
+</style>

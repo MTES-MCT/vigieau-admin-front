@@ -200,7 +200,7 @@ const showRestrictionsAepForm = computed(() => {
 });
 
 const totalSteps = computed(() => {
-  return showRestrictionsForm.value && showRestrictionsAepForm.value ? 5 : 4;
+  return showRestrictionsForm.value && showRestrictionsAepForm.value ? 6 : 5;
 });
 
 
@@ -211,6 +211,7 @@ const steps = computed(() => {
       'Ressources concernées par les restrictions',
       'Liste des zones d\'alertes',
       'Niveaux de gravité et usages',
+      'Usages',
     ];
   } else if (showRestrictionsForm.value && showRestrictionsAepForm.value) {
     return [
@@ -219,6 +220,7 @@ const steps = computed(() => {
       'Liste des zones d\'alertes AEP',
       'Liste des zones d\'alertes',
       'Niveaux de gravité et usages',
+      'Usages',
     ];
   } else {
     return [
@@ -226,6 +228,7 @@ const steps = computed(() => {
       'Ressources concernées par les restrictions',
       'Liste des zones d\'alertes AEP',
       'Niveaux de gravité et usages',
+      'Usages',
     ];
   }
 });
@@ -259,23 +262,35 @@ const graviteFormRef = ref(null);
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
     <DsfrTabContent v-if="showRestrictionsAepForm"
-                    :selected="currentStep === 3" :asc="asc">
+                    :selected="currentStep === 3"
+                    :asc="asc">
       <ArreteRestrictionFormZonesAep
         ref="restrictionsAepFormRef"
-        :selected="currentStep === (totalSteps - 1)"
+        :selected="showRestrictionsForm ? currentStep === (totalSteps - 3) : currentStep === (totalSteps - 2)"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
     <DsfrTabContent v-if="showRestrictionsForm"
-                    :selected="currentStep === totalSteps - 1" :asc="asc">
+                    :selected="currentStep === (totalSteps - 2)"
+                    :asc="asc">
       <ArreteRestrictionFormZones
         ref="restrictionsFormRef"
         :selected="currentStep === 3"
         :arreteRestriction="arreteRestriction" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === totalSteps"
+    <DsfrTabContent :selected="currentStep === totalSteps - 1"
                     :asc="asc">
       <ArreteRestrictionFormGravite
         ref="graviteFormRef"
+        :key="currentStep"
+        :selected="currentStep === (totalSteps - 1)"
+        :arreteRestriction="arreteRestriction"
+        @editUsages="nextStep()"
+      />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="currentStep === totalSteps"
+                    :asc="asc">
+      <ArreteRestrictionFormUsages
+        ref="usagesFormRef"
         :key="currentStep"
         :selected="currentStep === totalSteps"
         :arreteRestriction="arreteRestriction"
@@ -307,7 +322,7 @@ const graviteFormRef = ref(null);
                   :secondary="true"
                   icon="ri-arrow-right-line"
                   data-cy="ArreteRestrictionFormNextStepBtn"
-                  :disabled="currentStep === totalSteps"
+                  :disabled="currentStep >= (totalSteps - 1)"
                   @click="nextStep()" />
     </li>
     <li v-if="currentStep === totalSteps && arreteRestriction.statut === 'a_valider'">

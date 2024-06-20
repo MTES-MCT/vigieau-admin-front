@@ -247,18 +247,21 @@ const resetSources = (onlyLayers = false) => {
 };
 
 const computeBounds = () => {
-  const coordinates = zones.value
+  const geoms = zones.value
     .map((z) => {
       return z.geom.coordinates;
-    })
-    .flat(3);
+    });
 
-  const bounds = coordinates.reduce(
-    function(bounds, coord) {
-      return bounds.extend(coord);
-    },
-    new LngLatBounds(coordinates[0], coordinates[0]),
-  );
+  let bounds = new LngLatBounds();
+
+  geoms.forEach(g => {
+    g.forEach(c => {
+      if(c.length === 1) {
+        c = c.flat();
+      }
+      bounds.extend(c);
+    });
+  });
 
   map.value?.fitBounds(bounds, {
     padding: 20,
@@ -341,12 +344,12 @@ watch(
         <div class="map" ref="mapContainer"></div>
       </div>
     </div>
-    
+
     <div class="fr-mt-1w">
       <NiveauGraviteBadge niveau-gravite="vigilance" class="fr-mr-1w" />
-      <NiveauGraviteBadge niveau-gravite="alerte" class="fr-mr-1w"  />
+      <NiveauGraviteBadge niveau-gravite="alerte" class="fr-mr-1w" />
       <NiveauGraviteBadge niveau-gravite="alerte_renforcee" class="fr-mr-1w" />
-      <NiveauGraviteBadge niveau-gravite="crise"  />
+      <NiveauGraviteBadge niveau-gravite="crise" />
     </div>
 
     <DsfrAlert
