@@ -37,16 +37,6 @@ const modalActions = ref([
 ]);
 const usageNameEdited: Ref<string | null> = ref(null);
 
-const rules = computed(() => {
-  return {
-    usages: {
-      required: helpers.withMessage('L\'arrêté doit être lié à au moins un usage', required),
-    },
-  };
-});
-
-const v$ = useVuelidate(rules, props.arreteRestriction);
-
 const arreteRestrictionUsages = computed(() => {
   return props.arreteRestriction.restrictions.map((r) => r.usages).flat().filter((value, index, self) =>
       index === self.findIndex((t) => (
@@ -133,7 +123,6 @@ watch(
 const arreteCadreUsageListRef = ref(null);
 
 defineExpose({
-  v$,
   selectUsage,
   arreteCadreUsageListRef,
 });
@@ -157,7 +146,7 @@ defineExpose({
           <p>
             Retrouvez les usages utilisés dans un arrêté précédent&nbsp;:
           </p>
-          <DsfrInputGroup :error-message="utils.showInputError(v$, 'usagesArreteCadre')">
+          <DsfrInputGroup>
             <MixinsAutoComplete
               class="show-label"
               data-cy="ArreteCadreFormUsagesAutocomplete"
