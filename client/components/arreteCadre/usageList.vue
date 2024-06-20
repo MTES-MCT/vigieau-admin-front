@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { helpers, required } from "@vuelidate/validators/dist";
-import useVuelidate from "@vuelidate/core";
+import { helpers, required } from '@vuelidate/validators/dist';
+import useVuelidate from '@vuelidate/core';
 
 const props = defineProps<{
   usages: any[];
+  hideRemove?: boolean;
 }>();
 
 const emit = defineEmits(['usageSelected', 'usageRemoved']);
@@ -18,9 +19,9 @@ const rules = computed(() => {
   return {
     $each: helpers.forEach({
       descriptionCrise: {
-        required: helpers.withMessage("Tout les usages doivent avoir une description de crise", required),
+        required: helpers.withMessage('Tout les usages doivent avoir une description de crise', required),
       },
-    })
+    }),
   };
 });
 
@@ -29,50 +30,53 @@ const v$ = useVuelidate(rules, props.usages);
 const generateRows = () => {
   rows.value = [
     ...props.usages.map((u: any, index: number) => {
+      const buttons = [
+        {
+          icon: 'ri-edit-2-fill',
+          iconOnly: true,
+          label: 'Editer',
+          onClick: () => {
+            emit('usageSelected', index);
+          },
+        },
+      ];
+      if (!props.hideRemove) {
+        buttons.push({
+          icon: 'ri-delete-bin-5-fill',
+          iconOnly: true,
+          label: 'Supprimer',
+          onClick: () => {
+            modalActions.value = [
+              {
+                label: 'Valider',
+                onClick: () => {
+                  utils.closeModal(modalOpened);
+                  emit('usageRemoved', u);
+                },
+              },
+              {
+                label: 'Annuler',
+                secondary: true,
+                onClick: () => {
+                  utils.closeModal(modalOpened);
+                },
+              },
+            ];
+            modalDescription.value = `Voulez vous vraiment supprimer l'usage <b>${u.nom}</b> ?`;
+            modalOpened.value = true;
+          },
+        });
+      }
       return [
         {
           component: 'span',
           text: u.nom,
-          class: u.descriptionCrise ? '' : 'usage-error'
+          class: u.descriptionCrise ? '' : 'usage-error',
         },
         {
           component: 'DsfrButtonGroup',
           inlineLayoutWhen: 'always',
-          buttons: [
-            {
-              icon: 'ri-edit-2-fill',
-              iconOnly: true,
-              label: 'Editer',
-              onClick: () => {
-                emit('usageSelected', index);
-              },
-            },
-            {
-              icon: 'ri-delete-bin-5-fill',
-              iconOnly: true,
-              label: 'Supprimer',
-              onClick: () => {
-                modalActions.value = [
-                  {
-                    label: 'Valider',
-                    onClick: () => {
-                      utils.closeModal(modalOpened);
-                      emit('usageRemoved', u);
-                    },
-                  },
-                  {
-                    label: 'Annuler',
-                    secondary: true,
-                    onClick: () => {
-                      utils.closeModal(modalOpened);
-                    },
-                  },
-                ]
-                modalDescription.value = `Voulez vous vraiment supprimer l'usage <b>${u.nom}</b> ?`;
-                modalOpened.value = true;
-              },
-            },
-          ],
+          buttons: buttons,
         },
       ];
     }),
@@ -103,7 +107,7 @@ defineExpose({
   <div v-else>
     Aucun usage lié à l'arrêté cadre
   </div>
-  
+
   <DsfrModal :opened="modalOpened"
              :title="modalTitle"
              :actions="modalActions"
@@ -117,7 +121,7 @@ defineExpose({
   .fr-btns-group {
     flex-wrap: nowrap;
   }
-  
+
   .usage-error {
     color: var(--red-marianne-425-625);
   }

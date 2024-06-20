@@ -80,13 +80,6 @@ const selectUsage = (usage: Usage | string) => {
   askCreateEditUsage(null, usageRestriction);
 };
 
-const deleteUsage = (usage: Usage) => {
-  props.arreteRestriction.restrictions.forEach(r => {
-    r.usages = r.usages.filter((ru) => ru.nom !== usage.nom);
-  });
-  componentKey.value += 1;
-};
-
 const askCreateEditUsage = (index: number | null = null, usage?: Usage) => {
   const u = index !== null ? JSON.parse(JSON.stringify(arreteRestrictionUsages.value[index])) : new Usage(usage);
   usageToEdit.value = u;
@@ -135,8 +128,8 @@ defineExpose({
         <ArreteCadreUsageList
           ref="arreteCadreUsageListRef"
           :usages="arreteRestrictionUsages"
+          :hideRemove="true"
           @usage-selected="askCreateEditUsage($event)"
-          @usage-removed="deleteUsage($event)"
           :key="componentKey"
         />
       </div>
