@@ -16,7 +16,7 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
 const utils = useUtils();
-const isArOnDepartementUser: boolean = authStore.isMte || props.arreteRestriction.departement?.code === authStore.user?.roleDepartement;
+const isArOnDepartementUser: boolean = authStore.isMte || authStore.user?.roleDepartements.includes(props.arreteRestriction.departement?.code);
 const isZaOutdated: boolean = props.arreteRestriction.statut !== 'abroge' && props.arreteRestriction.restrictions.some((r) => r.zoneAlerte?.disabled);
 const canUpdate = authStore.isMte
   || (props.arreteRestriction.statut !== "abroge" && isArOnDepartementUser && !isZaOutdated);

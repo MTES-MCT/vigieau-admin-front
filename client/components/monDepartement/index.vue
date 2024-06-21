@@ -12,7 +12,7 @@ const alertStore = useAlertStore();
 const parametres: Ref<Parametres[] | undefined> = ref();
 const parametresSelected: Ref<Parametres | undefined> = ref();
 const authStore = useAuthStore();
-const depSelected = ref(authStore.user.role === 'departement' ? authStore.user.roleDepartement : null);
+const depSelected = ref(authStore.user?.role === 'departement' ? authStore.user.roleDepartements[0] : null);
 const departementsOptions: Ref<any[] | undefined> = ref();
 const refDataStore = useRefDataStore();
 
@@ -60,7 +60,9 @@ watch(
   () => refDataStore.departements,
   () => {
     if (refDataStore.departements && refDataStore.departements.length > 0) {
-      departementsOptions.value = refDataStore.departements.map((d) => {
+      departementsOptions.value = refDataStore.departements
+        .filter(d => authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(d.code))
+        .map((d) => {
         return {
           value: d.code,
           text: `${d.code} - ${d.nom}`,
@@ -80,7 +82,6 @@ watch(depSelected, () => {
 
 <template>
   <DsfrSelect
-    v-if="authStore.user.role === 'mte'"
     v-model="depSelected"
     data-cy="ArreteRestrictionListDepartementSelect"
     label="Filtrer par Département"

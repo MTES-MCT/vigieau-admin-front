@@ -3,6 +3,8 @@ import type { Ref } from 'vue';
 import type { User } from '~/dto/user.dto';
 import { UserRole } from '~/dto/user.dto';
 import { useAuthStore } from '~/stores/auth';
+import { Usage } from '~/dto/usage.dto';
+import deburr from 'lodash.deburr';
 
 const headers = ['Nom', 'Prénom', 'Email', 'Rôle', '', ''];
 const noCaption = false;
@@ -23,23 +25,26 @@ const componentKey = ref(0);
 const authStore = useAuthStore();
 const utils = useUtils();
 
+const query: Ref<string> = ref('');
+const usersFiltered: Ref<User[]> = ref([]);
+
 const generateRows = () => {
   rows.value = [
-    ...users.value.map((d: User) => {
+    ...usersFiltered.value.map((d: User) => {
       return [
         d.lastName || '',
         d.firstName || '',
         d.email,
-        `${UserRole[d.role]} ${d.role === 'departement' ? ` (${d.roleDepartement})` : ''}`,
+        `${UserRole[d.role]} ${d.role === 'departement' ? ` (${d.roleDepartements?.join(', ')})` : ''}`,
         authStore.isMte
           ? {
-              component: 'DsfrButton',
-              label: 'Modifier', 
+            component: 'DsfrButton',
+            label: 'Modifier',
             'data-cy': 'UserListEditBtn',
-              icon: 'ri-ball-pen-line',
-              iconOnly: true,
-              onclick: () => askEditUser(d),
-            }
+            icon: 'ri-ball-pen-line',
+            iconOnly: true,
+            onclick: () => askEditUser(d),
+          }
           : '',
         {
           component: 'DsfrButton',
@@ -59,13 +64,14 @@ const api = useApi();
 const { data, error } = await api.user.list();
 if (data.value) {
   users.value = data.value;
+  usersFiltered.value = users.value;
   generateRows();
 }
 
 const askEditUser = (user) => {
   utils.closeModal(modalDeleteOpened);
   modalEditOpened.value = true;
-  modalTitle.value = "Modification d'un utilisateur";
+  modalTitle.value = 'Modification d\'un utilisateur';
   modalIcon.value = 'ri-ball-pen-line';
   userToEdit.value = user;
   modalActions.value = [
@@ -77,7 +83,7 @@ const askEditUser = (user) => {
     {
       label: 'Enregistrer',
       onclick: validateEditUserForm,
-      'data-cy': 'UserFormEditBtn'
+      'data-cy': 'UserFormEditBtn',
     },
   ];
 };
@@ -85,7 +91,7 @@ const askEditUser = (user) => {
 const askAddUser = () => {
   utils.closeModal(modalDeleteOpened);
   modalEditOpened.value = true;
-  modalTitle.value = "Ajout d'un utilisateur";
+  modalTitle.value = 'Ajout d\'un utilisateur';
   modalIcon.value = 'ri-ball-pen-line';
   userToEdit.value = null;
   modalActions.value = [
@@ -105,7 +111,7 @@ const askAddUser = () => {
 const askDeleteUser = (user) => {
   utils.closeModal(modalEditOpened);
   modalDeleteOpened.value = true;
-  modalTitle.value = "Suppression d'un utilisateur";
+  modalTitle.value = 'Suppression d\'un utilisateur';
   modalIcon.value = 'ri-delete-bin-5-fill';
   modalText.value = `<p>Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.firstName || ''} ${user.lastName || ''} (${
     user.email
@@ -134,6 +140,7 @@ const deleteUser = async () => {
   closeModal();
   if (!error.value) {
     users.value = users.value.filter((u: User) => u.email !== userToEdit.value.email);
+    filterUsers();
     generateRows();
   } else {
     // TODO DISPLAY ERROR
@@ -151,6 +158,7 @@ const createEditUser = async (user: any) => {
     } else {
       users.value = users.value.map((u: User) => (u.email === user.email ? data.value : u));
     }
+    filterUsers();
     generateRows();
   } else {
     // TODO DISPLAY ERROR
@@ -160,6 +168,31 @@ const createEditUser = async (user: any) => {
 const validateEditUserForm = () => {
   userFormRef.value.submitForm();
 };
+
+const filterUsers = () => {
+  usersFiltered.value = query.value ? users.value.filter((u) => {
+    const nom = deburr(u.lastName)
+      .replace(/[\-\_]/g, '');
+    const prenom = deburr(u.firstName)
+      .replace(/[\-\_]/g, '');
+    const queryWords = deburr(query.value)
+      .replace(/[\-\_]/g, '')
+      .split(' ')
+      .map(s => s.replace(/^/, '(').replace(/$/, ')'))
+      .join('*');
+    const regex = new RegExp(`${queryWords}`, 'gi');
+    return nom?.match(regex) || prenom?.match(regex) || u.roleDepartements?.join('').match(regex) || u.email?.match(regex);
+  }) : users.value;
+  generateRows();
+};
+
+watch(
+  query,
+  useUtils().debounce(async () => {
+    filterUsers();
+  }, 300),
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -169,7 +202,20 @@ const validateEditUserForm = () => {
                 data-cy="UserListAddUserButton"
                 @click="askAddUser()" />
   </div>
-  <DsfrTable :headers="headers" :rows="rows" :no-caption="noCaption" :pagination="pagination" :key="componentKey" />
+  <div class="fr-grid-row">
+    <div class="fr-col-12 fr-col-lg-4">
+      <DsfrInput
+        placeholder="Rechercher un utilisateur"
+        buttonText="Chercher"
+        v-model="query"
+      />
+    </div>
+  </div>
+  <DsfrTable :headers="headers" 
+             :rows="rows" 
+             :no-caption="noCaption" 
+             :pagination="pagination" 
+             :key="componentKey" />
   <DsfrModal :opened="modalEditOpened" :title="modalTitle" :icon="modalIcon" :actions="modalActions" @close="closeModal">
     <UserForm ref="userFormRef" :user="userToEdit" :loading="loading" @createEdit="createEditUser($event)" />
   </DsfrModal>

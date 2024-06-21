@@ -16,7 +16,7 @@ if (data.value) {
 }
 
 const isAcOnDepartementUser: boolean =
-  authStore.isMte || arreteCadre.value.departements.some((d) => d.code === authStore.user.roleDepartement);
+  authStore.isMte || arreteCadre.value.departements.some((d) => authStore.user?.roleDepartements.includes(d.code));
 const isZaOutdated: boolean = arreteCadre.value.statut !== 'abroge' && arreteCadre.value.zonesAlerte.some((za) => za.disabled);
 
 const consultationButtons: Ref<any[]> = ref([

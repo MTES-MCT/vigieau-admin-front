@@ -16,7 +16,6 @@ const statDep: Ref<StatisticDepartement[] | undefined> = ref();
 const { data, error } = await api.statisticDepartement.list();
 if (data.value) {
   statDep.value = data.value;
-  console.log(statDep.value);
 }
 </script>
 

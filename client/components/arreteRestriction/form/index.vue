@@ -23,8 +23,8 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     const { data, error } = await api.arreteCadre.get(route.query.arretecadre.toString());
     if (data.value) {
       newAr.arretesCadre = [data.value];
-      newAr.departement = authStore.user.role === 'departement' ?
-        refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) :
+      newAr.departement = authStore.user?.role === 'departement' ?
+        refDataStore.departements.find((d) => authStore.user?.roleDepartements.includes(d.code)) :
         data.value?.departements[0];
     }
   }

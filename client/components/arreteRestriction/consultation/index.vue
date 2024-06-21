@@ -21,7 +21,7 @@ if (data.value) {
   });
 }
 
-const isArOnDepartementUser: boolean = authStore.isMte || arreteRestriction.value.departement?.code === authStore.user?.roleDepartement;
+const isArOnDepartementUser: boolean = authStore.isMte || authStore.user?.roleDepartements.includes(arreteRestriction.value.departement?.code);
 const isZaOutdated: boolean = arreteRestriction.value.statut !== 'abroge' && arreteRestriction.value.restrictions.some((r) => r.zoneAlerte?.disabled);
 
 const consultationButtons: Ref<any[]> = ref([

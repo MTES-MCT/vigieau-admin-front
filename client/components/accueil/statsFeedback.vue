@@ -10,7 +10,6 @@ const router = useRouter();
 const { data, error } = await api.usageFeedback.list();
 if (data.value) {
   feedbacks.value = data.value;
-  console.log(feedbacks.value);
 }
 
 </script>

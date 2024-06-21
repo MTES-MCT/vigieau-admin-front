@@ -5,6 +5,9 @@ import useVuelidate from '@vuelidate/core';
 import type { User } from '~/dto/user.dto';
 import { UserRole } from '~/dto/user.dto';
 import { useAuthStore } from '~/stores/auth';
+import deburr from 'lodash.deburr';
+import { useRefDataStore } from '~/stores/refData';
+import type { Departement } from '~/dto/departement.dto';
 
 const props = defineProps<{
   user: User | null;
@@ -17,6 +20,12 @@ const emit = defineEmits<{
 
 const rolesAvailable = [];
 const authStore = useAuthStore();
+const refDataStore = useRefDataStore();
+
+const query: Ref<string> = ref('');
+const departementsTags: Ref<any> = ref([]);
+const departementsFiltered: Ref<any> = ref([]);
+
 for (const ur in UserRole) {
   if (!(ur === 'mte' && authStore.user.role === 'departement')) {
     rolesAvailable.push({
@@ -31,7 +40,7 @@ const formData = reactive({
   firstName: props.user ? props.user.firstName : null,
   lastName: props.user ? props.user.lastName : null,
   role: props.user ? props.user.role : rolesAvailable.length > 1 ? null : rolesAvailable[0].value,
-  roleDepartement: props.user ? props.user.roleDepartement : authStore.user.role === 'departement' ? authStore.user.roleDepartement : null,
+  roleDepartements: props.user ? props.user.roleDepartements : authStore.user.role === 'departement' ? authStore.user.roleDepartements : [],
   isNewUser: !props.user,
 });
 const errorMessage: Ref<string> = ref('');
@@ -39,17 +48,19 @@ const errorMessage: Ref<string> = ref('');
 const rules = computed(() => {
   return {
     email: {
-      required: helpers.withMessage("L'email est obligatoire.", required),
-      email: helpers.withMessage("L'email n'est pas valide.", email),
+      required: helpers.withMessage('L\'email est obligatoire.', required),
+      email: helpers.withMessage('L\'email n\'est pas valide.', email),
     },
     firstName: {},
     lastName: {},
     role: {
       required: helpers.withMessage('Le rôle est obligatoire.', required),
     },
-    roleDepartement: {
+    roleDepartements: {
       requiredIf: helpers.withMessage('Le département est obligatoire.', requiredIf(formData.role === 'departement')),
-      regex: helpers.withMessage("Le département n'existe pas", helpers.regex(/^([0|2][1-9]|[1|3-8][0-9]|9[0-5]|97[1-4]|2[AB]|976)$/)),
+      $each: {
+        regex: helpers.withMessage('Le département n\'existe pas', helpers.regex(/^([0|2][1-9]|[1|3-8][0-9]|9[0-5]|97[1-4]|2[AB]|976)$/)),
+      }
     },
   };
 });
@@ -68,6 +79,72 @@ const submitForm = async () => {
     computeErrorMessage();
   }
 };
+
+const filterDepartements = () => {
+  let tmp = refDataStore.departements
+    .filter((d) => !formData.roleDepartements?.includes(d.code))
+    .filter(d => authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(d.code));
+  if(query.value) {
+    tmp = tmp.filter((d) => {
+      return (deburr(d.nom)
+          .replace(/[\s\-\_]/g, '')
+          .toLowerCase()
+          .includes(
+            deburr(query.value)
+              .replace(/[\s\-\_]/g, '')
+              .toLowerCase(),
+          ) ||
+        d.code.toLowerCase().includes(query.value.toLowerCase())
+      );
+    });
+  }
+  tmp.map((d: any) => {
+    d.display = `${d.code} - ${d.nom}`;
+    return d;
+  });
+  departementsFiltered.value = tmp;
+};
+
+const selectDepartement = (departement: Departement) => {
+  if (typeof departement === 'string') {
+    return;
+  }
+  query.value = '';
+  formData.roleDepartements = [...formData.roleDepartements, departement.code];
+  computeDepartementsTags();
+};
+
+const deleteDepartement = (departementCode: string) => {
+  formData.roleDepartements = formData.roleDepartements.filter((d: string) => d !== departementCode);
+  computeDepartementsTags();
+};
+
+const computeDepartementsTags = () => {
+  departementsTags.value = formData.roleDepartements.map((d) => {
+    const departement = refDataStore.departements.find((dep) => dep.code === d);
+    return {
+      label: `${departement?.code} - ${departement?.nom}`,
+      class: authStore.user?.role !== 'mte' && !authStore.user?.roleDepartements.includes(departement.code) ? '' : 'fr-tag--dismiss',
+      tagName: 'button',
+      onclick: () => {
+        if (!departement || (authStore.user?.role !== 'mte' && !authStore.user?.roleDepartements.includes(departement.code))) {
+          return;
+        }
+        deleteDepartement(departement.code);
+      },
+    };
+  });
+};
+
+computeDepartementsTags();
+
+watch(
+  query,
+  useUtils().debounce(async () => {
+    filterDepartements();
+  }, 300),
+  { immediate: true }
+);
 
 defineExpose({
   submitForm,
@@ -129,19 +206,25 @@ defineExpose({
         />
       </div>
       <div class="fr-mt-2w">
-        <DsfrInput
+        <MixinsAutoComplete
           v-if="formData.role === 'departement'"
-          id="roleDepartement"
+          label="Ajouter un/des départements"
           data-cy="UserFormRoleDepartementInput"
-          v-model="formData.roleDepartement"
-          hint="Format attendu: 01, 2A, 976 ..."
-          label="Département"
-          label-visible
-          type="text"
-          name="roleDepartement"
-          :disabled="loading || authStore.user.role === 'departement'"
+          class="show-label"
+          icon="ri-add-fill"
+          :labelVisible="true"
+          buttonText="Ajouter"
+          display-key="display"
+          v-model="query"
+          :options="departementsFiltered"
+          placeholder="Rechercher un département"
+          @update:modelValue="selectDepartement($event)"
+          @search="selectDepartement($event)"
+          :disabled="loading"
           :required="true"
         />
+
+        <DsfrTags class="fr-mt-2w" :tags="departementsTags" />
       </div>
     </DsfrInputGroup>
   </form>

@@ -94,7 +94,7 @@ watch(
       });
       if (!departementFilter.value && departementFilter.value !== 0) {
         departementFilter.value =
-          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : 0;
+          authStore.user?.role === 'departement' ? refDataStore.departements.filter((d) => authStore.user?.roleDepartements.includes(d.code))[0].id : 0;
       } else {
         paginate();
       }
