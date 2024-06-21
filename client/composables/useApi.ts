@@ -17,5 +17,7 @@ export const useApi = () => {
     thematique: new BaseApi('thematique'),
     commune: new CommuneApi('commune'),
     parametres: new ParametresApi('parametres'),
+    statisticDepartement: new BaseApi('statistic_departement'),
+    usageFeedback: new BaseApi('usage_feedback'),
   };
 };

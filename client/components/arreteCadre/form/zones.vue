@@ -18,7 +18,7 @@ const authStore = useAuthStore();
 const utils = useUtils();
 const zonesSelected: Ref<number[]> = ref(props.arreteCadre.zonesAlerte.map((z) => z.id));
 const departementsFiletered: Ref<any[]> = ref([]);
-const expandedDepCode: Ref<string | null> = ref(authStore.user?.roleDepartement || null);
+const expandedDepCode: Ref<string | null> = ref(authStore.user?.roleDepartements ? authStore.user?.roleDepartements[0] : null);
 
 const rules = computed(() => {
   return {

@@ -18,7 +18,7 @@ const authStore = useAuthStore();
 const alertStore = useAlertStore();
 const utils = useUtils();
 const isAcOnDepartementUser: boolean =
-  authStore.isMte || props.arreteCadre.departements.some((d) => d.code === authStore.user.roleDepartement);
+  authStore.isMte || props.arreteCadre.departements.some((d) => authStore.user?.roleDepartements.includes(d.code));
 const isZaOutdated: boolean = props.arreteCadre.statut !== 'abroge' && props.arreteCadre.zonesAlerte.some((za) => za.disabled);
 const canUpdate = authStore.isMte || (props.arreteCadre.statut !== 'abroge' && isAcOnDepartementUser && !isZaOutdated);
 const arreteCadreStatutFr = ArreteCadreStatutFr;
@@ -77,13 +77,13 @@ const arreteCadreActions: Ref<any> = ref([
 const arEnVigueurSameDepartement = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter(
     (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
-      (authStore.user?.role === 'mte' || ar.departement.code === authStore.user?.roleDepartement)
+      (authStore.user?.role === 'mte' || (ar.departement && authStore.user?.roleDepartements.includes(ar.departement.code)))
   );
 });
 const arEnVigueurOtherDepartement = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter(
     (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
-      authStore.user?.role !== 'mte' && ar.departement.code !== authStore.user?.roleDepartement
+      authStore.user?.role !== 'mte' && ar.departement && !authStore.user?.roleDepartements.includes(ar.departement.code)
   );
 });
 const arBrouillon = computed(() => {

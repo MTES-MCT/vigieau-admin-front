@@ -13,7 +13,7 @@ const { data, error } = await api.user.listDev();
 if (data.value) {
   userList.value = data.value.map((user: any) => {
     return {
-      text: `${user.email} - ${user.role} - ${user.roleDepartement}`,
+      text: `${user.email} - ${user.role} - ${user.roleDepartements?.join(', ')}`,
       value: user.email,
     };
   });

@@ -23,7 +23,7 @@ const acSelected = ref();
 const assignDepartement = (force = false) => {
   if ((!props.arreteRestriction.id && !props.arreteRestriction.departement) || force) {
     props.arreteRestriction.departement =
-      authStore.user.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement) : null;
+      authStore.user?.role === 'departement' ? refDataStore.departements.filter((d) => authStore.user?.roleDepartements.includes(d.code))[0] : null;
   }
   if (props.arreteRestriction.departement) {
     loadArretes();

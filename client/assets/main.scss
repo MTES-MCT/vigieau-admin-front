@@ -127,9 +127,14 @@ a.fr-pagination__link:not([aria-current]):not([href]):not([disabled]) {
 
 // BADGE
 .fr-badge {
+  &--pas_restrictions {
+    background-color: #e8edff;
+    color: #161616;
+  }
+  
   &--vigilance {
     background-color: #ffeda0;
-    color: var(--grey-50-1000);
+    color: #161616;
   }
 
   &--alerte {

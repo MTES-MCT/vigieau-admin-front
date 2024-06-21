@@ -8,7 +8,7 @@ import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
 import deburr from 'lodash.deburr';
 import { maxLength, requiredIf } from '@vuelidate/validators';
-import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const query: Ref<string> = ref('');
 const departementsTags: Ref<any> = ref([]);
-const departementsFiltered = ref([]);
+const departementsFiltered: Ref<any> = ref([]);
 const utils = useUtils();
 const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
@@ -25,8 +25,8 @@ const isAci: Ref<boolean> = ref(props.arreteCadre.departements.length > 1);
 const assignDepartement = (force = false) => {
   if (!props.arreteCadre.id || force) {
     if (props.arreteCadre.departements.length < 1) {
-      props.arreteCadre.departements =
-        authStore.user.role === 'departement' ? refDataStore.departements.filter((d) => d.code === authStore.user.roleDepartement) : [];
+      props.arreteCadre.departements = authStore.user.role === 'departement' ?
+        [refDataStore.departements.find((d) => authStore.user.roleDepartements.includes(d.code))] : [];
     } else if (props.arreteCadre.departements.length > 1 && !isAci.value) {
       props.arreteCadre.departements = [props.arreteCadre.departements[0]];
     }
@@ -37,29 +37,30 @@ const assignDepartement = (force = false) => {
 const rules = computed(() => {
   return {
     numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
+      required: helpers.withMessage('Le numéro de l\'arrêté est obligatoire', required),
       maxLength: helpers.withMessage('Le numéro de l\'arrêté ne doit pas dépasser 50 caractères.', maxLength(50)),
     },
     departements: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins un département", required),
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins un département', required),
     },
     arreteCadreAbroge: {},
   };
 });
 
 const filterDepartements = () => {
-  let tmp = refDataStore.departements.filter((d) => !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id));
-  if(query.value) {
+  let tmp = refDataStore.departements
+    .filter((d) => !props.arreteCadre.departements.map((ad) => ad.id).includes(d.id));
+  if (query.value) {
     tmp = tmp.filter((d) => {
       return (deburr(d.nom)
-            .replace(/[\s\-\_]/g, '')
-            .toLowerCase()
-            .includes(
-              deburr(query.value)
-                .replace(/[\s\-\_]/g, '')
-                .toLowerCase(),
-            ) ||
-          d.code.toLowerCase().includes(query.value.toLowerCase())
+          .replace(/[\s\-\_]/g, '')
+          .toLowerCase()
+          .includes(
+            deburr(query.value)
+              .replace(/[\s\-\_]/g, '')
+              .toLowerCase(),
+          ) ||
+        d.code.toLowerCase().includes(query.value.toLowerCase())
       );
     });
   }
@@ -70,12 +71,14 @@ const filterDepartements = () => {
   departementsFiltered.value = tmp;
 };
 
-const departementsOptions = refDataStore.departements.map((d) => {
-  return {
-    value: d.id,
-    text: `${d.code} - ${d.nom}`,
-  };
-});
+const departementsOptions = refDataStore.departements
+  .filter(d => authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(d.code))
+  .map((d) => {
+    return {
+      value: d.id,
+      text: `${d.code} - ${d.nom}`,
+    };
+  });
 
 const selectDepartement = (departement: Departement) => {
   if (typeof departement === 'string') {
@@ -84,21 +87,23 @@ const selectDepartement = (departement: Departement) => {
   query.value = '';
   props.arreteCadre.departements = [...props.arreteCadre.departements, departement];
   computeDepartementsTags();
+  filterDepartements();
 };
 
 const deleteDepartement = (departementId: number) => {
   props.arreteCadre.departements = props.arreteCadre.departements.filter((d) => d.id !== departementId);
   computeDepartementsTags();
+  filterDepartements();
 };
 
 const computeDepartementsTags = () => {
   departementsTags.value = props.arreteCadre.departements.map((d) => {
     return {
       label: `${d.code} - ${d.nom}`,
-      class: authStore.user?.role !== 'mte' && d.code === authStore.user?.roleDepartement ? '' : 'fr-tag--dismiss',
+      class: d.code === props.arreteCadre.departements[0]?.code ? '' : 'fr-tag--dismiss',
       tagName: 'button',
       onclick: () => {
-        if (authStore.user?.role !== 'mte' && d.code === authStore.user?.roleDepartement) {
+        if (d.code === props.arreteCadre.departements[0]?.code) {
           return;
         }
         deleteDepartement(d.id);
@@ -118,8 +123,8 @@ const departementPiloteChange = (depPiloteId: string) => {
 computeDepartementsTags();
 
 const isDepPilote = computed(() => {
-  return authStore.user?.role === 'mte' || authStore.user?.roleDepartement === props.arreteCadre.departements[0]?.code;
-})
+  return authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(props.arreteCadre.departements[0]?.code);
+});
 
 const v$ = useVuelidate(rules, props.arreteCadre);
 
@@ -139,7 +144,7 @@ watch(
   useUtils().debounce(async () => {
     filterDepartements();
   }, 300),
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(isAci, () => {
@@ -178,7 +183,7 @@ defineExpose({
             type="text"
           />
         </DsfrInputGroup>
-        
+
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'numero')">
           <DsfrInput
             id="numero"
@@ -195,12 +200,12 @@ defineExpose({
 
         <DsfrRadioButtonSet legend="Cet arrêté est :" :options="aciOptions" v-model="isAci" name="isAci" :small="false" />
         <DsfrHighlight
-          v-if="authStore.user?.role !== 'mte' && !isAci && arreteCadre.departements[0]"
+          v-if="authStore.user?.role !== 'mte' && !isAci && arreteCadre.departements[0] && authStore.user?.roleDepartements.length <= 1"
           :text="arreteCadre.departements[0].nom"
         />
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'departements')">
           <DsfrSelect
-            v-if="authStore.user?.role === 'mte' || isAci"
+            v-if="authStore.user?.role === 'mte' || authStore.user?.roleDepartements.length > 1 || isAci"
             :model-value="arreteCadre.departements[0]?.id"
             :label="isAci ? 'Département pilote' : 'Département'"
             :options="departementsOptions"

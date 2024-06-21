@@ -18,11 +18,13 @@ const statusOptions = ref([
   {
     label: 'En cours',
     value: 'publie',
+    icon: 'ri-checkbox-circle-fill',
     'data-cy': 'ArreteRestrictionListFilterPublie',
   },
   {
     label: 'Abrogé',
     value: 'abroge',
+    icon: 'ri-close-circle-fill',
     'data-cy': 'ArreteRestrictionListFilterAbroge',
   },
 ]);
@@ -93,7 +95,7 @@ watch(
         });
       if(!departementFilter.value && departementFilter.value !== 0) {
         departementFilter.value =
-          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => d.code === authStore.user.roleDepartement).id : null;
+          authStore.user?.role === 'departement' ? refDataStore.departements.find((d) => authStore.user?.roleDepartements.includes(d.code)).id : null;
       } else {
         paginate();
       }

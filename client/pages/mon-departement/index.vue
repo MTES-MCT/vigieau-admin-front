@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
+import { useAuthStore } from '~/stores/auth';
 
 definePageMeta({
   layout: 'basic',
@@ -15,12 +16,13 @@ const tabTitles = [
 ];
 const selectedTabIndex: Ref<number> = ref(0);
 const utils = useUtils();
+const authStore = useAuthStore();
 </script>
 
 <template>
   <MixinsAlerts class="fr-mb-2w" />
   <h1 class="fr-mb-4w">
-    Mon département
+    Mon département ({{ authStore.user?.firstName }} {{ authStore.user?.lastName }})
   </h1>
   <DsfrTabs :tab-titles="tabTitles"
             :initial-selected-index="selectedTabIndex"
