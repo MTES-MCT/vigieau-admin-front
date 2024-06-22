@@ -19,6 +19,7 @@ const authStore = useAuthStore();
 const refDataStore = useRefDataStore();
 const arretesCadreTags: Ref<any> = ref([]);
 const acSelected = ref();
+const loading = ref(false);
 
 const assignDepartement = (force = false) => {
   if ((!props.arreteRestriction.id && !props.arreteRestriction.departement) || force) {
@@ -33,14 +34,14 @@ const assignDepartement = (force = false) => {
 const rules = computed(() => {
   return {
     departement: {
-      required: helpers.withMessage("Le département de l'arrêté est obligatoire", required),
+      required: helpers.withMessage('Le département de l\'arrêté est obligatoire', required),
     },
     numero: {
-      required: helpers.withMessage("Le numéro de l'arrêté est obligatoire", required),
+      required: helpers.withMessage('Le numéro de l\'arrêté est obligatoire', required),
       maxLength: helpers.withMessage('Le numéro de l\'arrêté ne doit pas dépasser 50 caractères.', maxLength(50)),
     },
     arretesCadre: {
-      required: helpers.withMessage("L'arrêté doit être lié à au moins un arrêté cadre", required),
+      required: helpers.withMessage('L\'arrêté doit être lié à au moins un arrêté cadre', required),
     },
     arreteRestrictionAbroge: {},
   };
@@ -53,12 +54,14 @@ const arretesCadre: Ref<any> = ref([]);
 
 const loadArretes = async () => {
   const query = `depCode=${props.arreteRestriction.departement.code}`;
+  loading.value = true;
   const { data, error } = await api.arreteCadre.list(query);
   if (data.value) {
     arretesCadre.value = data.value;
     filterArretesCadre();
     computeArretesCadreTags();
   }
+  loading.value = false;
 };
 
 const filterArretesCadre = () => {
@@ -119,12 +122,14 @@ const departementChange = (depId: string) => {
   loadArretes();
 };
 
-const departementsOptions = refDataStore.departements.map((d) => {
-  return {
-    value: d.id,
-    text: `${d.code} - ${d.nom}`,
-  };
-});
+const departementsOptions = refDataStore.departements
+  .filter(d => authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(d.code))
+  .map((d) => {
+    return {
+      value: d.id,
+      text: `${d.code} - ${d.nom}`,
+    };
+  });
 
 defineExpose({
   v$,
@@ -174,9 +179,14 @@ watch(
           <span class="fr-input-group__sub-hint">{{ arreteRestriction.numero ? arreteRestriction.numero.length : 0 }}/50</span>
         </DsfrInputGroup>
 
+        <DsfrHighlight
+          v-if="authStore.user?.role !== 'mte' && arreteRestriction.departement?.id && authStore.user?.roleDepartements.length <= 1"
+          :text="arreteRestriction.departement.nom"
+        />
+
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'departement')">
           <DsfrSelect
-            v-if="authStore.user.role === 'mte'"
+            v-if="authStore.user?.role === 'mte' || authStore.user?.roleDepartements.length > 1"
             :model-value="arreteRestriction.departement?.id"
             label="Département"
             :options="departementsOptions"
@@ -186,8 +196,7 @@ watch(
 
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'arretesCadre')">
           <DsfrSelect
-            :disabled="!arreteRestriction.departement"
-            label="Ajouter un/des arrêtés cadre"
+            :disabled="!arreteRestriction.departement || loading"
             data-cy="ArreteRestrictionFormAcSelect"
             :labelVisible="true"
             :options="arretesCadreFiltered"
@@ -195,7 +204,12 @@ watch(
             v-model="acSelected"
             required
             @update:modelValue="selectArreteCadre($event)"
-          />
+          >
+            <template #label>
+              Ajouter un/des arrêtés cadre
+              <VIcon v-if="loading" name="ri-loader-4-line" animation="spin" />
+            </template>
+          </DsfrSelect>
 
           <DsfrTags class="fr-mt-2w" :tags="arretesCadreTags" />
         </DsfrInputGroup>
