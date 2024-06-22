@@ -250,7 +250,9 @@ const usagesFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" :disabled="loading" :secondary="true"
+          <DsfrButton label="Annuler" 
+                      :disabled="loading" 
+                      :secondary="true"
                       @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
         </li>
         <li>
