@@ -1,41 +1,20 @@
 <script setup lang="ts">
-import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
 import type { ChartOptions } from 'chart.js';
 import { Line } from 'vue-chartjs';
+import type { Ref } from 'vue';
+import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
 
-const props = defineProps<{
-  statisticDepartement: StatisticDepartement[];
-}>();
+const statisticDepartement: Ref<StatisticDepartement[] | undefined> = ref();
 
-const chartLineData = computed(() => {
-  const dates = props.statisticDepartement
-    .map((s: any) => s.visits.map((v: any) => new Date(v.date)))
-    .flat()
-    .filter(d => {
-      const dateDebutValue = new Date(dateDebut.value);
-      const dateFinValue = new Date(dateFin.value);
-      return d.getTime() >= dateDebutValue.getTime() && d.getTime() <= dateFinValue.getTime();
-    });
-  const uniqueDates = Array.from(new Set(dates));
-  uniqueDates.sort((a, b) => a.getTime() - b.getTime());
-  const data: number[] = [];
-  uniqueDates.forEach(d => {
-    const visits = props.statisticDepartement.map(s => {
-      return s.visits.find((v: any) => new Date(v.date).getTime() === d.getTime())?.visits;
-    }).reduce((acc, current) => acc + current, 0);
-    data.push(visits);
-  });
+const api = useApi();
+const loading = ref(true);
+const { data, error } = await api.statisticDepartement.list();
+if (data.value) {
+  statisticDepartement.value = data.value;
+}
 
-  return {
-    labels: uniqueDates,
-    datasets: [
-      {
-        label: 'Visiteurs',
-        data: data,
-      },
-    ],
-  };
-});
+const chartLineData = ref();
+const fullData = ref();
 
 const tooltipTitle = (tooltipItems: any[]): string => {
   const date = new Date(tooltipItems[0].parsed.x);
@@ -79,12 +58,60 @@ const chartLineOptions: ChartOptions = {
 
 
 const dateMin = computed(() => {
-  const dates = props.statisticDepartement.map((s: any) => s.visits.map((v: any) => new Date(v.date))).flat();
-  return new Date(Math.min(...dates.map(date => date.getTime()))).toISOString().split('T')[0];
+  const dates = statisticDepartement.value?.map((s: any) => s.visits.map((v: any) => new Date(v.date))).flat();
+  return new Date(Math.min(...dates?.map(date => date.getTime()))).toISOString().split('T')[0];
 });
 const dateDebut = ref(dateMin.value);
 const dateFin = ref(new Date().toISOString().split('T')[0]);
 const currentDate = ref(new Date().toISOString().split('T')[0]);
+
+const computeData = () => {
+  const dates = statisticDepartement.value?.map((s: any) => s.visits.map((v: any) => v.date))
+    .flat();
+  const uniqueDates = Array.from(new Set(dates));
+  uniqueDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+  const data: any[] = [];
+  uniqueDates.map(d => {
+    const visits = statisticDepartement.value?.map(s => {
+      return s.visits.find((v: any) => v.date === d)?.visits;
+    }).reduce((acc, current) => acc + current, 0);
+
+    data.push({
+      date: d,
+      visits: visits
+    });
+  });
+
+  fullData.value = data;
+  loading.value = false;
+};
+
+const filterData = () => {
+  const filteredData = fullData.value.filter(d => {
+    const date = new Date(d.date);
+    const dateDebutValue = new Date(dateDebut.value);
+    const dateFinValue = new Date(dateFin.value);
+    return date.getTime() >= dateDebutValue.getTime() && date.getTime() <= dateFinValue.getTime();
+  });
+  
+  chartLineData.value = {
+    labels: filteredData.map(d => new Date(d.date)),
+    datasets: [
+      {
+        label: 'Visiteurs',
+        data: filteredData.map(d => d.visits),
+      },
+    ],
+  };
+}
+
+computeData();
+filterData();
+
+watch([dateDebut, dateFin], () => {
+  filterData();
+});
 </script>
 
 <template>
@@ -117,7 +144,7 @@ const currentDate = ref(new Date().toISOString().split('T')[0]);
         />
       </DsfrInputGroup>
     </div>
-    <div>
+    <div v-if="!loading && chartLineData">
       <Line :options="chartLineOptions"
             :data="chartLineData"
             :style="{'min-height': '400px'}" />
