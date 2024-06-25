@@ -29,10 +29,7 @@ if (data.value) {
     <div class="fr-mt-2w">
       <div v-if="statDep"
            class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-4">
-          <AccueilStatsRestrictions :statisticDepartement="statDep" />
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-col-12 fr-col-lg-8">
           <AccueilStatsConsultation :statisticDepartement="statDep" />
         </div>
         <div class="fr-col-12 fr-col-lg-4">
