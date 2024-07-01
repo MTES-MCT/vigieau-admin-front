@@ -300,15 +300,17 @@ const graviteFormRef = ref(null);
   <ul
     class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
     <li>
-      <DsfrButton label="Précedent"
-                  :secondary="true"
-                  icon="ri-arrow-left-line"
-                  data-cy="ArreteRestrictionFormPreviousStepBtn"
-                  :disabled="currentStep === 1"
-                  @click="previousStep()" />
+      <DsfrButton
+        :label="currentStep !== totalSteps ? 'Précedent' : 'Retour aux restrictions'"
+        :secondary="true"
+        icon="ri-arrow-left-line"
+        data-cy="ArreteRestrictionFormPreviousStepBtn"
+        :disabled="currentStep === 1"
+        @click="previousStep()" />
     </li>
     <li>
       <DsfrButton
+        v-if="currentStep !== totalSteps"
         :label="arreteRestriction.statut === 'a_valider' ? 'Enregistrer en brouillon' : 'Enregistrer'"
         data-cy="ArreteRestrictionFormSaveBtn"
         :secondary="true"
@@ -318,14 +320,16 @@ const graviteFormRef = ref(null);
       />
     </li>
     <li>
-      <DsfrButton label="Suivant"
-                  :secondary="true"
-                  icon="ri-arrow-right-line"
-                  data-cy="ArreteRestrictionFormNextStepBtn"
-                  :disabled="currentStep >= (totalSteps - 1)"
-                  @click="nextStep()" />
+      <DsfrButton
+        v-if="currentStep !== totalSteps"
+        label="Suivant"
+        :secondary="true"
+        icon="ri-arrow-right-line"
+        data-cy="ArreteRestrictionFormNextStepBtn"
+        :disabled="currentStep >= (totalSteps - 1)"
+        @click="nextStep()" />
     </li>
-    <li v-if="currentStep === totalSteps && arreteRestriction.statut === 'a_valider'">
+    <li v-if="currentStep === (totalSteps - 1) && arreteRestriction.statut === 'a_valider'">
       <DsfrButton
         label="Publier"
         :disabled="loading"
@@ -337,6 +341,7 @@ const graviteFormRef = ref(null);
     </li>
     <li style="margin-left: auto;">
       <DsfrButton
+        v-if="currentStep !== totalSteps"
         label="Retour à la liste"
         icon="ri-arrow-left-line"
         secondary
