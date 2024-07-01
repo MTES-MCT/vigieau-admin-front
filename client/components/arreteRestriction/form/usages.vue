@@ -6,6 +6,7 @@ import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import deburr from 'lodash.deburr';
 import type { ArreteRestriction } from '~/dto/arrete_restriction.dto';
+import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   arreteRestriction: ArreteRestriction;
@@ -16,6 +17,7 @@ const componentKey = ref(0);
 const query: Ref<string> = ref('');
 const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
+const alertStore = useAlertStore();
 const utils = useUtils();
 
 const createEditUsageFormRef = ref();
@@ -94,10 +96,18 @@ const createEditUsage = async (usage: Usage) => {
     props.arreteRestriction.restrictions.forEach(r => {
       r.usages.push(usage);
     });
+    alertStore.addAlert({
+      description: `L'usage '${usage.nom}' a bien été ajouté.`,
+      type: 'success',
+    });
   } else {
     props.arreteRestriction.restrictions.forEach(r => {
       const index = r.usages.findIndex(u => u.nom === usageNameEdited.value);
       r.usages[index] = usage;
+    });
+    alertStore.addAlert({
+      description: `L'usage '${usage.nom}' a bien été modifié.`,
+      type: 'success',
     });
   }
   componentKey.value += 1;
