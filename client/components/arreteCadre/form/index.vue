@@ -50,7 +50,6 @@ if (isNewArreteCadre && !route.query.arretecadre) {
 </script>
 
 <template>
-  <MixinsAlerts class="fr-mb-2w" />
   <h1>
     {{ duplicate ? 'Duplication' : isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre
     <MixinsStatutBadge :statut="arreteCadre.statut" />

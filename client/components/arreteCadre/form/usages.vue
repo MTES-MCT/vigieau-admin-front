@@ -97,7 +97,7 @@ const selectUsage = (usage: Usage | string, isUsageArreteCadre: boolean = false)
 const deleteUsage = (usage: Usage) => {
   props.arreteCadre.usages = props.arreteCadre.usages.filter((uac) => uac.nom !== usage.nom);
   alertStore.addAlert({
-    description: `L'usage '${usage.nom}' a bien été supprimé.`,
+    description: `L'usage "${usage.nom}" a bien été supprimé.`,
     type: 'success',
   });
   componentKey.value += 1;
@@ -116,13 +116,13 @@ const createEditUsage = async (usage: Usage) => {
   if (indexEdited.value === null) {
     props.arreteCadre.usages.push(usage);
     alertStore.addAlert({
-      description: `L'usage '${usage.nom}' a bien été ajouté.`,
+      description: `L'usage "${usage.nom}" a bien été ajouté.`,
       type: 'success',
     });
   } else {
     props.arreteCadre.usages[indexEdited.value] = usage;
     alertStore.addAlert({
-      description: `L'usage '${usage.nom}' a bien été modifié.`,
+      description: `L'usage "${usage.nom}" a bien été modifié.`,
       type: 'success',
     });
   }

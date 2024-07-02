@@ -97,7 +97,7 @@ const createEditUsage = async (usage: Usage) => {
       r.usages.push(usage);
     });
     alertStore.addAlert({
-      description: `L'usage '${usage.nom}' a bien été ajouté.`,
+      description: `L'usage "${usage.nom}" a bien été ajouté.`,
       type: 'success',
     });
   } else {
@@ -106,7 +106,7 @@ const createEditUsage = async (usage: Usage) => {
       r.usages[index] = usage;
     });
     alertStore.addAlert({
-      description: `L'usage '${usage.nom}' a bien été modifié.`,
+      description: `L'usage "${usage.nom}" a bien été modifié.`,
       type: 'success',
     });
   }

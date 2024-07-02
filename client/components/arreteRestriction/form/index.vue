@@ -89,7 +89,6 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
 </script>
 
 <template>
-  <MixinsAlerts class="fr-mb-2w" />
   <h1>
     {{ duplicate ? 'Duplication' : isNewArreteRestriction ? 'Création' : 'Edition' }} d'un arrêté de restriction
     <MixinsStatutBadge :statut="arreteRestriction.statut" />
