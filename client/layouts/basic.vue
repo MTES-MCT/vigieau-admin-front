@@ -227,6 +227,7 @@ onUnmounted(() => {
                  :closeable="false"
       />
     </div>
+    <MixinsAlerts class="fr-mb-2w" />
     <div class="fr-container fr-my-4w">
       <slot />
     </div>

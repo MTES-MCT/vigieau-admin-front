@@ -153,8 +153,16 @@ const getNiveauGravite = (usageArreteCadre: UsageArreteCadre, niveauGravite?: st
 };
 
 const computeAllUsages = () => {
+  const restrictionUsages = props.arreteRestriction.restrictions
+    .map(r => r.usages)
+    .flat()
+    .filter((value, index, self) =>
+        index === self.findIndex((u) => (
+          u.nom === value.nom && u.nom === value.nom
+        )),
+    );
   if (!props.arreteCadre) {
-    allUsages.value = props.restriction.usages;
+    allUsages.value = restrictionUsages;
   } else {
     let usagesAc = props.arreteCadre.usages;
     usagesAc = usagesAc.filter((value, index, self) =>
@@ -162,8 +170,8 @@ const computeAllUsages = () => {
           t.nom === value.nom
         )),
     );
-    allUsages.value = props.restriction.usages.concat(usagesAc
-      .filter((u) => !usagesSelected.value.includes(u.nom))
+    allUsages.value = restrictionUsages.concat(usagesAc
+      .filter((u) => !restrictionUsages.some(ru => ru.nom === u.nom))
       .map((u) => {
         u.id = null;
         return u;
@@ -189,6 +197,12 @@ const computeAllUsages = () => {
     }
     return 0;
   });
+  filterUsages();
+};
+
+const filterUsages = () => {
+  props.restriction.usages = props.restriction.usages.filter(u => getNiveauGravite(u) !== null && getNiveauGravite(u) !== '');
+  usagesSelected.value = props.restriction.usages.map((u) => u.nom);
 };
 
 computeAllUsages();

@@ -116,7 +116,6 @@ watch(
       :closeable="true"
       @close="showZaAlert = false"
     />
-    <MixinsAlerts class="fr-mb-2w" />
     <h1 class="fr-my-0">
       Les arrêtés de restriction
 

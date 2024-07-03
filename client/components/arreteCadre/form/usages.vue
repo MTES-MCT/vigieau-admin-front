@@ -6,6 +6,7 @@ import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
 import deburr from 'lodash.deburr';
+import { useAlertStore } from '~/stores/alert';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -18,6 +19,7 @@ const componentKey = ref(0);
 const query: Ref<string> = ref('');
 const usagesFiltered: Ref<Usage[]> = ref([]);
 const refDataStore = useRefDataStore();
+const alertStore = useAlertStore();
 const utils = useUtils();
 
 const createEditUsageFormRef = ref();
@@ -94,6 +96,10 @@ const selectUsage = (usage: Usage | string, isUsageArreteCadre: boolean = false)
 
 const deleteUsage = (usage: Usage) => {
   props.arreteCadre.usages = props.arreteCadre.usages.filter((uac) => uac.nom !== usage.nom);
+  alertStore.addAlert({
+    description: `L'usage "${usage.nom}" a bien été supprimé.`,
+    type: 'success',
+  });
   componentKey.value += 1;
 };
 
@@ -109,8 +115,16 @@ const askCreateEditUsage = (index: number | null = null, usage?: Usage) => {
 const createEditUsage = async (usage: Usage) => {
   if (indexEdited.value === null) {
     props.arreteCadre.usages.push(usage);
+    alertStore.addAlert({
+      description: `L'usage "${usage.nom}" a bien été ajouté.`,
+      type: 'success',
+    });
   } else {
     props.arreteCadre.usages[indexEdited.value] = usage;
+    alertStore.addAlert({
+      description: `L'usage "${usage.nom}" a bien été modifié.`,
+      type: 'success',
+    });
   }
   componentKey.value += 1;
   indexEdited.value = null;

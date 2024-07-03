@@ -71,6 +71,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       ar.dateFin = null;
       ar.dateSignature = null;
       ar.fichier = null;
+      ar.arreteRestrictionAbroge = null;
       ar.restrictions = ar.restrictions.filter((r) => {
         return !r.zoneAlerte || !r.zoneAlerte.disabled;
       });
@@ -89,7 +90,6 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
 </script>
 
 <template>
-  <MixinsAlerts class="fr-mb-2w" />
   <h1>
     {{ duplicate ? 'Duplication' : isNewArreteRestriction ? 'Création' : 'Edition' }} d'un arrêté de restriction
     <MixinsStatutBadge :statut="arreteRestriction.statut" />

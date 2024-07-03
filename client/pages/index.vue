@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Ref } from 'vue';
-import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
-
 definePageMeta({
   layout: 'basic',
 });
@@ -9,14 +6,6 @@ definePageMeta({
 useHead({
   title: `Accueil - ${useRuntimeConfig().public.appName}`,
 });
-
-const api = useApi();
-const statDep: Ref<StatisticDepartement[] | undefined> = ref();
-
-const { data, error } = await api.statisticDepartement.list();
-if (data.value) {
-  statDep.value = data.value;
-}
 </script>
 
 <template>
@@ -27,13 +16,9 @@ if (data.value) {
       <AccueilMap />
     </div>
     <div class="fr-mt-2w">
-      <div v-if="statDep"
-           class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-4">
-          <AccueilStatsRestrictions :statisticDepartement="statDep" />
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <AccueilStatsConsultation :statisticDepartement="statDep" />
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-8">
+          <AccueilStatsConsultation />
         </div>
         <div class="fr-col-12 fr-col-lg-4">
           <AccueilStatsFeedback />

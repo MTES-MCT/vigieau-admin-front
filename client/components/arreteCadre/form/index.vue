@@ -32,6 +32,7 @@ if (isNewArreteCadre && !route.query.arretecadre) {
       ac.dateDebut = null;
       ac.dateFin = null;
       ac.fichier = null;
+      ac.arreteCadreAbroge = null;
       ac.usages.map((u) => {
         u.id = null;
         return u;
@@ -50,7 +51,6 @@ if (isNewArreteCadre && !route.query.arretecadre) {
 </script>
 
 <template>
-  <MixinsAlerts class="fr-mb-2w" />
   <h1>
     {{ duplicate ? 'Duplication' : isNewArreteCadre ? 'Création' : 'Edition' }} d'un arrêté cadre
     <MixinsStatutBadge :statut="arreteCadre.statut" />
