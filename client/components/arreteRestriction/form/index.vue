@@ -71,6 +71,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       ar.dateFin = null;
       ar.dateSignature = null;
       ar.fichier = null;
+      ar.arreteRestrictionAbroge = null;
       ar.restrictions = ar.restrictions.filter((r) => {
         return !r.zoneAlerte || !r.zoneAlerte.disabled;
       });
