@@ -153,14 +153,23 @@ const getNiveauGravite = (usageArreteCadre: UsageArreteCadre, niveauGravite?: st
 };
 
 const computeAllUsages = () => {
-  const restrictionUsages = props.arreteRestriction.restrictions
-    .map(r => r.usages)
-    .flat()
-    .filter((value, index, self) =>
+  let restrictionUsages =
+    props.restriction.usages.concat(
+      props.arreteRestriction.restrictions
+        .filter(r => r.id !== props.restriction.id)
+        .map(r => r.usages
+          .filter(u => !props.restriction.usages.some(ru => ru.nom === u.nom))
+          .map((u) => {
+          u.id = null;
+          return u;
+        }))
+        .flat(),
+    ).filter((value, index, self) =>
         index === self.findIndex((u) => (
           u.nom === value.nom && u.nom === value.nom
         )),
     );
+  restrictionUsages = JSON.parse(JSON.stringify(restrictionUsages));
   if (!props.arreteCadre) {
     allUsages.value = restrictionUsages;
   } else {
