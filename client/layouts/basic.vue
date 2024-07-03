@@ -13,6 +13,8 @@ const modalSchemeOpened = ref(false);
 const schemeFormRef = ref(null);
 const { theme, scheme, setScheme } = <any>useScheme();
 const accountOpened = ref(false);
+const route = useRoute();
+const showAlerts = route.path !== '/connexion';
 
 const logout = function () {
   authStore.logout();
@@ -220,14 +222,14 @@ onUnmounted(() => {
     </div>
   </div>
   <main>
-    <div class="fr-container fr-mb-6w" v-if="runTimeConfig.appEnv !== 'prod'">
+    <div class="fr-container fr-mb-6w" v-if="!+runTimeConfig.isProd">
       <DsfrAlert description="Plateforme de développement, les données sont fictives. Si vous souhaitez accéder à la plateforme de production, allez sur https://admin.vigieau.beta.gouv.fr"
                  type="warning"
                  class="fr-my-2w"
                  :closeable="false"
       />
     </div>
-    <MixinsAlerts class="fr-mb-2w" />
+    <MixinsAlerts v-if="showAlerts" class="fr-mb-2w" />
     <div class="fr-container fr-my-4w">
       <slot />
     </div>

@@ -58,7 +58,7 @@ const chartLineOptions: ChartOptions = {
 
 
 const dateMin = computed(() => {
-  const dates = statisticDepartement.value?.map((s: any) => s.visits.map((v: any) => new Date(v.date))).flat();
+  const dates = statisticDepartement.value?.map((s: any) => s.visits?.map((v: any) => new Date(v.date))).flat();
   return new Date(Math.min(...dates?.map(date => date.getTime()))).toISOString().split('T')[0];
 });
 const dateDebut = ref(dateMin.value);
@@ -66,7 +66,7 @@ const dateFin = ref(new Date().toISOString().split('T')[0]);
 const currentDate = ref(new Date().toISOString().split('T')[0]);
 
 const computeData = () => {
-  const dates = statisticDepartement.value?.map((s: any) => s.visits.map((v: any) => v.date))
+  const dates = statisticDepartement.value?.map((s: any) => s.visits?.map((v: any) => v.date))
     .flat();
   const uniqueDates = Array.from(new Set(dates));
   uniqueDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
