@@ -103,7 +103,9 @@ const createEditUsage = async (usage: Usage) => {
   } else {
     props.arreteRestriction.restrictions.forEach(r => {
       const index = r.usages.findIndex(u => u.nom === usageNameEdited.value);
-      r.usages[index] = usage;
+      if(index >= 0) {
+        r.usages[index] = usage;        
+      }
     });
     alertStore.addAlert({
       description: `L'usage "${usage.nom}" a bien été modifié.`,
