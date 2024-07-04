@@ -2,10 +2,10 @@ import { BaseApi } from '~/api/base-api';
 import { useCustomFetch } from "~/composables/useCustomFetch";
 
 export class BaseApiPagination extends BaseApi {
-  paginate(pageToGet: number = 1, query?: string, filter?: any[]) {
+  paginate(pageToGet: number = 1, query?: string, filter?: any[], limit?: number) {
     const params: any = {
       page: `${pageToGet}`,
-      limit: '9',
+      limit: limit ? limit : '9',
       search: query || '',
     };
 

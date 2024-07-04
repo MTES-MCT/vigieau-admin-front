@@ -17,10 +17,19 @@ const tabTitles = [
 const selectedTabIndex: Ref<number> = ref(0);
 const utils = useUtils();
 const authStore = useAuthStore();
+
+const breadcrumb = [
+  {
+    to: "/",
+    text: "Accueil"
+  }, {
+    text: "Mon département"
+  }
+];
 </script>
 
 <template>
-  <MixinsAlerts class="fr-mb-2w" />
+  <DsfrBreadcrumb :links="breadcrumb" />
   <h1 class="fr-mb-4w">
     Mon département ({{ authStore.user?.firstName }} {{ authStore.user?.lastName }})
   </h1>

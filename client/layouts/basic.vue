@@ -14,7 +14,7 @@ const schemeFormRef = ref(null);
 const { theme, scheme, setScheme } = <any>useScheme();
 const accountOpened = ref(false);
 const route = useRoute();
-const showAlerts = route.path !== '/connexion';
+const showAlerts = route.path !== '/connexion' && route.path !== '/';
 
 const logout = function () {
   authStore.logout();

@@ -5,6 +5,7 @@ import { ArreteCadreApi } from "~/api/arrete-cadre";
 import { ArreteRestrictionApi } from "~/api/arrete-restriction";
 import { ParametresApi } from "~/api/parametres";
 import { CommuneApi } from "~/api/commune";
+import { BaseApiPagination } from '~/api/base-api-pagination';
 
 export const useApi = () => {
   return {
@@ -18,6 +19,6 @@ export const useApi = () => {
     commune: new CommuneApi('commune'),
     parametres: new ParametresApi('parametres'),
     statisticDepartement: new BaseApi('statistic_departement'),
-    usageFeedback: new BaseApi('usage_feedback'),
+    usageFeedback: new BaseApiPagination('usage_feedback'),
   };
 };
