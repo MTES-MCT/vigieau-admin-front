@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { helpers, required } from '@vuelidate/validators/dist';
-import useVuelidate from '@vuelidate/core';
 import type { Ref } from 'vue';
 import { useRefDataStore } from '~/stores/refData';
 import { Usage } from '~/dto/usage.dto';
@@ -12,6 +10,7 @@ const props = defineProps<{
   arreteRestriction: ArreteRestriction;
 }>();
 const usageToEdit: Ref<Usage | undefined> = ref(new Usage());
+const canEditName: Ref<boolean> = ref(true);
 const componentKey = ref(0);
 
 const query: Ref<string> = ref('');
@@ -84,7 +83,9 @@ const selectUsage = (usage: Usage | string) => {
 
 const askCreateEditUsage = (index: number | null = null, usage?: Usage) => {
   const u = index !== null ? JSON.parse(JSON.stringify(arreteRestrictionUsages.value[index])) : new Usage(usage);
+  u.id = null;
   usageToEdit.value = u;
+  canEditName.value = !u.nom;
   usageNameEdited.value = index !== null ? u.nom : null;
   setTimeout(() => {
     modalOpened.value = true;
@@ -104,7 +105,7 @@ const createEditUsage = async (usage: Usage) => {
     props.arreteRestriction.restrictions.forEach(r => {
       const index = r.usages.findIndex(u => u.nom === usageNameEdited.value);
       if(index >= 0) {
-        r.usages[index] = usage;        
+        r.usages[index] = usage;
       }
     });
     alertStore.addAlert({
@@ -188,6 +189,7 @@ defineExpose({
         ref="createEditUsageFormRef"
         @createEdit="createEditUsage($event)"
         :usage="usageToEdit"
+        :disableUsageName="!canEditName"
         :other-usages="arreteRestrictionUsages"
       />
     </DsfrModal>

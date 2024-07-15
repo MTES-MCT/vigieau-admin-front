@@ -9,6 +9,7 @@ import type { Usage } from '~/dto/usage.dto';
 const props = defineProps<{
   usage: Usage;
   otherUsages: Usage[];
+  disableUsageName: boolean;
   loading: boolean;
 }>();
 
@@ -174,6 +175,7 @@ defineExpose({
         name="usage_nom"
         :required="true"
         ref="usageFormNameInput"
+        :disabled="disableUsageName"
       />
       <span class="fr-input-group__sub-hint">{{ usage.nom ? usage.nom.length : 0 }}/150</span>
     </DsfrInputGroup>
