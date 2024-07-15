@@ -71,7 +71,6 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
       ar.dateFin = null;
       ar.dateSignature = null;
       ar.fichier = null;
-      ar.arreteRestrictionAbroge = null;
       ar.restrictions = ar.restrictions.filter((r) => {
         return !r.zoneAlerte || !r.zoneAlerte.disabled;
       });
@@ -83,6 +82,9 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
         });
         return r;
       });
+      if(!route.query.arreterestriction) {
+        ar.arreteRestrictionAbroge = null;
+      }
     }
     arreteRestriction.value = ar;
   }
