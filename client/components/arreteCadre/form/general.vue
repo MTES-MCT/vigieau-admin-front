@@ -244,7 +244,7 @@ defineExpose({
             v-if="isDepPilote"
             type="info"
             title="Email d'information"
-            description="Afin de favoriser une bonne communication, un email sera envoyé aux départements dont les zones d'alerte sont vides afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais. Vous serez informé par email lorsque cela est fait."
+            description="Afin de favoriser une bonne communication, un email sera envoyé aux départements dont les zones d'alerte sont vides afin qu’ils remplissent leurs zones d’alerte dans les meilleurs délais."
             class="fr-mb-2w"
           />
         </div>

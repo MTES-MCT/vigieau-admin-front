@@ -3,7 +3,8 @@ import type { Ref } from 'vue';
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { ArreteCadreStatutFr } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
-import { useAlertStore } from "~/stores/alert";
+import { useAlertStore } from '~/stores/alert';
+import { useContextStore } from '~/stores/context';
 
 const props = defineProps<{
   arreteCadre: ArreteCadre;
@@ -16,6 +17,7 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const alertStore = useAlertStore();
+const contextStore = useContextStore();
 const utils = useUtils();
 const isAcOnDepartementUser: boolean =
   authStore.isMte || props.arreteCadre.departements.some((d) => authStore.user?.roleDepartements.includes(d.code));
@@ -77,20 +79,14 @@ const arreteCadreActions: Ref<any> = ref([
 const arEnVigueurSameDepartement = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter(
     (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
-      (authStore.user?.role === 'mte' || (ar.departement && authStore.user?.roleDepartements.includes(ar.departement.code)))
+      (authStore.user?.role === 'mte' || (ar.departement && authStore.user?.roleDepartements.includes(ar.departement.code))),
   );
 });
 const arEnVigueurOtherDepartement = computed(() => {
   return props.arreteCadre.arretesRestriction?.filter(
     (ar) => ['a_venir', 'publie'].includes(ar.statut) &&
-      authStore.user?.role !== 'mte' && ar.departement && !authStore.user?.roleDepartements.includes(ar.departement.code)
+      authStore.user?.role !== 'mte' && ar.departement && !authStore.user?.roleDepartements.includes(ar.departement.code),
   );
-});
-const arBrouillon = computed(() => {
-  return props.arreteCadre.arretesRestriction?.filter((ar) => ['a_valider'].includes(ar.statut));
-});
-const arAbroges = computed(() => {
-  return props.arreteCadre.arretesRestriction?.filter((ar) => ['abroge'].includes(ar.statut));
 });
 
 const onKeyDown = (e: KeyboardEvent) => {
@@ -220,6 +216,13 @@ const repealArrete = async (ac: ArreteCadre) => {
   loading.value = false;
 };
 
+const goToArs = () => {
+  if (props.arreteCadre.departements?.length > 1) {
+    contextStore.setDepartementFilter(0);
+  }
+  navigateTo(`/arrete-restriction?query=${props.arreteCadre.numero}`);
+};
+
 const depString = computed(() => {
   return props.arreteCadre.departements.map((d) => d.nom).join('&nbsp;; ');
 });
@@ -283,13 +286,13 @@ const depString = computed(() => {
         </div>
       </div>
       <div class="fr-card__footer fr-grid-row" v-if="arreteCadre.arretesRestriction.length > 0">
-        <NuxtLink
-          :to="'/arrete-restriction?query=' + arreteCadre.numero"
+        <a
+          @click="goToArs()"
           v-if="arEnVigueurSameDepartement.length > 0"
           class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
         >
           {{ arEnVigueurSameDepartement.length }} arrêté(s) de restriction en vigueur
-        </NuxtLink>
+        </a>
         <NuxtLink
           disabled
           v-if="arEnVigueurOtherDepartement.length > 0"
@@ -297,20 +300,20 @@ const depString = computed(() => {
         >
           {{ arEnVigueurOtherDepartement.length }} arrêté(s) de restriction en vigueur sur d'autres départements
         </NuxtLink>
-<!--        <NuxtLink-->
-<!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
-<!--          v-if="arBrouillon.length > 0"-->
-<!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
-<!--        >-->
-<!--          {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)-->
-<!--        </NuxtLink>-->
-<!--        <NuxtLink-->
-<!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
-<!--          v-if="arAbroges.length > 0"-->
-<!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
-<!--        >-->
-<!--          {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)-->
-<!--        </NuxtLink>-->
+        <!--        <NuxtLink-->
+        <!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
+        <!--          v-if="arBrouillon.length > 0"-->
+        <!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
+        <!--        >-->
+        <!--          {{ arBrouillon.length }} arrêté(s) de restriction brouillon(s)-->
+        <!--        </NuxtLink>-->
+        <!--        <NuxtLink-->
+        <!--          :to="'/arrete-restriction?query=' + arreteCadre.numero"-->
+        <!--          v-if="arAbroges.length > 0"-->
+        <!--          class="fr-link fr-icon-arrow-right-line fr-link&#45;&#45;icon-right"-->
+        <!--        >-->
+        <!--          {{ arAbroges.length }} arrêté(s) de restriction abrogé(s)-->
+        <!--        </NuxtLink>-->
       </div>
     </div>
   </div>
@@ -338,29 +341,46 @@ const depString = computed(() => {
   color: var(--purple-glycine-sun-319-moon-630);
 }
 
-.fr-card__actions {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-
-  &__menu {
-    z-index: 1;
+.fr-card {
+  &__actions {
     position: absolute;
-    top: 40px;
+    top: 2rem;
+    right: 2rem;
 
-    ul {
-      list-style-type: none;
+    &__menu {
+      z-index: 1;
+      position: absolute;
+      top: 40px;
 
-      li {
-        padding: 0;
+      ul {
+        list-style-type: none;
+
+        li {
+          padding: 0;
+        }
+      }
+
+      a:not([href]) {
+        color: inherit;
+
+        &:hover {
+          background-color: var(--hover-tint);
+          --underline-hover-width: var(--underline-max-width);
+        }
       }
     }
-
-    a:not([href]) {
-      color: inherit;
-
+  }
+  
+  &__footer {
+    a {
+      color: var(--text-action-high-blue-france);
+      background-image: var(--underline-img), var(--underline-img);
+      background-position: var(--underline-x) 100%, var(--underline-x) calc(100% - var(--underline-thickness));
+      background-repeat: no-repeat, no-repeat;
+      background-size: var(--underline-hover-width) calc(var(--underline-thickness)* 2), var(--underline-idle-width) var(--underline-thickness);
+      transition: background-size 0s;
+      
       &:hover {
-        background-color: var(--hover-tint);
         --underline-hover-width: var(--underline-max-width);
       }
     }
