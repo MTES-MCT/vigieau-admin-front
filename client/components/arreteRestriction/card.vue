@@ -197,10 +197,7 @@ const repealArrete = async (ar: ArreteRestriction) => {
             v-html="numeroToDisplay"
           ></NuxtLink>
         </h3>
-        <!--        <p class="fr-card__desc">-->
-        <!--          Dep&nbsp;:-->
-        <!--          <template v-for="dep in arreteRestriction.departements"> {{ dep.nom }}&nbsp;;</template>-->
-        <!--        </p>-->
+        <p class="fr-card__desc">Dep&nbsp;: <span>{{ arreteRestriction.departement?.nom }}</span></p>
         <div class="fr-card__start">
           <ul class="fr-badges-group">
             <li v-if="isZaOutdated">
