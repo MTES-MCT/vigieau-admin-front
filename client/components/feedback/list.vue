@@ -82,6 +82,9 @@ paginate();
           Le {{ utils.formatDate(feedback.createdAt) }}<br />
           La restriction <b>{{ feedback.usageNom }}</b> n'est pas comprise.
         </div>
+        <div v-if="feedback.feedback">
+          Commentaire&nbsp;: {{ feedback.feedback }}
+        </div>
         <div class="fr-grid-row fr-mt-1w">
           <DsfrButton v-if="feedback.arreteRestriction?.id"
                       tertiary
