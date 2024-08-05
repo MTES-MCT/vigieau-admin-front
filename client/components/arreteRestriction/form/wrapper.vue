@@ -103,13 +103,12 @@ const saveArrete = async (publish: boolean = false) => {
     // Mise à jour des ids des objets nouvellement crées
     props.arreteRestriction.id = data.value.id;
     props.arreteRestriction.restrictions.map((restriction: Restriction) => {
-      restriction.id = (<ArreteRestriction>data.value).restrictions.find(
+      const restrictionReturned = (<ArreteRestriction>data.value).restrictions.find(
         (r: Restriction) => r.zoneAlerte ? r.zoneAlerte.id === restriction.zoneAlerte?.id : r.nomGroupementAep === restriction.nomGroupementAep,
-      ).id;
+      );
+      restriction.id = restrictionReturned.id;
       restriction.usages.map((usagesArreteRestriction: Usage) => {
-        usagesArreteRestriction.id = (<ArreteRestriction>data.value).restrictions.find(
-          (r: Restriction) => r.id === restriction.id,
-        ).usages.find(
+        usagesArreteRestriction.id = restrictionReturned.usages.find(
           (u: Usage) => u.nom === usagesArreteRestriction.nom,
         ).id;
         return usagesArreteRestriction;

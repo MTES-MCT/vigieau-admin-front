@@ -24,6 +24,9 @@ if (data.value) {
           Le {{ utils.formatDate(feedback.createdAt) }}<br />
           La restriction <b>{{ feedback.usageNom }}</b> n'est pas comprise.
         </div>
+        <div v-if="feedback.feedback">
+          Commentaire&nbsp;: {{ feedback.feedback }}
+        </div>
       </div>
       <div class="fr-col-12 feedback-card" v-if="feedbacksPaginated.data.length < 1">
         Aucune restriction non comprise.

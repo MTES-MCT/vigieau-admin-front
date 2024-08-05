@@ -160,9 +160,9 @@ const computeAllUsages = () => {
         .map(r => r.usages
           .filter(u => !props.restriction.usages.some(ru => ru.nom === u.nom))
           .map((u) => {
-          u.id = null;
-          return u;
-        }))
+            u.id = null;
+            return u;
+          }))
         .flat(),
     ).filter((value, index, self) =>
         index === self.findIndex((u) => (
@@ -206,6 +206,7 @@ const computeAllUsages = () => {
     }
     return 0;
   });
+  allUsages.value = JSON.parse(JSON.stringify(allUsages.value));
   filterUsages();
 };
 

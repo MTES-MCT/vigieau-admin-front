@@ -59,7 +59,8 @@ const chartLineOptions: ChartOptions = {
 
 const dateMin = computed(() => {
   const dates = statisticDepartement.value?.map((s: any) => s.visits?.map((v: any) => new Date(v.date))).flat();
-  return new Date(Math.min(...dates?.map(date => date.getTime()))).toISOString().split('T')[0];
+  return dates && dates.length > 0 ? new Date(Math.min(...dates?.map(date => date.getTime()))).toISOString().split('T')[0] :
+    new Date().toISOString().split('T')[0];
 });
 const dateDebut = ref(dateMin.value);
 const dateFin = ref(new Date().toISOString().split('T')[0]);
