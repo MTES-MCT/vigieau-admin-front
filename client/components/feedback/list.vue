@@ -35,7 +35,7 @@ const modalActions: Ref<any[]> = ref([
 
 const paginate = async () => {
   loading.value = true;
-  const { data, error } = await api.usageFeedback.paginate(currentPage.value + 1, undefined, undefined, 2);
+  const { data, error } = await api.usageFeedback.paginate(currentPage.value + 1, undefined, undefined, 10);
   loading.value = false;
   if (data.value) {
     data.value.meta.dsfrPages = Array.from({ length: data.value.meta.totalPages }, (value, index) => {
