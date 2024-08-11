@@ -8,7 +8,7 @@ const feedbacksPaginated: Ref<PaginatedResult<any> | null> = ref(null);
 const api = useApi();
 const utils = useUtils();
 const router = useRouter();
-const { data, error } = await api.usageFeedback.paginate(1, undefined, undefined, 2);
+const { data, error } = await api.usageFeedback.paginate(1, undefined, undefined, 3);
 if (data.value) {
   feedbacksPaginated.value = data.value;
 }
