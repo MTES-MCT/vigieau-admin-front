@@ -18,13 +18,7 @@ if (isNewArreteCadre && !route.query.arretecadre) {
   const { data, error } = await api.arreteCadre.get(isNewArreteCadre && route.query.arretecadre ?
     <string>route.query.arretecadre : <string>route.params.id);
   if (data.value) {
-    const ac = <ArreteCadre>data.value;
-    if(route.query.arretecadre) {
-      ac.arreteCadreAbroge = <ArreteCadre>{
-        id: data.value.id,
-        numero: data.value.numero
-      };
-    }
+    const ac = <ArreteCadre>JSON.parse(JSON.stringify(data.value));
     if (props.duplicate || route.query.arretecadre) {
       ac.id = null;
       ac.numero = '';
@@ -38,6 +32,12 @@ if (isNewArreteCadre && !route.query.arretecadre) {
         return u;
       });
       ac.zonesAlerte = ac.zonesAlerte.filter(za => !za.disabled);
+    }
+    if(route.query.arretecadre) {
+      ac.arreteCadreAbroge = <ArreteCadre>{
+        id: data.value.id,
+        numero: data.value.numero
+      };
     }
     if (ac.departements.length > 1 && ac.departementPilote?.code) {
       const depPiloteIndex = ac.departements.findIndex((d) => d.code === ac.departementPilote.code);

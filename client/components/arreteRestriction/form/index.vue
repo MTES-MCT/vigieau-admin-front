@@ -34,7 +34,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     isNewArreteRestriction && route.query.arreterestriction ? <string>route.query.arreterestriction : <string>route.params.id,
   );
   if (data.value) {
-    const ar = <ArreteRestriction>data.value;
+    const ar = <ArreteRestriction>JSON.parse(JSON.stringify(data.value));
     // Format restrictions
     ar.restrictions = ar.restrictions.map((r) => {
       if (!r.zoneAlerte) {
