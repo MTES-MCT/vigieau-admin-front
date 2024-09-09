@@ -1,6 +1,8 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'basic',
+  middleware: 'role',
+  roles: ['mte', 'departement'],
 });
 
 useHead({
@@ -9,11 +11,11 @@ useHead({
 
 const breadcrumb = [
   {
-    to: "/arrete-restriction",
-    text: "Arrêtés de restriction"
+    to: '/arrete-restriction',
+    text: 'Arrêtés de restriction',
   }, {
-    text: "Duplication"
-  }
+    text: 'Duplication',
+  },
 ];
 </script>
 

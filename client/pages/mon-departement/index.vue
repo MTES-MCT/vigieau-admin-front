@@ -4,6 +4,8 @@ import { useAuthStore } from '~/stores/auth';
 
 definePageMeta({
   layout: 'basic',
+  middleware: 'role',
+  roles: ['mte', 'departement'],
 });
 
 useHead({

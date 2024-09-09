@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
 import { ArreteRestriction } from '~/dto/arrete_restriction.dto';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
 
