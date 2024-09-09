@@ -6,6 +6,7 @@ export class ArreteMunicipal {
   userFirstName: string | null;
   userLastName: string | null;
   userEmail: string | null;
+  userPhone: string | null;
   dateDebut: string | null;
   dateFin: string | null;
   statut: 'a_valider' | 'a_venir' | 'publie' | 'abroge';
@@ -21,6 +22,7 @@ export class ArreteMunicipal {
     this.userEmail = user ? user.email : null;
     this.userFirstName = user ? user.firstName : null;
     this.userLastName = user ? user.lastName : null;
+    this.userPhone = null;
     this.dateDebut = null;
     this.dateFin = null;
     this.statut = 'a_valider';

@@ -10,6 +10,7 @@ export class ArreteMunicipalApi extends BaseApiPagination {
     formData.append('dateDebut', payload.dateDebut);
     formData.append('dateFin', payload.dateFin);
     formData.append('userEmail', payload.userEmail);
+    formData.append('userPhone', payload.userPhone);
     formData.append('userFirstName', payload.userFirstName);
     formData.append('userLastName', payload.userLastName);
     
@@ -27,6 +28,7 @@ export class ArreteMunicipalApi extends BaseApiPagination {
     formData.append('dateDebut', payload.dateDebut);
     formData.append('dateFin', payload.dateFin);
     formData.append('userEmail', payload.userEmail);
+    formData.append('userPhone', payload.userPhone);
     formData.append('userFirstName', payload.userFirstName);
     formData.append('userLastName', payload.userLastName);
     

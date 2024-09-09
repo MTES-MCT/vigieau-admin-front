@@ -1,5 +1,6 @@
 import type { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import type { ArreteRestriction } from "~/dto/arrete_restriction.dto";
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 export const useUtils = () => {
   return {
@@ -163,6 +164,10 @@ Vous confirmez prendre en compte que les modifications faites à cet arrêté vo
     
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    
+    phoneValidator(value: string) {
+      return isValidPhoneNumber(value, 'FR');
     }
   };
 };

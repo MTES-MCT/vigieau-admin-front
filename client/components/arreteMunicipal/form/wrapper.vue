@@ -2,6 +2,7 @@
 import type { ArreteMunicipal } from '~/dto/arrete_municipal.dto';
 import useVuelidate from '@vuelidate/core';
 import { useAlertStore } from '~/stores/alert';
+import { parsePhoneNumber } from 'libphonenumber-js';
 
 const props = defineProps<{
   arreteMunicipal: ArreteMunicipal;
@@ -15,9 +16,6 @@ const v$ = useVuelidate();
 
 const askPublishArrete = async () => {
   await saveArrete();
-  if (!v$.value.$error) {
-    // modalPublishOpened.value = true;
-  }
 };
 
 const saveArrete = async () => {
@@ -30,9 +28,13 @@ const saveArrete = async () => {
     return;
   }
   loading.value = true;
+
+  const phoneNumber = parsePhoneNumber(props.arreteMunicipal.userPhone, 'FR');
+  props.arreteMunicipal.userPhone = phoneNumber.formatInternational();
+  
   const { data, error } = props.arreteMunicipal.id
     ? await api.arreteMunicipal.update(props.arreteMunicipal.id.toString(), props.arreteMunicipal)
-    : await api.arreteMunicipal.create({ ...props.arreteMunicipal });
+    : await api.arreteMunicipal.create(props.arreteMunicipal);
   if (data.value?.id) {
     navigateTo('/arrete-municipal');
     alertStore.addAlert({

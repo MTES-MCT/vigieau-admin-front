@@ -23,6 +23,10 @@ const rules = computed(() => {
       required: helpers.withMessage('L\'email est obligatoire.', required),
       email: helpers.withMessage('L\'email n\'est pas valide.', email),
     },
+    userPhone: {
+      required: helpers.withMessage('Le numéro de téléphone est obligatoire.', required),
+      phone: helpers.withMessage('Le numéro de téléphone n\'est pas valide.', utils.phoneValidator),
+    },
     communes: {
       required: helpers.withMessage('L\'arrêté doit concerner au moins un code INSEE.', required),
     },
@@ -120,6 +124,20 @@ defineExpose({
             name="userEmail"
             :required="true"
             disabled
+          />
+        </DsfrInputGroup>
+
+        <DsfrInputGroup :error-message="utils.showInputError(v$, 'userPhone')">
+          <DsfrInput
+            id="phone"
+            data-cy="FormPhoneInput"
+            v-model="arreteMunicipal.userPhone"
+            label="Numéro de téléphone"
+            hint="Format attendu : (+33) 1 22 33 44 55"
+            label-visible
+            type="text"
+            name="userPhone"
+            :required="true"
           />
         </DsfrInputGroup>
 
