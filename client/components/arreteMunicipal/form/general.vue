@@ -3,6 +3,7 @@ import type { ArreteMunicipal } from '~/dto/arrete_municipal.dto';
 import { email, helpers, required, requiredIf } from '@vuelidate/validators';
 import useVuelidate from '@vuelidate/core';
 import type { Ref } from 'vue';
+import { useAuthStore } from '~/stores/auth';
 
 const props = defineProps<{
   arreteMunicipal: ArreteMunicipal;
@@ -10,9 +11,10 @@ const props = defineProps<{
 
 const utils = useUtils();
 const api = useApi();
+const authStore = useAuthStore();
 const hint = ref('');
 const communes: Ref<any> = ref([]);
-const communesText = props.arreteMunicipal.communes?.map((c) => c.code).join('\n');
+const communesText = ref(props.arreteMunicipal.communes?.map((c) => c.code).join('\n'));
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const rules = computed(() => {
   return {
@@ -64,6 +66,10 @@ const loadCommunes = async () => {
   const { data, error } = await api.commune.list();
   if (data.value) {
     communes.value = data.value;
+    if(!props.arreteMunicipal.id && authStore.user?.role === 'commune') {
+      props.arreteMunicipal.communes = communes.value.filter((c: any) => authStore.user?.roleCommunes.includes(c.code));
+      communesText.value = props.arreteMunicipal.communes?.map((c) => c.code).join('\n');
+    }
   }
 }
 

@@ -4,6 +4,7 @@ export interface User {
   lastName: string;
   role: string;
   roleDepartements: string[];
+  roleCommunes: string[];
 }
 
 export enum UserRole {

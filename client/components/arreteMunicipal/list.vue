@@ -150,7 +150,7 @@ paginate();
       <DsfrButton label="Créer un nouvel arrêté municipal" data-cy="ArreteMunicipalListAddBtn" />
     </NuxtLink>
     <div class="fr-col-12">
-      <b>Communiquer auprès des communes</b><br /><br />
+      <h3>Communiquer auprès des communes</h3>
       <span>
         Si vous souhaitez partager à de nouvelles communes le formulaire,  copiez/collez le lien ci-dessous<br />
         <a :href="formLink"
