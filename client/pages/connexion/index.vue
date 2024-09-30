@@ -46,15 +46,15 @@ const loginDev = () => {
         />
         <h1>Connexion à {{ runTimeConfig.appName }}</h1>
         <div class="fr-mb-6v">
-          <h2>Se connecter avec AgentConnect</h2>
+          <h2>Se connecter avec ProConnect</h2>
           <div class="fr-connect-group" data-cy="LoginAgentConnectBtn">
             <button class="fr-connect" @click="loginAgentConnect()">
               <span class="fr-connect__login">S’identifier avec</span>
-              <span class="fr-connect__brand">AgentConnect</span>
+              <span class="fr-connect__brand">ProConnect</span>
             </button>
             <p>
-              <a href="https://agentconnect.gouv.fr/" target="_blank" rel="noopener" title="Qu’est ce qu'AgentConnect ? - nouvelle fenêtre"
-                >Qu’est ce qu'AgentConnect ?</a
+              <a href="https://agentconnect.gouv.fr/" target="_blank" rel="noopener" title="Qu’est ce qu'ProConnect ? - nouvelle fenêtre"
+                >Qu’est ce que ProConnect ?</a
               >
             </p>
           </div>
@@ -71,15 +71,6 @@ const loginDev = () => {
 </template>
 
 <style lang="scss">
-// Couleurs d'AgentConnect
-button.fr-connect {
-  background-color: #0a76f6;
-
-  &:hover {
-    background-color: #2e94fa;
-  }
-}
-
 :root[data-fr-theme='dark'] button.fr-connect {
   background-color: white;
 

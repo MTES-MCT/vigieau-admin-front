@@ -35,8 +35,9 @@ const generateRows = () => {
         d.lastName || '',
         d.firstName || '',
         d.email,
-        `${UserRole[d.role]} ${d.role === 'departement' ? ` (${d.roleDepartements?.join(', ')})` : ''}`,
-        authStore.isMte
+        `${UserRole[d.role]} ${d.role === 'departement' ? ` (${d.roleDepartements?.join(', ')})` : ''}
+        ${d.role === 'commune' ? ` (${d.roleCommunes?.join(', ')})` : ''}`,
+        authStore.isMte && d.role !== 'commune'
           ? {
             component: 'DsfrButton',
             label: 'Modifier',
@@ -181,7 +182,11 @@ const filterUsers = () => {
       .map(s => s.replace(/^/, '(').replace(/$/, ')'))
       .join('*');
     const regex = new RegExp(`${queryWords}`, 'gi');
-    return nom?.match(regex) || prenom?.match(regex) || u.roleDepartements?.join('').match(regex) || u.email?.match(regex);
+    return nom?.match(regex) || 
+      prenom?.match(regex) || 
+      u.roleDepartements?.join('').match(regex) || 
+      u.roleCommunes?.join('').match(regex) || 
+      u.email?.match(regex);
   }) : users.value;
   generateRows();
 };

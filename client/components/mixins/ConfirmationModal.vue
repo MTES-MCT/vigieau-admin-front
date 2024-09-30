@@ -35,6 +35,7 @@ const modalActions: Ref<any[]> = ref([
     icon="ri-arrow-right-line"
     :title="title"
     :actions="modalActions"
+    @close="emit('close')"
   >
     <div v-html="description" />
   </DsfrModal>

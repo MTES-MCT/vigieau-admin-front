@@ -83,7 +83,7 @@ const populateTable = () => {
             repealModalOpened.value = true;
           },
         },
-        authStore.user && authStore.user.role === 'mte' ?
+        authStore.user && authStore.user.role !== 'commune' ?
           {
             component: 'DsfrButton',
             secondary: true,

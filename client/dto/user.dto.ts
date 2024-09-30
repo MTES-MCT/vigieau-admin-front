@@ -10,4 +10,5 @@ export interface User {
 export enum UserRole {
   mte = 'MTE',
   departement = 'Département',
+  commune = 'Commune',
 }
