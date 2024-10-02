@@ -22,7 +22,14 @@ import {
   RiEyeFill,
   RiInformationFill,
   RiTimeFill,
-  RiCheckFill, RiAlertFill, RiAddFill, RiSearchLine, RiAccountCircleFill, RiCheckboxCircleFill, RiCloseCircleFill,
+  RiCheckFill, 
+  RiAlertFill, 
+  RiAddFill, 
+  RiSearchLine, 
+  RiAccountCircleFill, 
+  RiCheckboxCircleFill, 
+  RiCloseCircleFill, 
+  RiArticleFill,
 } from 'oh-vue-icons/icons';
 
 const icons = [
@@ -33,6 +40,7 @@ const icons = [
   RiBallPenLine,
   RiDeleteBin5Fill,
   RiArticleLine,
+  RiArticleFill,
   RiGroupLine,
   RiLogoutBoxRLine,
   GiFrance,

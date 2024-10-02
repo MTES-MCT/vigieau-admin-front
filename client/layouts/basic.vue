@@ -2,7 +2,7 @@
 import { useScheme } from '@gouvminint/vue-dsfr';
 import { useAuthStore } from '~/stores/auth';
 import type { Ref } from 'vue';
-import { useContextStore } from "~/stores/context";
+import { useContextStore } from '~/stores/context';
 
 const runTimeConfig = useRuntimeConfig().public;
 const authStore = useAuthStore();
@@ -15,81 +15,105 @@ const { theme, scheme, setScheme } = <any>useScheme();
 const accountOpened = ref(false);
 const route = useRoute();
 const showAlerts = route.path !== '/connexion' && route.path !== '/';
+const quickLinks: Ref<any[]> = ref([]);
+const navItems: Ref<any[]> = ref([]);
 
-const logout = function () {
+const logout = function() {
   authStore.logout();
   contextStore.resetContext();
   navigateTo('/api/auth/logout', { external: true });
 };
 
 const a11yCompliance: string = 'Non conforme';
-const accountOptions = (icon: boolean) => [
-  {
-    text: 'Mon département',
-    onclick: () => {
-      navigateTo('/mon-departement');
-    },
-    icon: icon ? 'ri-settings-3-line' : null,
-  },
-  {
-    text: "Paramètres d'affichage",
+const accountOptions = (icon: boolean) => {
+  const links = [];
+  if (['mte', 'departement'].includes(authStore.user?.role)) {
+    links.push({
+      text: 'Gestion des arrêtés municipaux',
+      onclick: () => {
+        navigateTo('/arrete-municipal');
+      },
+      icon: icon ? 'ri-article-fill' : null,
+    });
+    links.push({
+      text: 'Mon département',
+      onclick: () => {
+        navigateTo('/mon-departement');
+      },
+      icon: icon ? 'ri-settings-3-line' : null,
+    });
+  }
+  links.push({
+    text: 'Paramètres d\'affichage',
     onclick: () => {
       modalSchemeOpened.value = true;
     },
     icon: icon ? 'ri-sun-fill' : null,
-  },
-  {
+  });
+  links.push({
     text: 'Déconnexion',
     onclick: logout,
     icon: icon ? 'ri-logout-box-r-line' : null,
-  },
-];
-const quickLinks = (await authStore.isAuthenticated)
-  ? [
-      {
-        label: 'Gestion des arrêtés cadre',
-        to: '/arrete-cadre',
+  });
+  return links;
+};
+const loadQuickLinks = async () => {
+  const isAuthenticated = await authStore.isAuthenticated;
+  const links = [];
+  if (isAuthenticated && ['mte', 'departement'].includes(authStore.user?.role)) {
+    links.push({
+      label: 'Gestion des arrêtés cadre',
+      to: '/arrete-cadre',
+    });
+    links.push({
+      label: 'Gestion des arrêtés de restriction',
+      to: '/arrete-restriction',
+    });
+  }
+  if (isAuthenticated) {
+    links.push({
+      label: 'Mon compte',
+      icon: 'ri-account-circle-fill',
+      to: '#',
+      onclick: ($event) => {
+        $event?.preventDefault();
+        accountOpened.value = !accountOpened.value;
+        setTimeout(() => {
+          const buttons = document.querySelector('.fr-header .fr-btns-group');
+          const menu = document.querySelector('.fr-header__menu-list-link');
+          const menuWidth = menu?.getElementsByClassName('fr-menu__list')[0].getBoundingClientRect().width;
+          if (!buttons || !menu || !menuWidth) {
+            return;
+          }
+          menu.style['right'] = (document.body.clientWidth - buttons.getBoundingClientRect().right + menuWidth) + 'px';
+        });
       },
-      {
-        label: 'Gestion des arrêtés de restriction',
-        to: '/arrete-restriction',
-      },
-      {
-        label: 'Mon compte',
-        icon: 'ri-account-circle-fill',
-        to: '#',
-        onclick: ($event) => {
-          $event?.preventDefault();
-          accountOpened.value = !accountOpened.value;
-          setTimeout(() => {
-            const buttons = document.querySelector('.fr-header .fr-btns-group');
-            const menu = document.querySelector('.fr-header__menu-list-link');
-            const menuWidth = menu?.getElementsByClassName('fr-menu__list')[0].getBoundingClientRect().width;
-            if(!buttons || !menu || !menuWidth) {
-              return;
-            }
-            menu.style['right'] = (document.body.clientWidth - buttons.getBoundingClientRect().right + menuWidth) + 'px';            
-          });
-        },
-      },
-    ]
-  : [];
-const navItems = (await authStore.isAuthenticated)
-  ? [
-    {
+    });
+  }
+  quickLinks.value = links;
+};
+const loadNavItems = async () => {
+  const isAuthenticated = await authStore.isAuthenticated;
+  const links = [];
+
+  if (isAuthenticated && ['mte', 'departement'].includes(authStore.user?.role)) {
+    links.push({
       text: 'Gestion des arrêtés cadre',
       to: '/arrete-cadre',
-    },
-    {
+    });
+    links.push({
       text: 'Gestion des arrêtés de restriction',
       to: '/arrete-restriction',
-    },
-    {
+    });
+  }
+  if (isAuthenticated && ['departement', 'commune'].includes(authStore.user?.role)) {
+    links.push({
       title: 'Mon compte',
       links: accountOptions(false),
-    },
-  ]
-  : [];
+    });
+  }
+  navItems.value = links;
+};
 const mandatoryLinks: any[] = [
   {
     label: `Accessibilité : ${a11yCompliance}`,
@@ -185,6 +209,11 @@ onUnmounted(() => {
   document.removeEventListener('click', onDocumentClick);
   document.removeEventListener('keydown', onKeyDown);
 });
+
+watch(authStore.user, async () => {
+  await loadQuickLinks();
+  await loadNavItems();
+}, { immediate: true });
 </script>
 
 <template>
@@ -206,14 +235,9 @@ onUnmounted(() => {
       <ul class="fr-menu__list">
         <template v-for="action of accountOptions(true)">
           <li>
-            <a
-              class="fr-nav__link"
-              @click="
-                          action.onclick();
-                          accountOpened = false;
-                        "
-            >
-              <VIcon :name="action.icon" class="fr-mr-1w"/>
+            <a class="fr-nav__link"
+               @click="action.onclick(); accountOpened = false;">
+              <VIcon :name="action.icon" class="fr-mr-1w" />
               {{ action.text }}
             </a>
           </li>
@@ -223,10 +247,11 @@ onUnmounted(() => {
   </div>
   <main>
     <div class="fr-container fr-mb-6w" v-if="!+runTimeConfig.isProd">
-      <DsfrAlert description="Plateforme de développement, les données sont fictives. Si vous souhaitez accéder à la plateforme de production, allez sur https://admin.vigieau.beta.gouv.fr"
-                 type="warning"
-                 class="fr-my-2w"
-                 :closeable="false"
+      <DsfrAlert
+        description="Plateforme de développement, les données sont fictives. Si vous souhaitez accéder à la plateforme de production, allez sur https://admin.vigieau.beta.gouv.fr"
+        type="warning"
+        class="fr-my-2w"
+        :closeable="false"
       />
     </div>
     <MixinsAlerts v-if="showAlerts" class="fr-mb-2w" />
@@ -270,8 +295,9 @@ onUnmounted(() => {
     .fr-nav {
       display: none;
     }
-  }  
+  }
 }
+
 @media (max-width: 62em) {
   .fr-header {
     .fr-header__menu-links {

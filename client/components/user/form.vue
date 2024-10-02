@@ -27,6 +27,9 @@ const departementsTags: Ref<any> = ref([]);
 const departementsFiltered: Ref<any> = ref([]);
 
 for (const ur in UserRole) {
+  if (ur === 'commune') {
+    continue;
+  }
   if (!(ur === 'mte' && authStore.user.role === 'departement')) {
     rolesAvailable.push({
       text: UserRole[ur],
@@ -60,7 +63,7 @@ const rules = computed(() => {
       requiredIf: helpers.withMessage('Le département est obligatoire.', requiredIf(formData.role === 'departement')),
       $each: {
         regex: helpers.withMessage('Le département n\'existe pas', helpers.regex(/^([0|2][1-9]|[1|3-8][0-9]|9[0-5]|97[1-4]|2[AB]|976)$/)),
-      }
+      },
     },
   };
 });
@@ -84,7 +87,7 @@ const filterDepartements = () => {
   let tmp = refDataStore.departements
     .filter((d) => !formData.roleDepartements?.includes(d.code))
     .filter(d => authStore.user?.role === 'mte' || authStore.user?.roleDepartements.includes(d.code));
-  if(query.value) {
+  if (query.value) {
     tmp = tmp.filter((d) => {
       return (deburr(d.nom)
           .replace(/[\s\-\_]/g, '')
@@ -143,7 +146,7 @@ watch(
   useUtils().debounce(async () => {
     filterDepartements();
   }, 300),
-  { immediate: true }
+  { immediate: true },
 );
 
 defineExpose({

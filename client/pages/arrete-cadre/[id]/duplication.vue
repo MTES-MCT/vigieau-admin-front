@@ -1,6 +1,8 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'basic',
+  middleware: 'role',
+  roles: ['mte', 'departement'],
 });
 
 useHead({

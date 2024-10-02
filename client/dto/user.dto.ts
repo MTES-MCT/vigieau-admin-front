@@ -4,9 +4,11 @@ export interface User {
   lastName: string;
   role: string;
   roleDepartements: string[];
+  roleCommunes: string[];
 }
 
 export enum UserRole {
   mte = 'MTE',
   departement = 'Département',
+  commune = 'Commune',
 }

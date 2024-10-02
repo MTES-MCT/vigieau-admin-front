@@ -1,23 +1,21 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'basic',
-  middleware: 'role',
-  roles: ['mte', 'departement'],
 });
 
 useHead({
-  title: `Arrêtés Restriction - ${useRuntimeConfig().public.appName}`,
+  title: `Arrêtés Municipaux - ${useRuntimeConfig().public.appName}`,
 });
 </script>
 
 <template>
-  <div class="ar-list">
-    <ArreteRestrictionList />    
+  <div class="am-list">
+    <ArreteMunicipalList />
   </div>
 </template>
 
 <style lang="scss">
-.ar-list {
+.am-list {
   position: relative;
 
   &:before {
@@ -33,7 +31,7 @@ useHead({
 }
 
 @media (min-width: 78em) {
-  .ar-list:before {
+  .am-list:before {
     left: calc(-1.5rem - (100vw - 78rem) / 2);
   }
 }

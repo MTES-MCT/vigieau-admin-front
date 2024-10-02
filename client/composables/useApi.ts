@@ -3,6 +3,7 @@ import { ZoneAlerteApi } from '~/api/zone-alerte';
 import { BaseApi } from '~/api/base-api';
 import { ArreteCadreApi } from "~/api/arrete-cadre";
 import { ArreteRestrictionApi } from "~/api/arrete-restriction";
+import { ArreteMunicipalApi } from "~/api/arrete-municipal";
 import { ParametresApi } from "~/api/parametres";
 import { CommuneApi } from "~/api/commune";
 import { BaseApiPagination } from '~/api/base-api-pagination';
@@ -11,6 +12,7 @@ export const useApi = () => {
   return {
     arreteCadre: new ArreteCadreApi('arrete-cadre'),
     arreteRestriction: new ArreteRestrictionApi('arrete-restriction'),
+    arreteMunicipal: new ArreteMunicipalApi('arrete-municipal'),
     zoneAlerte: new ZoneAlerteApi('zone-alerte'),
     user: new UserApi('user'),
     departement: new UserApi('departement'),

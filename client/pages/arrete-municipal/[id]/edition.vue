@@ -1,19 +1,18 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'basic',
-  middleware: 'role',
-  roles: ['mte', 'departement'],
 });
 
 useHead({
-  title: `Edition arrêté cadre - ${useRuntimeConfig().public.appName}`,
+  title: `Edition arrêté municipal - ${useRuntimeConfig().public.appName}`,
 });
+
 
 const route = useRoute();
 const breadcrumb = [
   {
-    to: "/arrete-cadre",
-    text: "Arrêtés cadre"
+    to: "/arrete-municipal",
+    text: "Arrêtés municipaux"
   }, {
     text: route.params.id === 'nouveau' ? 'Création' : 'Edition'
   }
@@ -22,5 +21,5 @@ const breadcrumb = [
 
 <template>
   <DsfrBreadcrumb :links="breadcrumb" />
-  <ArreteCadreForm />
+  <ArreteMunicipalForm />
 </template>

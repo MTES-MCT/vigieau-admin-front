@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
 import { ArreteRestriction } from '~/dto/arrete_restriction.dto';
-import { ArreteCadre } from '~/dto/arrete_cadre.dto';
 import { useAuthStore } from '~/stores/auth';
 import { useRefDataStore } from '~/stores/refData';
 
@@ -34,7 +33,7 @@ if (isNewArreteRestriction && !route.query.arreterestriction) {
     isNewArreteRestriction && route.query.arreterestriction ? <string>route.query.arreterestriction : <string>route.params.id,
   );
   if (data.value) {
-    const ar = <ArreteRestriction>data.value;
+    const ar = <ArreteRestriction>JSON.parse(JSON.stringify(data.value));
     // Format restrictions
     ar.restrictions = ar.restrictions.map((r) => {
       if (!r.zoneAlerte) {

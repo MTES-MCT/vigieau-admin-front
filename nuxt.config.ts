@@ -6,6 +6,7 @@ const appName = "VigiEau Admin";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
+
   app: {
     head: {
       title: appName,
@@ -33,7 +34,9 @@ export default defineNuxtConfig({
       },
     },
   },
+
   buildModules: ['@nuxt/typescript-build'],
+
   css: [
     '@gouvfr/dsfr/dist/core/core.main.min.css',
     '@gouvfr/dsfr/dist/component/component.main.min.css',
@@ -44,12 +47,16 @@ export default defineNuxtConfig({
 
     'assets/main.scss',
   ],
+
   ignore: ['**/*.test.*', '**/*.spec.*', '**/*.cy.*'],
   srcDir: 'client/',
+
   imports: {
     autoImport: true,
   },
+
   modules: ['@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
+
   runtimeConfig: {
     public: {
       appName,
@@ -59,6 +66,7 @@ export default defineNuxtConfig({
       email: 'contact.vigieau@beta.gouv.fr',
     },
   },
+
   vite: {
     build: {
       target: 'es2019',
@@ -71,6 +79,7 @@ export default defineNuxtConfig({
       }),
     ]
   },
+
   nitro: {
     devProxy: {
       '/api/': {
@@ -78,9 +87,11 @@ export default defineNuxtConfig({
       },
     },
   },
+
   pinia: {
     storesDirs: ['./stores/**'],
   },
+
   hooks: {
     'build:manifest': (manifest) => {
       // Suppression du prefetch pour les icônes
@@ -95,4 +106,6 @@ export default defineNuxtConfig({
       }
     },
   },
+
+  compatibilityDate: '2024-09-02',
 });
