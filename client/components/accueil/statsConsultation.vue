@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import type { ChartOptions } from 'chart.js';
 import { Line } from 'vue-chartjs';
-import type { Ref } from 'vue';
 import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
 
-const statisticDepartement: Ref<StatisticDepartement[] | undefined> = ref();
-
-const api = useApi();
-const loading = ref(true);
-const { data, error } = await api.statisticDepartement.list();
-if (data.value) {
-  statisticDepartement.value = data.value;
-}
+const props = defineProps<{
+  statisticDepartement: StatisticDepartement[];
+}>();
 
 const chartLineData = ref();
 const fullData = ref();
@@ -34,7 +28,7 @@ const tooltipTitle = (tooltipItems: any[]): string => {
 
 const chartLineOptions: ChartOptions = {
   responsive: true,
-  maintainAspectRatio: true,
+  maintainAspectRatio: false,
   scales: {
     x: {
       type: 'time',
@@ -58,7 +52,7 @@ const chartLineOptions: ChartOptions = {
 
 
 const dateMin = computed(() => {
-  const dates = statisticDepartement.value?.map((s: any) => s.visits?.map((v: any) => new Date(v.date))).flat();
+  const dates = props.statisticDepartement?.map((s: any) => s.visits?.map((v: any) => new Date(v.date))).flat();
   return dates && dates.length > 0 ? new Date(Math.min(...dates?.map(date => date.getTime()))).toISOString().split('T')[0] :
     new Date().toISOString().split('T')[0];
 });
@@ -67,25 +61,24 @@ const dateFin = ref(new Date().toISOString().split('T')[0]);
 const currentDate = ref(new Date().toISOString().split('T')[0]);
 
 const computeData = () => {
-  const dates = statisticDepartement.value?.map((s: any) => s.visits?.map((v: any) => v.date))
+  const dates = props.statisticDepartement?.map((s: any) => s.visits?.map((v: any) => v.date))
     .flat();
   const uniqueDates = Array.from(new Set(dates));
   uniqueDates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
   const data: any[] = [];
   uniqueDates.map(d => {
-    const visits = statisticDepartement.value?.map(s => {
+    const visits = props.statisticDepartement?.map(s => {
       return s.visits.find((v: any) => v.date === d)?.visits;
     }).reduce((acc, current) => acc + current, 0);
 
     data.push({
       date: d,
-      visits: visits
+      visits: visits,
     });
   });
 
   fullData.value = data;
-  loading.value = false;
 };
 
 const filterData = () => {
@@ -95,7 +88,7 @@ const filterData = () => {
     const dateFinValue = new Date(dateFin.value);
     return date.getTime() >= dateDebutValue.getTime() && date.getTime() <= dateFinValue.getTime();
   });
-  
+
   chartLineData.value = {
     labels: filteredData.map(d => new Date(d.date)),
     datasets: [
@@ -105,7 +98,7 @@ const filterData = () => {
       },
     ],
   };
-}
+};
 
 computeData();
 filterData();
@@ -145,10 +138,10 @@ watch([dateDebut, dateFin], () => {
         />
       </DsfrInputGroup>
     </div>
-    <div v-if="!loading && chartLineData">
+    <div v-if="chartLineData">
       <Line :options="chartLineOptions"
-            :data="chartLineData"
-            :style="{'min-height': '400px'}" />
+            id="stats-consultation-line"
+            :data="chartLineData" />
     </div>
   </div>
 </template>
@@ -160,5 +153,10 @@ watch([dateDebut, dateFin], () => {
       color: inherit;
     }
   }
+}
+
+#stats-consultation-line {
+  height: 400px;
+  max-height: 400px;
 }
 </style>
