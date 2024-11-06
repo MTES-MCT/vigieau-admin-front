@@ -14,7 +14,7 @@ const alertStore = useAlertStore();
 const api = useApi();
 const v$ = useVuelidate();
 
-const askPublishArrete = async () => {
+const askEditPublishArrete = async () => {
   await saveArrete();
 };
 
@@ -38,7 +38,7 @@ const saveArrete = async () => {
   if (data.value?.id) {
     navigateTo('/arrete-municipal');
     alertStore.addAlert({
-      description: 'Publication réussie',
+      description: props.arreteMunicipal.id ? 'Modification réussie' : 'Publication réussie',
       type: 'success',
     });
   }
@@ -66,14 +66,14 @@ const showErrors = (errors: any, title: string | null) => {
 
   <ul
     class="fr-btns-group--sticky fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
-    <li v-if="arreteMunicipal.statut === 'a_valider'">
+    <li>
       <DsfrButton
-        label="Publier"
+        :label="arreteMunicipal.statut === 'a_valider' ? 'Publier' : 'Modifier'"
         :disabled="loading"
         :icon="loading ? { name: 'ri-loader-4-line', animation: 'spin' } : ''"
         :iconRight="true"
         data-cy="ArreteMunicipalFormPublishBtn"
-        @click="askPublishArrete()"
+        @click="askEditPublishArrete()"
       />
     </li>
     <li style="margin-left: auto;">

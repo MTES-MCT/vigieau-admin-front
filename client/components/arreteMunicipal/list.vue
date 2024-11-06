@@ -14,28 +14,10 @@ const rows: Ref<any[]> = ref([]);
 const loading = ref(false);
 const api = useApi();
 const utils = useUtils();
-const abrogerFormRef = ref(null);
-const arreteMunicipalToRepeal: Ref<any> = ref(null);
-const repealModalOpened: Ref<boolean> = ref(false);
+const router = useRouter();
 const deleteModalOpened: Ref<boolean> = ref(false);
 const deleteDescriptionModal: Ref<string> = ref('');
-const formLink = `https://admin.${useRuntimeConfig().public.domainName}/arrete-municipal/nouveau/edition`;
-const repealModalActions: Ref<any[]> = ref([
-  {
-    label: 'Abroger',
-    'data-cy': 'RepealFormRepealBtn',
-    onclick: () => {
-      abrogerFormRef.value?.submitForm();
-    },
-  },
-  {
-    label: 'Annuler',
-    secondary: true,
-    onclick: () => {
-      utils.closeModal(repealModalOpened);
-    },
-  },
-]);
+const arreteMunicipalToDelete: Ref<any> = ref(null);
 
 const paginate = async () => {
   loading.value = true;
@@ -74,22 +56,22 @@ const populateTable = () => {
           download: am.fichier.url,
           title: am.fichier.nom,
         } : '',
+        am.statut !== 'abroge' ?
         {
           component: 'DsfrButton',
           secondary: true,
-          text: 'Abroger',
+          text: 'Modifier',
           onClick: () => {
-            arreteMunicipalToRepeal.value = am;
-            repealModalOpened.value = true;
+            router.push(`/arrete-municipal/${am.id}/edition`);
           },
-        },
+        } : '',
         authStore.user && authStore.user.role !== 'commune' ?
           {
             component: 'DsfrButton',
             secondary: true,
             text: 'Supprimer',
             onClick: () => {
-              arreteMunicipalToRepeal.value = am;
+              arreteMunicipalToDelete.value = am;
               deleteDescriptionModal.value = `<p>Êtes-vous sûr de vouloir supprimer l'arrêté municipal ?<br/>
 Cette action est irréversible.</p>`;
               deleteModalOpened.value = true;
@@ -100,29 +82,12 @@ Cette action est irréversible.</p>`;
   });
 };
 
-const repealArrete = async (am: ArreteMunicipal) => {
-  if (loading.value) {
-    return;
-  }
-  loading.value = true;
-  const { data, error } = await api.arreteMunicipal.repeal(am.id?.toString(), am);
-  if (!error.value) {
-    utils.closeModal(repealModalOpened);
-    alertStore.addAlert({
-      description: 'Abrogation réussie',
-      type: 'success',
-    });
-  }
-  loading.value = false;
-  paginate();
-};
-
 const deleteArrete = async () => {
   if (loading.value) {
     return;
   }
   loading.value = true;
-  const { data, error } = await api.arreteMunicipal.delete(arreteMunicipalToRepeal.value.id?.toString());
+  const { data, error } = await api.arreteMunicipal.delete(arreteMunicipalToDelete.value.id?.toString());
   if (!error.value) {
     utils.closeModal(deleteModalOpened);
     alertStore.addAlert({
@@ -150,19 +115,7 @@ paginate();
       <DsfrButton label="Créer un nouvel arrêté municipal" data-cy="ArreteMunicipalListAddBtn" />
     </NuxtLink>
     <div class="fr-col-12">
-      <h3>Communiquer auprès des communes</h3>
-      <span>
-        Si vous souhaitez partager à de nouvelles communes le formulaire,  copiez/collez le lien ci-dessous<br />
-        <a :href="formLink"
-           rel="noopener external"
-           target="_blank"
-           class="fr-link">
-          Lien vers le formulaire
-        </a>
-      </span><br /><br />
-      <span>
-        Vous pouvez gérer ici vos demandes de publication d’arrêtés municipaux.
-      </span>
+      Vous pouvez gérer ici vos arrêtés municipaux sécheresse.
     </div>
   </div>
   <template v-if="arretesMunicipauxPaginated">
@@ -178,15 +131,6 @@ paginate();
       />
     </div>
   </template>
-  <DsfrModal
-    :opened="repealModalOpened"
-    icon="ri-arrow-right-line"
-    title="Abroger l'arrêté municipal"
-    :actions="repealModalActions"
-    @close="repealModalOpened = utils.closeModal(repealModalOpened);"
-  >
-    <ArreteMunicipalFormAbroger ref="abrogerFormRef" :arreteMunicipal="arreteMunicipalToRepeal" @abroger="repealArrete($event)" />
-  </DsfrModal>
   <MixinsConfirmationModal
     :opened="deleteModalOpened"
     title="Supprimer l'arrêté municipal"

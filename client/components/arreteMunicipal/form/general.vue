@@ -161,7 +161,7 @@ defineExpose({
             :model-value="communesText"
             @update:modelValue="parseCommunes($event)"
             data-cy="CommunesFormNomInput"
-            label="Coller ici votre la liste de code INSEE  correspondant aux communes concernées par l'arrêté."
+            label="Coller ici le code INSEE de votre commune."
             label-visible
             isTextarea
             required
@@ -175,7 +175,8 @@ defineExpose({
           </p>
         </DsfrInputGroup>
 
-        <p>Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin</p>
+        <p class="fr-mb-0">Choisissez la date d’entrée en vigueur de l’arrêté et sa date de fin</p>
+        <p class="fr-mb-1w">L’arrêté sera publié sur VigiEau entre sa date de début et sa date de fin. Vous pourrez toujours modifier la date de fin après la publication.</p>
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-lg-6">
             <DsfrInputGroup :error-message="utils.showInputError(v$, 'dateDebut')">
