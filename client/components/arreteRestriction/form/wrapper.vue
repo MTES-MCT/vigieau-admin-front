@@ -202,6 +202,10 @@ const totalSteps = computed(() => {
   return showRestrictionsForm.value && showRestrictionsAepForm.value ? 6 : 5;
 });
 
+const subscriptions = computed(() => {
+  return refDataStore.departements.find(d => props.arreteRestriction.departement?.id === d.id)?.subscriptions;
+})
+
 
 const steps = computed(() => {
   if (showRestrictionsForm.value && !showRestrictionsAepForm.value) {
@@ -368,7 +372,10 @@ const graviteFormRef = ref(null);
           {{ getRestrictionByNiveauDeGravite('crise').length }} zone(s) en crise
         </li>
       </ul>
-      <div class="divider"></div>
+      <span>
+        {{ subscriptions }} usagers de VigiEau seront prévenus par mail.
+      </span>
+      <div class="divider fr-mt-1w"></div>
     </p>
     <ArreteRestrictionFormPublier ref="publierFormRef"
                                   :arreteRestriction="arreteRestriction"

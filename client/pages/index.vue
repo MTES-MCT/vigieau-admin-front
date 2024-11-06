@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { Ref } from 'vue';
+import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
+
 definePageMeta({
   layout: 'basic',
   middleware: 'role',
@@ -8,6 +11,14 @@ definePageMeta({
 useHead({
   title: `Accueil - ${useRuntimeConfig().public.appName}`,
 });
+
+const statisticDepartement: Ref<StatisticDepartement[] | undefined> = ref();
+
+const api = useApi();
+const { data, error } = await api.statisticDepartement.list();
+if (data.value) {
+  statisticDepartement.value = data.value;
+}
 </script>
 
 <template>
@@ -20,10 +31,16 @@ useHead({
     <div class="fr-mt-2w">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-          <AccueilStatsConsultation />
+          <AccueilStatsConsultation v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />
         </div>
         <div class="fr-col-12 fr-col-lg-4">
           <AccueilStatsFeedback />
+        </div>
+<!--        <div class="fr-col-12 fr-col-lg-4">-->
+<!--          <AccueilStatsRestrictions v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />-->
+<!--        </div>-->
+        <div class="fr-col-12 fr-col-lg-4">
+          <AccueilStatsSubscriptions v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />
         </div>
       </div>
     </div>
