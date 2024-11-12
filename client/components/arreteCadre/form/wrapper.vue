@@ -25,14 +25,31 @@ const isDepPilote: Ref<boolean | null> = ref(authStore.user?.role === 'mte' || a
 const usageSelected = ref();
 
 const currentStep: Ref<number> = ref(!props.arreteCadre.id || !props.arreteCadre.departementPilote || isDepPilote.value ? 1 : 2);
-const steps = [
-  'Informations générales',
-  'Liste des zones d\'alertes',
-  'Mesures de restriction',
-  'Récapitulatif',
-];
 
 const v$ = useVuelidate();
+
+const showRessourcesInfluencees = computed(() => {
+  return props.arreteCadre.zonesAlerte.some(z => z.ressourceInfluencee);
+});
+
+const steps = computed(() => {
+  if (showRessourcesInfluencees.value) {
+    return [
+      'Informations générales',
+      'Liste des zones d\'alertes',
+      'Emprise géographique des ressources influencées',
+      'Mesures de restriction',
+      'Récapitulatif',
+    ];
+  } else {
+    return [
+      'Informations générales',
+      'Liste des zones d\'alertes',
+      'Mesures de restriction',
+      'Récapitulatif',
+    ];
+  }
+});
 
 const nextStep = async () => {
   asc.value = true;
@@ -47,6 +64,12 @@ const nextStep = async () => {
       errors = zonesFormRef.value?.v$.$errors;
       break;
     case 3:
+      if (!showRessourcesInfluencees.value) {
+        await usagesFormRef.value?.v$.$validate();
+        errors = usagesFormRef.value?.v$.$errors;
+      }
+      break;
+    case 4:
       await usagesFormRef.value?.v$.$validate();
       errors = usagesFormRef.value?.v$.$errors;
       break;
@@ -149,6 +172,7 @@ const publierFormRef = ref(null);
 const generalFormRef = ref(null);
 const zonesFormRef = ref(null);
 const usagesFormRef = ref(null);
+const ressourcesInfluenceesFormRef = ref(null);
 </script>
 
 <template>
@@ -166,7 +190,13 @@ const usagesFormRef = ref(null);
         ref="zonesFormRef"
         :arrete-cadre="arreteCadre" />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 3" :asc="asc">
+    <DsfrTabContent v-if="showRessourcesInfluencees" :selected="currentStep === 3" :asc="asc">
+      <ArreteCadreFormRessourceInfluencee
+        ref="ressourcesInfluenceesFormRef"
+        :arrete-cadre="arreteCadre"
+      />
+    </DsfrTabContent>
+    <DsfrTabContent :selected="showRessourcesInfluencees ? currentStep === 4 : currentStep === 3" :asc="asc">
       <ArreteCadreFormUsages
         ref="usagesFormRef"
         :arrete-cadre="arreteCadre"
@@ -175,7 +205,7 @@ const usagesFormRef = ref(null);
         @resetUsageSelected="usageSelected = null"
       />
     </DsfrTabContent>
-    <DsfrTabContent :selected="currentStep === 4" :asc="asc">
+    <DsfrTabContent :selected="showRessourcesInfluencees ? currentStep === 5 : currentStep === 4" :asc="asc">
       <ArreteCadreFormRecapitulatif
         :arrete-cadre="arreteCadre"
         :key="componentKey + currentStep"
@@ -207,14 +237,14 @@ const usagesFormRef = ref(null);
         @click="saveArrete(arreteCadre.statut !== 'a_valider')"
       />
     </li>
-    <li v-if="currentStep !== 4">
+    <li v-if="showRessourcesInfluencees ? currentStep !== 5 : currentStep !== 4">
       <DsfrButton label="Suivant"
                   :secondary="true"
                   icon="ri-arrow-right-line"
                   data-cy="ArreteCadreFormNextStepBtn"
                   @click="nextStep()" />
     </li>
-    <li v-if="currentStep === 4 && arreteCadre.statut === 'a_valider'">
+    <li v-if="(showRessourcesInfluencees ? currentStep === 5 : currentStep === 4) && arreteCadre.statut === 'a_valider'">
       <DsfrButton
         label="Publier"
         :disabled="loading"
@@ -250,8 +280,8 @@ const usagesFormRef = ref(null);
     <template #footer>
       <ul class="fr-btns-group fr-btns-group--md fr-btns-group--inline-sm fr-btns-group--inline-md fr-btns-group--inline-lg fr-mt-4w">
         <li v-if="currentStep !== 1">
-          <DsfrButton label="Annuler" 
-                      :disabled="loading" 
+          <DsfrButton label="Annuler"
+                      :disabled="loading"
                       :secondary="true"
                       @click="modalPublishOpened = utils.closeModal(modalPublishOpened);" />
         </li>
