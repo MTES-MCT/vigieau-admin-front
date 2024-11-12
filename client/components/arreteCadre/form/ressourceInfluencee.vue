@@ -22,6 +22,7 @@ const modalCommunesOpened = ref(false);
 const groupementCommunesFormRef = ref(null);
 const loading = ref(false);
 const zoneToEdit = ref();
+const accordionKey = ref(0);
 const modalActions = ref([
   {
     label: 'Enregistrer',
@@ -60,6 +61,7 @@ const createEditGroupement = async (zone: ZoneAlerte) => {
   }
   sortCommunes();
   zoneToEdit.value = null;
+  accordionKey.value ++;
   utils.closeModal(modalCommunesOpened);
 };
 
@@ -128,6 +130,7 @@ watch(
                              :title="'Voir les ' + option.communes.length + ' communes'"
                              :expanded-id="expandedId"
                              @expand="expandedId = $event"
+                             :key="accordionKey"
               >
                 <span v-for="c of option.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
               </DsfrAccordion>

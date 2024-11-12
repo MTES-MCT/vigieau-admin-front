@@ -99,7 +99,7 @@ const populateSources = () => {
     return;
   }
   resetSources();
-  const features = communes.value.filter(c => props.communes.some(pc => pc.id === c.id))
+  const features = communes.value.filter(c => props.communes?.some(pc => pc.id === c.id))
     .map((c) => {
       return {
         type: 'Feature',
