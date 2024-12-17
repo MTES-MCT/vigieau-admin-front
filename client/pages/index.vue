@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Ref } from 'vue';
 import type { StatisticDepartement } from '~/dto/statistic_departement.dto';
+import { useAuthStore } from '~/stores/auth';
+import moment from 'moment';
 
 definePageMeta({
   layout: 'basic',
@@ -15,9 +17,37 @@ useHead({
 const statisticDepartement: Ref<StatisticDepartement[] | undefined> = ref();
 
 const api = useApi();
+const authStore = useAuthStore();
+const utils = useUtils();
+const router = useRouter();
+
 const { data, error } = await api.statisticDepartement.list();
 if (data.value) {
   statisticDepartement.value = data.value;
+}
+
+const modalCheckRulesOpened = ref(false);
+const modalTitle = ref('Vérification de vos règles de gestion');
+const modalActions: Ref<any[]> = ref([{
+    label: 'Modifier',
+    onclick: async () => {
+      utils.closeModal(modalCheckRulesOpened);
+      await api.user.checkRules();
+      router.push('mon-departement');
+    },
+  }, {
+    label: 'Fermer',
+    secondary: true,
+    onclick: async () => {
+      utils.closeModal(modalCheckRulesOpened);
+      await api.user.checkRules();
+    },
+  }],
+);
+if (authStore.user &&
+  authStore.user.role === 'departement' &&
+  (!authStore.user?.checkRules || moment(authStore.user.checkRules).isBefore(moment().subtract(1, 'years'), 'day'))) {
+  modalCheckRulesOpened.value = true;
 }
 </script>
 
@@ -36,9 +66,9 @@ if (data.value) {
         <div class="fr-col-12 fr-col-lg-4">
           <AccueilStatsFeedback />
         </div>
-<!--        <div class="fr-col-12 fr-col-lg-4">-->
-<!--          <AccueilStatsRestrictions v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />-->
-<!--        </div>-->
+        <!--        <div class="fr-col-12 fr-col-lg-4">-->
+        <!--          <AccueilStatsRestrictions v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />-->
+        <!--        </div>-->
         <div class="fr-col-12 fr-col-lg-4">
           <AccueilStatsSubscriptions v-if="statisticDepartement" :statisticDepartement="statisticDepartement" />
         </div>
@@ -48,6 +78,13 @@ if (data.value) {
       <AccueilLinks />
     </div>
   </div>
+
+  <DsfrModal :opened="modalCheckRulesOpened"
+             :title="modalTitle"
+             :actions="modalActions"
+             @close="modalCheckRulesOpened = utils.closeModal(modalCheckRulesOpened);">
+    <MonDepartementReglesModal />
+  </DsfrModal>
 </template>
 
 <style lang="scss">

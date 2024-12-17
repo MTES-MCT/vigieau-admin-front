@@ -5,6 +5,7 @@ export interface User {
   role: string;
   roleDepartements: string[];
   roleCommunes: string[];
+  checkRules: string;
 }
 
 export enum UserRole {
