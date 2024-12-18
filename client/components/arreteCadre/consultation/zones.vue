@@ -58,7 +58,7 @@ watch(() => refDataStore.departements,
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SOU', false)" class="fr-ml-2w fr-my-2w">
         {{ za.code }} {{ za.nom }}
       </p>
-      <P v-if="getZonesByType(d, 'SOU', true).length > 0">
+      <P v-if="getZonesByType(d.zonesAlerte, 'SOU', true).length > 0">
         &ensp;Ressources influencées
       </P>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SOU', true)" class="fr-ml-2w fr-my-2w">
