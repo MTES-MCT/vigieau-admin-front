@@ -56,12 +56,14 @@ const createEditGroupementCommunes = (zone: ZoneAlerte) => {
 
 const createEditGroupement = async (zone: ZoneAlerte) => {
   const z = props.arreteCadre.zonesAlerte.find(z => z.id === zone.id);
-  if (z) {
-    z.communes = zone.communes;
+  const zBis = zonesInfluenceesSelected.value.find(z => z.id === zone.id);
+  if (z && zBis) {
+    z.communes = JSON.parse(JSON.stringify(zone.communes));
+    zBis.communes = JSON.parse(JSON.stringify(zone.communes));
   }
   sortCommunes();
   zoneToEdit.value = null;
-  accordionKey.value ++;
+  accordionKey.value++;
   utils.closeModal(modalCommunesOpened);
 };
 
@@ -103,6 +105,14 @@ watch(
   },
   { immediate: true },
 );
+
+watch(
+  () => props.arreteCadre.zonesAlerte,
+  async () => {
+    zonesInfluenceesSelected.value = props.arreteCadre.zonesAlerte.filter(z => z.ressourceInfluencee);
+    computeDepSelected();
+  },
+);
 </script>
 
 <template>
@@ -123,6 +133,7 @@ watch(
                   :label="option.communes?.length > 0 ? 'Modifier un groupement de communes' : 'Ajouter un groupement de communes'"
                   secondary
                   @click="createEditGroupementCommunes(option)"
+                  :key="option.id + '-' + accordionKey"
                 />
               </div>
               <DsfrAccordion v-if="option.communes?.length > 0"
@@ -130,7 +141,7 @@ watch(
                              :title="'Voir les ' + option.communes.length + ' communes'"
                              :expanded-id="expandedId"
                              @expand="expandedId = $event"
-                             :key="accordionKey"
+                             :key="option.id + '-' + accordionKey"
               >
                 <span v-for="c of option.communes"> {{ c.code }} - {{ c.nom }}<br /> </span>
               </DsfrAccordion>
