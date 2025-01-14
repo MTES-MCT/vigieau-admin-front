@@ -246,6 +246,13 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
           {{ restriction.nomGroupementAep }}
         </template>
         <template v-else> {{ restriction.zoneAlerte.code }} {{ restriction.zoneAlerte.nom }}</template>
+        <DsfrTooltip v-if="restriction.zoneAlerte?.ressourceInfluencee"
+                     on-hover 
+                     content="Ressource influencée">
+          <DsfrBadge label="RI"
+                     @click="$event.preventDefault();"
+                     class="fr-ml-2w fr-badge--no-icon" />
+        </DsfrTooltip>
       </div>
       <div class="fr-col-4">
         <DsfrInputGroup :error-message="utils.showInputError(v$, 'niveauGravite')">
@@ -307,5 +314,9 @@ watch(() => props.restriction.niveauGravite, (newValue, oldValue) => {
   .fr-select-group {
     margin-bottom: 0;
   }
+}
+
+.fr-link {
+  background: none;
 }
 </style>

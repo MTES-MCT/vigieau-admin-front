@@ -35,13 +35,13 @@ watch(() => refDataStore.departements,
   <template v-for="d of departementsFiletered">
     <h2>Zones d'alerte du {{ d.nom }} ({{ d.zonesAlerte.length }})</h2>
     <template v-if="getZonesByType(d.zonesAlerte, 'SUP').length > 0">
-      <p>Eaux superficielles</p>
+      <p><b>Eaux superficielles</b></p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SUP', false)" class="fr-ml-2w fr-my-2w">
         {{ za.code }} {{ za.nom }}
       </p>
-      <P v-if="getZonesByType(d.zonesAlerte, 'SUP', true).length > 0">
-        &ensp;Ressources influencées
-      </P>
+      <p v-if="getZonesByType(d.zonesAlerte, 'SUP', true).length > 0">
+        &ensp;<u>Ressources influencées</u>
+      </p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SUP', true)" class="fr-ml-2w fr-my-2w">
         {{ za.code }} {{ za.nom }}
         <DsfrAccordion v-if="za.communes?.length > 0"
@@ -54,13 +54,13 @@ watch(() => refDataStore.departements,
       </p>
     </template>
     <template v-if="getZonesByType(d.zonesAlerte, 'SOU').length > 0">
-      <p>Eaux souterraines</p>
+      <p><b>Eaux souterraines</b></p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SOU', false)" class="fr-ml-2w fr-my-2w">
         {{ za.code }} {{ za.nom }}
       </p>
-      <P v-if="getZonesByType(d.zonesAlerte, 'SOU', true).length > 0">
-        &ensp;Ressources influencées
-      </P>
+      <p v-if="getZonesByType(d.zonesAlerte, 'SOU', true).length > 0">
+        &ensp;<u>Ressources influencées</u>
+      </p>
       <p v-for="za of getZonesByType(d.zonesAlerte, 'SOU', true)" class="fr-ml-2w fr-my-2w">
         {{ za.code }} {{ za.nom }}
         <DsfrAccordion v-if="za.communes?.length > 0"
