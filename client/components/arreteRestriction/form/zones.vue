@@ -47,6 +47,7 @@ const zonesOptionsCheckBox = (ac: ArreteCadre, type: string) => {
         name: z.id,
         label: `${z.code} ${z.nom ? z.nom : ''}`,
         isArAssociated: arsAssociated.some((ar) => ar.restrictions?.some((r) => r.zoneAlerte?.id === z.id)),
+        ressourceInfluencee: z.ressourceInfluencee,
       };
     });
 };
@@ -199,6 +200,13 @@ defineExpose({
                 >
                   <template #label>
                     {{ option.label }}
+                    <DsfrTooltip v-if="option.ressourceInfluencee"
+                                 on-hover
+                                 content="Ressource influencée">
+                      <DsfrBadge label="RI"
+                                 @click="$event.preventDefault();"
+                                 class="fr-ml-2w fr-badge--no-icon"/>
+                    </DsfrTooltip>
                     <div class="checkbox-label-info" v-if="option.isArAssociated">
                       <VIcon name="ri-information-fill" />
                       Cette zone est utilisée dans un autre arrêté de restriction actif
@@ -306,5 +314,9 @@ defineExpose({
       color: var(--blue-france-sun-113-625);
     }
   }
+}
+
+.fr-link {
+  background: none;
 }
 </style>

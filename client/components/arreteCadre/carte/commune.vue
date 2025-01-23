@@ -48,7 +48,7 @@ onMounted(async () => {
     if (data.value) {
       communes.value = data.value;
     }
-    
+
     // SOURCES
     map.value?.addSource('cadastre', {
       type: 'vector',
@@ -99,7 +99,7 @@ const populateSources = () => {
     return;
   }
   resetSources();
-  const features = communes.value.filter(c => props.communes.some(pc => pc.id === c.id))
+  const features = communes.value.filter(c => props.communes?.some(pc => pc.id === c.id))
     .map((c) => {
       return {
         type: 'Feature',
@@ -131,11 +131,15 @@ const resetSources = (onlyLayers = false) => {
 };
 
 const computeBounds = () => {
-  const geoms = communes.value.filter(c => props.communes.some(pc => pc.id === c.id))
+  const geoms = communes.value.filter(c => props.communes?.some(pc => pc.id === c.id))
     .map((c) => {
       return c.geom.coordinates;
     });
 
+  if (!geoms || geoms.length < 1) {
+    return;
+  }
+  
   let bounds = new LngLatBounds();
 
   geoms.forEach(g => {

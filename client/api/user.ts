@@ -14,4 +14,11 @@ export class UserApi extends BaseApi {
       baseURL: '/api',
     });
   };
+  
+  checkRules = () => {
+    return useCustomFetch(`/${this.resource}/check_rules`, {
+      method: 'POST',
+      baseURL: '/api',
+    });    
+  }
 }
