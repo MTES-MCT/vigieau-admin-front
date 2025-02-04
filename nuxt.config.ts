@@ -64,6 +64,7 @@ export default defineNuxtConfig({
       domainName: process.env.DOMAIN_NAME,
       apiUrl: process.env.API_URL,
       email: 'contact.vigieau@beta.gouv.fr',
+      apiSecheresseUrl: process.env.API_SECHERESSE_URL,
     },
   },
 
